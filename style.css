@@ -1,0 +1,169 @@
+.WebLayout{
+	min-width: 1024px;
+	min-height: 768px;
+	
+	width: 1024px;
+	height: 768px;
+	max-width: 1440px;
+	max-height: 900px;
+	position:static;
+	margin: 0px auto auto auto;
+
+}
+
+.WebNameDiv{
+	border-style: outset;
+	border-color: black;
+	border-width: 5px;
+	width: 150px;
+	padding:5px;
+	background-color: white;
+	font-weight: bold;
+	font-size: 30px;
+	/* font-size: 30; */
+	position: static;
+	margin-top: -2%;
+}
+
+body {
+	background-image: url("Image/web-bg.jpg");
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+	background-position: center;
+	background-size: cover;
+	background-color: rgb(255,255,255);	
+	font-family: "Times New Roman", "Microsoft JhengHei UI";
+}
+
+@keyframes oxxo{
+  0%{
+      left:0;
+  }
+  100%{
+      left:200px;
+  }
+}.titleDiv {
+	font-size: 45px;
+	/* font-size: 50px; */
+	font-weight: bold;
+	background-color: #FFFFFF;
+	height: auto;
+	width: 30%;
+	margin-top: auto;
+	margin-right: auto;
+	margin-bottom: auto;
+	margin-left: auto;
+	border: 3px outset #000000;
+	position: static;
+	text-transform: capitalize;
+	font-style: normal;
+	text-align: center;
+}
+
+.LoginArea {
+	font-family: "Times New Roman", "Microsoft JhengHei UI";
+	font-size: 1vmin;
+	font-weight: bolder;
+	position: static;
+	width: 200px;
+	
+	height: auto;
+	margin-top: -5%;
+	margin-right: 0%;
+	margin-bottom: auto;
+	margin-left: auto;
+	
+}
+.loginTable{
+	/* border-color: #000000; */
+	/* border-width: 0px; */
+	/* border-style: solid; */
+	
+	width: 200px;
+	
+}
+.inputText{
+	font-size: 1.5vmin;
+	font-weight: bold;
+	width: 100px;
+	border: 2px double #FFFFFF;
+	background-color: RGBA(0,0,0,0.50);
+	color: white;
+	margin-top: auto;
+	margin-right: 0%;
+	margin-left: 0%;
+	margin-bottom: auto;
+}
+::-webkit-input-placeholder {
+	color: #BBBBBB;
+}
+.LoginButton{
+	font-size: 1.5vmin;
+	font-weight: bold;
+	width: 100px;
+	margin-top: auto;
+	margin-right: 0%;
+	margin-left: 0%;
+	margin-bottom: auto;
+	position: static;
+	border: 2px inset #000000;
+}
+
+.RegisterButton{
+	font-size: 1.5vmin;
+	font-weight: bold;
+	width: 205px;
+	height: 30px;
+	margin-top: 0%;
+	margin-right: 0%;
+	margin-left: auto;
+	margin-bottom: auto;
+	position: static;
+	background-color: #00DB00; 
+}
+
+.TopDiv{
+	/* font-size: 1.5vmin; */
+	/* font-weight: bold; */
+	height: 70px;
+	width: 600px;
+	
+	border-style: outset;
+	border-top:3px outset #000000;
+	border-left:3px outset #000000;
+	border-right:3px outset #000000;
+	border-bottom: 0px;
+	
+	margin-top: -5%;
+	margin-right: auto;
+	margin-left: auto;
+	margin-bottom: auto;
+	background-color: RGBA(255,255,255,0.80);
+	padding: 0 0 0 0;
+	position: relative;
+}
+.TopHr{
+	border: 0px;
+	background-color: rgba(0,0,0,0.60);
+	height: 20px;
+	margin-top: 0%;
+	margin-right: 0%;
+	margin-bottom: auto;
+	margin-left: 0%;
+	
+}
+
+.SearchTable{
+	position: absolute;	
+	top:0px;
+	border: 0px solid #000000;
+	padding: 0% 0% 0% 0%;
+	height: 70px;
+	width: 600px;
+	/* margin-top: 0%;
+	margin-right: auto;
+	margin-bottom: auto;
+	margin-left: 0%; */
+	
+
+}
