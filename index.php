@@ -28,11 +28,11 @@ $store = null;
       <table class="loginTable" cellpadding="0">
         <tbody>
           <tr>
-            <td><input type="text" class="inputText" placeholder="帳號"></td>
+            <td><input type="text" class="inputText" placeholder="帳號" name="user"></td>
             <td><button type="button" class="LoginButton" style="background-color: #C4E1FF;">會員登入</button></td>
           </tr>
           <tr>
-            <td><input type="text" class="inputText" placeholder="密碼"></td>
+            <td><input type="password" class="inputText" placeholder="密碼" name="password"></td>
             <td><button type="button" class="LoginButton" style="background-color: #FFD306;">小農登入</button></td>
           </tr>
         </tbody>
@@ -46,17 +46,45 @@ $store = null;
           <tr>
             <td style="width: 100px; height:auto; text-align:right; font-size:larger; font-weight:bold;margin: auto 0% auto auto">農產品篩選</td>
             <td>
-              <hr width="1" size=65px color="#000000" style="margin: 0% auto auto auto; width:1px;">
+              <hr width="1" size=65px color="#000000" style="margin: 0% auto auto 0%; width:1px;">
             </td>
-            <td style="width: 500px; height:auto; text-align:left;">123</td>
+            <!-- Sql農產品篩選條件 -->
+            <td><input type="checkbox" name="" value="">123</td>
+            <td><input type="checkbox" name="" value="">123</td>
           </tr>
         </tbody>
-        <!-- Sql農產品篩選條件 -->
       </table>
     </div>
-    <hr class="TopHr">
 
+    <hr class="TopHr">
     </hr>
+
+    <div class="mainDiv">
+      <div class="StoreInfoDiv">
+        <table class="StoreInfoTable" style="border:0px;">
+          <tbody>
+            <td>
+              <table class="StoreInfoTable" style="border: 1px solid #000000;">
+                <tbody>
+                  <tr style="height:70px;">
+                    <td><a href=""><img src="image/user.png" alt="123"></a></td> <!-- Sql賣場圖片&連結-->
+                  </tr>
+                  <tr style="height:30px;">
+                    <td><a href="" style="font-size:2vmin; color:#00bfff; font-weight: bold; text-align: center;">進入此賣場</a></td> <!-- Sql賣場連結-->
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+            <td>
+              <div>賣場資訊</div> <!-- Sql賣場資訊 -->
+            </td>
+          </tbody>
+        </table>
+
+
+      </div>
+
+    </div>
 
 
   </div>

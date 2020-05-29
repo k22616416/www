@@ -164,6 +164,51 @@ body {
 	margin-right: auto;
 	margin-bottom: auto;
 	margin-left: 0%; */
+}
+
+.mainDiv{
+
+	height: auto;
+	min-height: 600px;
+	width: 600px;
+	max-width: 600px;
+	
+	border-style: outset;
+	border-top:0px ;
+	border-left:3px outset #000000;
+	border-right:3px outset #000000;
+	border-bottom: 3px outset #000000;
+	
+	margin-top: 0%;
+	margin-right: auto;
+	margin-left: auto;
+	margin-bottom: auto;
+	background-color: RGBA(255,255,255,0.80);
+	padding: 1% 0 0 0;
+	position: static;
+}
+.StoreInfoDiv{
+	border: 1px solid #000000;
+	margin :0% 1.5% 1% 1.5% ;
+	position: static;
+
+}
+.StoreInfoTable{
+	height: 100px;
+}
+
+.StoreHrefText{
+	font-size:2vmin; 
+	color:#00bfff; 
+	font-weight: bold;
+	text-align: center;
+}
+
+img{
+	height:70px; 
+	width:70px;
+	margin: 0% auto 0% auto;
 	
 
 }
+
