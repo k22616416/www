@@ -65,6 +65,7 @@ body {
 	font-size: 1vmin;
 	font-weight: bolder;
 	position: static;
+
 	width: 200px;
 	
 	height: auto;
@@ -142,6 +143,7 @@ body {
 	padding: 0 0 0 0;
 	position: relative;
 }
+
 .TopHr{
 	border: 0px;
 	background-color: rgba(0,0,0,0.60);
@@ -187,14 +189,21 @@ body {
 	padding: 1% 0 0 0;
 	position: static;
 }
-.StoreInfoDiv{
-	border: 1px solid #000000;
-	margin :0% 1.5% 1% 1.5% ;
-	position: static;
 
+.StoreInfoDiv{
+	width: 588px;
+	background-color:white;
+	border: 3px solid #000000;
+	margin :1% auto 1% auto ;
+	position: static;
 }
+
 .StoreInfoTable{
+	border:0px;
 	height: 100px;
+	width: inherit;
+	margin: 0% auto auto auto;
+	/* background-color: #FFFFFF; */
 }
 
 .StoreHrefText{
@@ -208,7 +217,5 @@ img{
 	height:70px; 
 	width:70px;
 	margin: 0% auto 0% auto;
-	
-
 }
 

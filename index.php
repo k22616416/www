@@ -61,22 +61,45 @@ $store = null;
 
     <div class="mainDiv">
       <div class="StoreInfoDiv">
-        <table class="StoreInfoTable" style="border:0px;">
+        <table class="StoreInfoTable">
           <tbody>
-            <td>
-              <table class="StoreInfoTable" style="border: 1px solid #000000;">
+            <td style="width:100px;">
+              <table class="StoreInfoTable" style="border: 0px solid #000000; width: 100px;">
                 <tbody>
-                  <tr style="height:70px;">
-                    <td><a href=""><img src="image/user.png" alt="123"></a></td> <!-- Sql賣場圖片&連結-->
+                  <tr>
+                    <td style="height:70px; width:70px;"><a href=""><img src="image/user.png" alt="123"></a></td> <!-- Sql賣場圖片&連結-->
                   </tr>
-                  <tr style="height:30px;">
-                    <td><a href="" style="font-size:2vmin; color:#00bfff; font-weight: bold; text-align: center;">進入此賣場</a></td> <!-- Sql賣場連結-->
+                  <tr>
+                    <td style="height:30px; width:70px;"><a href="" style="font-size:18px; color:#00bfff; font-weight: bold; text-align: center;">進入此賣場</a></td> <!-- Sql賣場連結-->
                   </tr>
                 </tbody>
               </table>
             </td>
+            <td style="width: 3px;">
+              <hr width=" 1px" size=108px color="#000000" style="margin: 0% auto 0% auto; ">
+            </td>
             <td>
-              <div>賣場資訊</div> <!-- Sql賣場資訊 -->
+              <div style="width: auto;">//賣場資訊</div> <!-- Sql賣場資訊 -->
+            </td>
+            <td style="width: 3px;">
+              <hr width="1px" size=108px color="#000000" style="margin: 0% auto 0% auto; ">
+            </td>
+            <td style="width: 100px;">
+              <table class="StoreInfoTable" style="width: 100px; position: relative;left:0px;">
+                <tbody>
+                  <tr style="height:50; width:100px; font-size:14px;">
+                    <td>已成交訂單數:000</td> <!-- Sql賣場訂單數-->
+                  </tr>
+                  <tr>
+                    <td>
+                      <hr style="margin: auto 0% auto 0%; height:2px;  border:0px; background-color: #000000;">
+                    </td>
+                  </tr>
+                  <tr style="height:50; width:100px; font-size:14px;">
+                    <td>瀏覽次數:000</td> <!-- Sql賣場瀏覽次數-->
+                  </tr>
+                </tbody>
+              </table>
             </td>
           </tbody>
         </table>
