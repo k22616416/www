@@ -4,13 +4,26 @@
 	
 	width: 1024px;
 	height: 768px;
-	max-width: 1440px;
-	max-height: 900px;
-	position:static;
-	margin: 0px auto auto auto;
+	position: relative;;
+	top: 0px;
+	left: 50%;
+	margin-left: -512px;
 
 }
 
+.topArea{
+	width: 1024px;
+	height: 160px;
+	position: fixed;
+	top:0%;
+	left: 50%;
+	margin-left: -512px;
+	z-index: 1;
+	background-color: RGBA(255,255,255,0.50);
+	/* margin: 0 auto 0 auto; */
+	/* margin: auto auto auto auto; */
+
+}
 .WebNameDiv{
 	border-style: outset;
 	border-color: black;
@@ -21,8 +34,13 @@
 	font-weight: bold;
 	font-size: 30px;
 	/* font-size: 30; */
-	position: static;
-	margin-top: -2%;
+	/* position: static; */
+	/* margin-top: -2%; */
+	position: absolute;
+	top:5%;
+	left:0%; 
+	/* margin-left: 0%; */
+    
 }
 
 body {
@@ -35,44 +53,48 @@ body {
 	font-family: "Times New Roman", "Microsoft JhengHei UI";
 }
 
-@keyframes oxxo{
-  0%{
-      left:0;
-  }
-  100%{
-      left:200px;
-  }
-}.titleDiv {
+
+.titleDiv {
 	font-size: 45px;
 	/* font-size: 50px; */
 	font-weight: bold;
 	background-color: #FFFFFF;
 	height: auto;
-	width: 30%;
-	margin-top: auto;
+	width: 400px;
+	
+	/* margin-top: auto;
 	margin-right: auto;
 	margin-bottom: auto;
-	margin-left: auto;
+	margin-left: auto; */
 	border: 3px outset #000000;
-	position: static;
+	/* position: static; */
+	position: absolute;
+	top:0%;
+	left:50%; 
+    margin-left: -200px;
+	
+
 	text-transform: capitalize;
 	font-style: normal;
 	text-align: center;
 }
 
-.LoginArea {
-	font-family: "Times New Roman", "Microsoft JhengHei UI";
-	font-size: 1vmin;
-	font-weight: bolder;
-	position: static;
 
+.LoginArea {
+	/* font-family: "Times New Roman", "Microsoft JhengHei UI"; */
+	/* font-size: 16px; */
+	/* font-weight: bolder; */
+	/* position: static; */
 	width: 200px;
-	
 	height: auto;
-	margin-top: -5%;
+	/* margin-top: 1%;
 	margin-right: 0%;
 	margin-bottom: auto;
-	margin-left: auto;
+	margin-left: auto; */
+	position: absolute;
+	top: 5%;
+	right: 0%;
+	/* margin-right: -100px; */
 	
 }
 .loginTable{
@@ -84,9 +106,10 @@ body {
 	
 }
 .inputText{
-	font-size: 1.5vmin;
-	font-weight: bold;
+	font-size: 14px;
+	font-weight: bolder;
 	width: 100px;
+	height: 25px;
 	border: 2px double #FFFFFF;
 	background-color: RGBA(0,0,0,0.50);
 	color: white;
@@ -99,27 +122,28 @@ body {
 	color: #BBBBBB;
 }
 .LoginButton{
-	font-size: 1.5vmin;
+	font-size: 14px;
 	font-weight: bold;
-	width: 100px;
+	width: 96px;
+	height: 25px;
 	margin-top: auto;
 	margin-right: 0%;
 	margin-left: 0%;
 	margin-bottom: auto;
-	position: static;
+	/* position: static; */
 	border: 2px inset #000000;
 }
 
 .RegisterButton{
-	font-size: 1.5vmin;
+	font-size: 14px;
 	font-weight: bold;
-	width: 205px;
-	height: 30px;
+	width: 200px;
+	height: 25px;
 	margin-top: 0%;
 	margin-right: 0%;
 	margin-left: auto;
 	margin-bottom: auto;
-	position: static;
+	/* position: static; */
 	background-color: #00DB00; 
 }
 
@@ -135,23 +159,34 @@ body {
 	border-right:3px outset #000000;
 	border-bottom: 0px;
 	
-	margin-top: -5%;
+	/* margin-top: -5%;
 	margin-right: auto;
 	margin-left: auto;
-	margin-bottom: auto;
+	margin-bottom: auto; */
 	background-color: RGBA(255,255,255,0.80);
 	padding: 0 0 0 0;
-	position: relative;
+	position: absolute;
+	top: 67px;
+	left: 50%;
+	margin-left: -303px;
+	margin-bottom: 0;
 }
 
 .TopHr{
 	border: 0px;
 	background-color: rgba(0,0,0,0.60);
 	height: 20px;
-	margin-top: 0%;
+
+	width: 1024px;
+	position: absolute;
+	bottom: 0px;
+	left: 50%;
+	margin-left: -512px;
+	margin-bottom: 0px;
+	/* margin-top: 0%;
 	margin-right: 0%;
 	margin-bottom: auto;
-	margin-left: 0%;
+	margin-left: 0%; */
 	
 }
 
@@ -181,41 +216,90 @@ body {
 	border-right:3px outset #000000;
 	border-bottom: 3px outset #000000;
 	
-	margin-top: 0%;
+	/* margin-top: 0%;*/
+	position: relative;
+	top :152px;
+	left: 50%;
+	
+	margin-left: -303px;
+	/* margin-top: 171px;
 	margin-right: auto;
 	margin-left: auto;
-	margin-bottom: auto;
+	margin-bottom: auto; */
+	/* top:0px; */
+	
 	background-color: RGBA(255,255,255,0.80);
 	padding: 1% 0 0 0;
-	position: static;
+	/* position: absolute; */
 }
 
 .StoreInfoDiv{
 	width: 588px;
 	background-color:white;
 	border: 3px solid #000000;
-	margin :1% auto 1% auto ;
+	margin : 0% auto 1% auto ;
 	position: static;
+}
+.StoreInfoDiv:hover{
+	background-color: yellow;
 }
 
 .StoreInfoTable{
-	border:0px;
+	border:3px solid #000000;
 	height: 100px;
-	width: inherit;
-	margin: 0% auto auto auto;
-	/* background-color: #FFFFFF; */
+	width: auto;
+	margin: 0px 5px 10px 5px;
+	background-color: #FFFFFF;
+}
+.StoreInfoTable:hover{
+	background-color: rgba(255,255,0,0.40);
 }
 
 .StoreHrefText{
-	font-size:2vmin; 
+	font-size:16px; 
 	color:#00bfff; 
 	font-weight: bold;
-	text-align: center;
 }
 
 img{
 	height:70px; 
 	width:70px;
-	margin: 0% auto 0% auto;
+	display: block;
+	margin:auto;
+	/* position: relative;
+	top: 0px;
+	left: 15px;
+	right: auto;
+	bottom: auto; */
 }
 
+.StoreTopTable{
+	height: 68px;
+	width: 600px;
+	position: relative;
+	top: 0px;
+	padding: 0 0 0 0;
+	border: 0px;
+}
+
+tr{
+	padding: 0 0 0 0;
+}
+td{
+	padding: 0 0 0 0;
+}
+
+#sql{
+	color:red;
+	
+}
+button{
+
+	font-size: 16px;
+
+}
+
+a{
+	text-decoration:none;
+	
+}
