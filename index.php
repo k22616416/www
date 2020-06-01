@@ -41,7 +41,7 @@ $store = null;
 
         if (isset($_POST['submit'])) {
           if (empty($_POST['user']) || empty($_POST['password'])) {
-            echo 'userName empty';
+            //echo 'userName empty';
           } else {
             $userName = $_POST['user'];
             $passwd = $_POST['password'];
@@ -53,12 +53,12 @@ $store = null;
             $sqlData = $conn->query($insertQuery);
             if ($sqlData->num_rows > 0) {
               while ($row = $sqlData->fetch_assoc()) {
-                echo $row['使用者帳號'] . "<br>" . $row['姓名'] . "<br>" . $row['Email'] . "<br>" . $row['連絡電話'];
+                //echo $row['使用者帳號'] . "<br>" . $row['姓名'] . "<br>" . $row['Email'] . "<br>" . $row['連絡電話'];
               }
               unset($_POST['user']);
               unset($_POST['password']);
             } else {
-              echo "0筆資料";
+              //echo "0筆資料";
             }
             $conn->close();
             // header('localhost: index.php');
