@@ -95,10 +95,10 @@ $store = 'user';
                         </tbody>
                     </form>
                 </table>
-                <button type="button" class="RegisterButton" style="display: none;">註冊成為新的小農或會員</button>
+                <button type="button" class="RegisterButton">註冊成為新的小農或會員</button>
             </div>
 
-            <div class="TopDiv">
+            <div class=" TopDiv">
                 <!--分割線上方Div-->
                 <table class="StoreTopTable">
                     <tbody>
