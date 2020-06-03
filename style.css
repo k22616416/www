@@ -259,7 +259,11 @@ body {
 	font-size:16px; 
 	color:#00bfff; 
 	font-weight: bold;
+	background-color: rgba(0,0,0,0);
+	width: 100px;
+	border: 0px;
 }
+
 
 img{
 	height:70px; 
@@ -377,4 +381,8 @@ a{
 	position: absolute;
 	 
 	right:5px;
+}
+.LoginErrorDiv{
+	color: #FF0000;
+	font-weight: bolder;
 }

@@ -1,9 +1,16 @@
 <link href="style.css" rel="stylesheet" type="text/css">
 <script src="script.js" async></script>
 <?php
-$titleStr = '小農註冊頁面';
+
+
 $store = null;
-$member = 0;
+if (isset($_POST['memberInput']))
+    $member = $_POST['memberInput'];
+else
+    $member = 0;
+
+if ($member == 0) $titleStr = '會員註冊頁面';
+else $titleStr = '小農註冊頁面';
 ?>
 
 <!DOCTYPE html>
@@ -25,10 +32,13 @@ $member = 0;
                 小農<br>
                 線上市集<br>
             </div>
-
-            <button style="position: absolute; top:15px; left:210px; width:100px">
-                轉至<?php if ($member == 0) echo '小農';
-                    else echo '會員'; ?>申請頁面</button>
+            <form action="registerPage.php" method="post">
+                <input name="memberInput" type="hidden" value="<?php if ($member == 0) echo '1';
+                                                                else echo '0'; ?>"></input>
+                <button name="memberType" type="submit" style="position: absolute; top:15px; left:210px; width:100px">
+                    轉至<?php if ($member == 0) echo '小農';
+                        else echo '會員'; ?>申請頁面</button>
+            </form>
             <div class="TopDiv">
                 <div class="registerTopDiv">填寫基本資料</div>
             </div>
@@ -102,7 +112,7 @@ $member = 0;
                         </tr>
                     </tbody>
                 </table>
-                <table class="registerInput" name="googleMapTable" <?php if ($member) echo 'display:none;' ?>>
+                <table class="registerInput" name="googleMapTable" <?php if ($member == 0) echo 'style="display:none;"' ?>>
                     <tbody>
                         <tr>
                             <td style="font-size:larger; font-weight:bolder;">地圖經緯度：</td>
@@ -116,8 +126,8 @@ $member = 0;
                         </tr>
                     </tbody>
                 </table>
-                <div style="position: absolute; bottom:20px; right:50px;">
-                    <button name="submit" type="submit" style="width: 100px; height:50px; background-color:cornflowerblue;  font-weight:bolder; font-size:30px;">送出</button>
+                <div style="position: absolute; bottom:20px; right:50%; margin-right:-100px;">
+                    <button name="infoSubmit" type="submit" style="width: 100px; height:50px; background-color:cornflowerblue;  font-weight:bolder; font-size:30px;">送出</button>
 
                     <script>
                         var infoTable = ["user", "passwd", "passwd2", "phoneNumber", "email", "address", "gMap"];

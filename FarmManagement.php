@@ -1,9 +1,9 @@
-<?php session_start(); ?>
 <link href="style.css" rel="stylesheet" type="text/css">
 <script src="script.js" async></script>
 <?php
-$titleStr = '小農線上市集媒合系統';
-$store = 'user';
+$titleStr = '農場管理';
+$store = '';
+$loginStatus = false;
 ?>
 <script>
     var shopCarCount = 0;
@@ -15,7 +15,7 @@ $store = 'user';
 <head>
     <meta charset="UTF-8">
     <title id="sql">
-        <?php echo $store ?>的農場
+        <?php echo $titleStr ?>
     </title>
 </head>
 
@@ -23,7 +23,7 @@ $store = 'user';
 
     <div class="WebLayout">
         <div class="topArea">
-            <div class="titleDiv" id="sql"><?php echo $store ?>的農場</div>
+            <div class="titleDiv" id="sql"><?php echo $titleStr ?></div>
             <div class="WebNameDiv">
                 小農<br>
                 線上市集<br>
@@ -80,8 +80,15 @@ $store = 'user';
                     </tbody>
                 </table>
 
-                <!-- 未登入 -->
-                <table class="loginTable" cellpadding="0">
+                <!-- 未登入則離開管理頁面回到首頁 -->
+                <?php
+                if (!$loginStatus) {
+                    header('Location: index.php');  //網址待修改
+                    exit();
+                }
+                ?>
+
+                <!-- <table class="loginTable" cellpadding="0">
                     <form class="title-add" method="post" action="storePage.php">
                         <tbody>
                             <tr>
@@ -95,7 +102,7 @@ $store = 'user';
                         </tbody>
                     </form>
                 </table>
-                <button type="button" class="RegisterButton">註冊成為新的小農或會員</button>
+                <button type="button" class="RegisterButton">註冊成為新的小農或會員</button> -->
             </div>
 
             <div class=" TopDiv">
