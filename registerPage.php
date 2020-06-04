@@ -28,7 +28,7 @@ else $titleStr = '小農註冊頁面';
     <div class="WebLayout" style="height:600px; min-height:600px;">
         <div class="topArea">
             <div class="titleDiv" style="color:rgba(190,0,0,1);"><?php echo $titleStr ?></div>
-            <div class="WebNameDiv">
+            <div class="WebNameDiv" onclick=goHome()>
                 小農<br>
                 線上市集<br>
             </div>

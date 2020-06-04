@@ -5,16 +5,21 @@
 $titleStr = '小農線上市集媒合系統';
 if (isset($_POST['storeNumber'])) {
     $store = $_POST['storeNumber'];
+    $_SESSION['storeNumber'] = $store;
+} else if ($_SESSION['storeNumber'] != null) {
+    $store = $_SESSION['storeNumber'];
 } else {
     die("取得賣場編號失敗");
+    echo '<script>document.location.href="index.php"</script>';
     exit;
 }
-
 $loginStatus = false;
 $loginMember = 0;
 $infoName = '';
 $errorCode = 0;
 error_reporting(0);
+
+
 ?>
 <script>
     var shopCarCount = 0;
@@ -35,84 +40,100 @@ error_reporting(0);
     <div class="WebLayout">
         <div class="topArea">
             <div class="titleDiv" id="sql"><?php echo $store ?>的農場</div>
-            <div class="WebNameDiv">
+            <div class="WebNameDiv" onclick=goHome()>
                 小農<br>
                 線上市集<br>
             </div>
+
             <button type="button" style="position: absolute; top:36px;left:210px; background-color:RGBA(255,0,0,0.60);">離開此賣場</button>
             <div class="LoginArea">
                 <!-- 判斷有沒有登入 -->
                 <?php
-                $DBNAME = "小農2";
-                $DBUSER = "root";
-                $DBHOST = "localhost";
-                $conn = mysqli_connect($DBHOST, $DBUSER, '');
-                if (empty($conn)) {
-                    print mysqli_error($conn);
-                    die("資料庫連線失敗");
-                    exit;
-                }
-                if (!mysqli_select_db($conn, $DBNAME)) {
-                    die("資料庫連線失敗");
-                }
-                // mysqli_query($conn, "SET NAMES 'utf8'");
-                // $conn = new mysqli('127.0.0.1:3306', 'root', '', '小農2');
-                // if (!$conn) {
-                //     echo "資料庫連線失敗<br>";
-                // } else {
-                //     echo "資料庫連線成功<br>";
-                // }
+                if (isset($_POST['logout'])) {
+                    unset($_POST['logout']);
+                    unset($_SESSION['user']);
+                    unset($_SESSION['name']);
+                    unset($_SESSION['member']);
+                } else if ($_SESSION['user'] != null) {
+                    $loginStatus = true;
+                    $loginMember = $_SESSION['member'];
+                    $infoName = $_SESSION['姓名'];
+                    $userName = $_SESSION['user'];
+                    $errorCode = 0;
 
-                if (isset($_POST['memberSubmit'])) {
-                    if (empty($_POST['user']) || empty($_POST['password'])) {
-                        $errorCode = 1;
-                    } else {
-                        $userName = $_POST['user'];
-                        $passwd = $_POST['password'];
-                        //$task = $_POST['newTask'];
+                    echo '<script>console.log("' . $loginMember . '")</script>';
+                    echo '<script>console.log("' . $infoName . '")</script>';
+                    echo '<script>console.log("' . $userName . '")</script>';
+                } else {
+                    $DBNAME = "小農2";
+                    $DBUSER = "root";
+                    $DBHOST = "localhost";
+                    $conn = mysqli_connect($DBHOST, $DBUSER, '');
+                    if (empty($conn)) {
+                        print mysqli_error($conn);
+                        die("資料庫連線失敗");
+                        exit;
+                    }
+                    if (!mysqli_select_db($conn, $DBNAME)) {
+                        die("資料庫連線失敗");
+                    }
 
-                        $cmd = "SELECT * FROM `消費者` WHERE `使用者帳號`= '" . $userName . "' AND `使用者密碼`='" . $passwd . "';";
-                        //echo $cmd;
-                        $sqlData = mysqli_query($conn, $cmd);
-                        if (mysqli_num_rows($sqlData) > 0) {
-                            // mysqli_num_rows($sqlData) > 0;
-                            $sqlArray = mysqli_fetch_array($sqlData, MYSQLI_ASSOC);
-                            $loginStatus = true;
-                            $loginMember = 1;
-                            $infoName = $sqlArray['姓名'];
-                            $errorCode = 0;
+                    if (isset($_POST['memberSubmit'])) {
+                        if (empty($_POST['user']) || empty($_POST['password'])) {
+                            $errorCode = 1;
                         } else {
-                            //echo "0筆資料";
-                            $errorCode = 2;
-                        }
+                            $userName = $_POST['user'];
+                            $passwd = $_POST['password'];
+                            //$task = $_POST['newTask'];
 
-                        // mysqli_close($conn);
-                        unset($_POST['user']);
-                        unset($_POST['password']);
+                            $cmd = "SELECT * FROM `消費者` WHERE `使用者帳號`= '" . $userName . "' AND `使用者密碼`='" . $passwd . "';";
+                            //echo $cmd;
+                            $sqlData = mysqli_query($conn, $cmd);
+                            if (mysqli_num_rows($sqlData) > 0) {
+                                // mysqli_num_rows($sqlData) > 0;
+                                $sqlArray = mysqli_fetch_array($sqlData, MYSQLI_ASSOC);
+                                $loginStatus = true;
+                                $loginMember = 1;
+                                $infoName = $sqlArray['姓名'];
+                                $_SESSION['user'] = $userName;
+                                $_SESSION['name'] = $sqlArray['姓名'];
+                                $_SESSION['member'] = $loginMember;
+                                $errorCode = 0;
+                            } else {
+                                //echo "0筆資料";
+                                $errorCode = 2;
+                            }
+
+                            // mysqli_close($conn);
+                            unset($_POST['user']);
+                            unset($_POST['password']);
+                        }
+                    }
+                    if (isset($_POST['farmerSubmit'])) {
+                        if (empty($_POST['user']) || empty($_POST['password'])) {
+                            $errorCode = 1;
+                        } else {
+                            $userName = $_POST['user'];
+                            $passwd = $_POST['password'];
+
+                            $cmd = "SELECT * FROM `小農` WHERE `使用者帳號`= '" . $userName . "' AND `使用者密碼`='" . $passwd . "';";
+                            $sqlData = mysqli_query($conn, $cmd);
+                            if ($sqlData->num_rows > 0) {
+                                $loginStatus = true;
+                                $loginMember = 2;
+                                $errorCode = 0;
+                                $infoName = $sqlArray['姓名'];
+                                $_SESSION['user'] = $userName;
+                                $_SESSION['name'] = $sqlArray['姓名'];
+                                $_SESSION['member'] = $loginMember;
+                            } else {
+                                $errorCode = 2;
+                            }
+                            unset($_POST['user']);
+                            unset($_POST['password']);
+                        }
                     }
                 }
-                if (isset($_POST['farmerSubmit'])) {
-                    if (empty($_POST['user']) || empty($_POST['password'])) {
-                        $errorCode = 1;
-                    } else {
-                        $userName = $_POST['user'];
-                        $passwd = $_POST['password'];
-
-                        $cmd = "SELECT * FROM `小農` WHERE `使用者帳號`= '" . $userName . "' AND `使用者密碼`='" . $passwd . "';";
-                        $sqlData = mysqli_query($conn, $cmd);
-                        if ($sqlData->num_rows > 0) {
-                            $loginStatus = true;
-                            $loginMember = 2;
-                            $errorCode = 0;
-                            $infoName = $sqlArray['姓名'];
-                        } else {
-                            $errorCode = 2;
-                        }
-                        unset($_POST['user']);
-                        unset($_POST['password']);
-                    }
-                }
-
                 ?>
                 <!-- 已登入 -->
                 <table class="loginTable" style="border-collapse:collapse; border:2px solid #000000; background-color: RGBA(255,255,255,0.50); <?php if (!$loginStatus) echo 'display:none;'; ?>">
@@ -230,66 +251,81 @@ error_reporting(0);
             <hr class="TopHr">
             </hr>
 
-            <div class="shopCar" style="display:none;" id="shopCar">
-                <form class="shopCarForm" method="post" action="storePage.php">
-                    <table style="border-bottom: 5px solid #000000;">
-                        <tbody>
-                            <tr>
-                                <td style="width: 50px;"><img src="image/shopping_cart.png" style="height: 50px; width:50px; margin:0px auto auto 5px;"></td>
-                                <td align="center" style="font-size: 30px; font-weight: bolder; width: 150px;">
-                                    <span>買菜藍</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <script>
-                        function checkBuyCar() {
-                            if (shopCarCount == 0) return;
-                            document.getElementById('shopCar').style = "";
+            <div class="shopCar" id="shopCar" style="display:none;">
+                <!-- <form class="shopCarForm" method="post" action="storePage.php"> -->
+                <table style="border-bottom: 5px solid #000000;">
+                    <tbody>
+                        <tr>
+                            <td style="width: 50px;"><img src="image/shopping_cart.png" style="height: 50px; width:50px; margin:0px auto auto 5px;"></td>
+                            <td align="center" style="font-size: 30px; font-weight: bolder; width: 150px;">
+                                <span>買菜藍</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!-- <script>
+                    function checkBuyCar(cookieStr) {
+                        if (shopCarCount == 0) return;
+                        document.getElementById('shopCar').style = "";
 
 
-                            for (var i = 0; i < shopCarCount; i++) {
-                                var a = $_SESSION['commodity' + shopCarCount];
-                                console.log("SESSION:" + a);
-                                var tmp = document.getElementById('shopCarTableTemplate');
-                                var clone = tmp.cloneNode(true);
-                                clone.style = "";
-                                clone.id = "shopCarTable" + i;
-                                tmp.parentNode.appendChild(tmp);
-
-                            }
+                        for (var i = 0; i < shopCarCount; i++) {
+                            var a = $_SESSION['commodity' + shopCarCount];
+                            console.log("SESSION:" + a);
+                            var tmp = document.getElementById('shopCarTableTemplate');
+                            var clone = tmp.cloneNode(true);
+                            clone.style = "";
+                            clone.id = "shopCarTable" + i;
+                            tmp.parentNode.appendChild(tmp);
                         }
-                    </script>
-                    <table class="shopCarTable" id="shopCarTableTemplate">
-                        <tbody>
-                            <tr>
-                                <td align="left" id="target">123</td>
-                                <td align="center">123</td>
-                                <td align="center">123</td>
-                            </tr>
-                            <tr>
-                                <td colspan="3">
-                                    <hr id="shopCarHr">
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <script>
-                        function buyDone() {
-                            for (var i = 0; i < shopCarCount; i++) {
-                                unset($_SESSION['commodity' + shopCarCount]);
-                            }
+                    }
+                    if (document.cookie) {
+                        console.log(document.cookie);
+                        checkBuyCar();
+                    }
+                </script> -->
+                <?php
+                function creatByuCar($name, $count)
+                {
+                    echo '<script> console.log(' . $name . ":" . $count . ')</script>';
+                }
+                if (isset($_POST['commodity'])) {   //如果有東西加到購物車內
+                    $commodityIndex = $_POST['commodityIndex'];
+                    $buyCount = $_POST['buyCount'];
+                    unset($_POST['commodity']);
+                    creatByuCar($commodityIndex, $buyCount);
+                }
+
+                ?>
+                <table class="shopCarTable" id="shopCarTableTemplate">
+                    <tbody>
+                        <tr>
+                            <td align="left" id="target">品名</td>
+                            <td align="center">數量<input type="number" value="1" style="width:40px; text-align:center;"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <hr id="shopCarHr">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <script>
+                    function buyDone() {
+                        for (var i = 0; i < shopCarCount; i++) {
+                            unset($_SESSION['commodity' + shopCarCount]);
                         }
-                    </script>
-                    <button class="checkoutButton" onclick="buyDone">結帳</button>
-                </form>
+                    }
+                </script>
+                <button class="checkoutButton" onclick="buyDone">結帳</button>
+                <!-- </form> -->
             </div>
         </div>
 
         <!--透過SQL增加賣場資訊-->
         <div class="mainDiv">
             <table class="StoreInfoTable" id="storeInfoTemplate">
-                <form name="commodity1" action="storePage.php" method="POST" align="center" style="margin:auto auto auto auto;">
-                    <input type="text" id="commodity1" value="123" style="display: none;">
+                <form name="commodity" id="commodity" action="storePage.php" method="post" align="center" style="margin:auto auto auto auto;">
+                    <input type="hidden" name="commodityIndex" value="產品編號:123"></input>
                     <tbody>
                         <tr>
                             <td rowspan="3" align="center" style="width: 100px; height:100px;"><img src="image/carrot.png" alt="123"><span id="sql" style="font-size:smaller;">有機</span>
@@ -311,22 +347,22 @@ error_reporting(0);
                                     <tr style="border: 3px solid #000000; border-right:0px; border-bottom:0px; border-left:0px;">
                                         <td style="border: 3px solid #000000; border-left:0px; border-bottom:0px;">
                                             剩餘數量：n把</td>
-                                        <td></td>
+                                        <td>購買數量 <input type="text" name="buyCount" style="width:50px;" value=1></input></td>
                                     </tr>
                                 </table>
                             </td>
+
                             <td rowspan="3">
                                 <hr width=" 3px" size=100px color="#000000" style="margin: 0% auto 0% auto; border: 0px;">
                             </td>
                             <td align="center" style="right:0px; position: relative; width: 100px; font-size:24px; font-weight: bolder; ">
                                 <script>
                                     function buy() {
-                                        shopCarCount++;
-                                        console.log('buy');
-                                        checkBuyCar();
+                                        // document.cookie = name;
+                                        document.getElementById("commodity").submit();
                                     }
                                 </script>
-                                <a onclick="javascript:buy();return false;" href="#">
+                                <a href="#" onclick="buy()">
                                     <font color="blue" align="center">購<br>買</font>
                                 </a>
                             </td>

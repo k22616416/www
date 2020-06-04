@@ -1,3 +1,4 @@
+<?php session_start(); ?>
 <link href="style.css" rel="stylesheet" type="text/css">
 <script src="script.js" async></script>
 <?php
@@ -47,66 +48,83 @@ if (!mysqli_select_db($conn, $DBNAME)) {
 
       <div class="LoginArea">
         <!-- 判斷有沒有登入 -->
+
         <?php
+        if (isset($_POST['logout'])) {
+          unset($_POST['logout']);
+          unset($_SESSION['user']);
+          unset($_SESSION['name']);
+          unset($_SESSION['member']);
+        } else if ($_SESSION['user'] != null) {
+          $loginStatus = true;
+          $loginMember = $_SESSION['member'];
+          $infoName = $_SESSION['姓名'];
+          $userName = $_SESSION['user'];
+          $errorCode = 0;
 
-        // mysqli_query($conn, "SET NAMES 'utf8'");
-        // $conn = new mysqli('127.0.0.1:3306', 'root', '', '小農2');
-        // if (!$conn) {
-        //     echo "資料庫連線失敗<br>";
-        // } else {
-        //     echo "資料庫連線成功<br>";
-        // }
+          echo '<script>console.log("' . $loginMember . '")</script>';
+          echo '<script>console.log("' . $infoName . '")</script>';
+          echo '<script>console.log("' . $userName . '")</script>';
+        } else {
 
-        if (isset($_POST['memberSubmit'])) {
-          if (empty($_POST['user']) || empty($_POST['password'])) {
-            $errorCode = 1;
-          } else {
-            $userName = $_POST['user'];
-            $passwd = $_POST['password'];
-            //$task = $_POST['newTask'];
-
-            $cmd = "SELECT * FROM `消費者` WHERE `使用者帳號`= '" . $userName . "' AND `使用者密碼`='" . $passwd . "';";
-            //echo $cmd;
-            $sqlData = mysqli_query($conn, $cmd);
-            if (mysqli_num_rows($sqlData) > 0) {
-              // mysqli_num_rows($sqlData) > 0;
-              $sqlArray = mysqli_fetch_array($sqlData, MYSQLI_ASSOC);
-              $loginStatus = true;
-              $loginMember = 1;
-              $infoName = $sqlArray['姓名'];
-              $errorCode = 0;
+          if (isset($_POST['memberSubmit'])) {
+            if (empty($_POST['user']) || empty($_POST['password'])) {
+              $errorCode = 1;
             } else {
-              //echo "0筆資料";
-              $errorCode = 2;
-            }
+              $userName = $_POST['user'];
+              $passwd = $_POST['password'];
+              //$task = $_POST['newTask'];
 
-            // mysqli_close($conn);
-            unset($_POST['user']);
-            unset($_POST['password']);
+              $cmd = "SELECT * FROM `消費者` WHERE `使用者帳號`= '" . $userName . "' AND `使用者密碼`='" . $passwd . "';";
+              //echo $cmd;
+              $sqlData = mysqli_query($conn, $cmd);
+              if (mysqli_num_rows($sqlData) > 0) {
+                // mysqli_num_rows($sqlData) > 0;
+                $sqlArray = mysqli_fetch_array($sqlData, MYSQLI_ASSOC);
+                $loginStatus = true;
+                $loginMember = 1;
+                $infoName = $sqlArray['姓名'];
+                $errorCode = 0;
+                $_SESSION['user'] = $userName;
+                $_SESSION['name'] = $sqlArray['姓名'];
+                $_SESSION['member'] = $loginMember;
+              } else {
+                //echo "0筆資料";
+                $errorCode = 2;
+              }
+
+              // mysqli_close($conn);
+              unset($_POST['user']);
+              unset($_POST['password']);
+            }
           }
-        }
-        if (isset($_POST['farmerSubmit'])) {
-          if (empty($_POST['user']) || empty($_POST['password'])) {
-            $errorCode = 1;
-          } else {
-            $userName = $_POST['user'];
-            $passwd = $_POST['password'];
-
-            $cmd = "SELECT * FROM `小農` WHERE `使用者帳號`= '" . $userName . "' AND `使用者密碼`='" . $passwd . "';";
-            $sqlData = mysqli_query($conn, $cmd);
-            if ($sqlData->num_rows > 0) {
-              $loginStatus = true;
-              $loginMember = 2;
-              $errorCode = 0;
-              $infoName = $sqlArray['姓名'];
+          if (isset($_POST['farmerSubmit'])) {
+            if (empty($_POST['user']) || empty($_POST['password'])) {
+              $errorCode = 1;
             } else {
-              $errorCode = 2;
+              $userName = $_POST['user'];
+              $passwd = $_POST['password'];
+
+              $cmd = "SELECT * FROM `小農` WHERE `使用者帳號`= '" . $userName . "' AND `使用者密碼`='" . $passwd . "';";
+              $sqlData = mysqli_query($conn, $cmd);
+              if ($sqlData->num_rows > 0) {
+                $loginStatus = true;
+                $loginMember = 2;
+                $errorCode = 0;
+                $infoName = $sqlArray['姓名'];
+                $_SESSION['user'] = $userName;
+                $_SESSION['name'] = $sqlArray['姓名'];
+                $_SESSION['member'] = $loginMember;
+              } else {
+                $errorCode = 2;
+              }
+              unset($_POST['user']);
+              unset($_POST['password']);
             }
-            unset($_POST['user']);
-            unset($_POST['password']);
           }
         }
         ?>
+
         <!-- 已登入 -->
         <table class="loginTable" style="border-collapse:collapse; border:2px solid #000000; background-color: RGBA(255,255,255,0.50); <?php if (!$loginStatus) echo 'display:none;'; ?>">
 
@@ -125,13 +143,14 @@ if (!mysqli_select_db($conn, $DBNAME)) {
             {
               echo '<tr >';
               echo '<form method="post" action="storePage.php">';
+              echo '<input type="hidden" name="storeNumber" value="' . $userName . '">';
               echo '<td colspan=2><button class="RegisterButton" name="fixed" type="submit">修改個人資料</button></td>';
               echo '</form>';
               echo '</tr>';
               echo '<tr >';
               echo '<form method="post" action="storePage.php">';
-              echo '<input type="hidden" name="user" value="' . $userName . '">';
-              echo '<td colspan=2><button class="RegisterButton">進入個人賣場</button></td>';
+              echo '<input type="hidden" name="storeNumber" value="' . $userName . '">';
+              echo '<td colspan=2><button class="RegisterButton" type="submit">進入個人賣場</button></td>';
               echo '</form>';
               echo '</tr>';
             } else if ($loginMember == 1) //消費者身分
