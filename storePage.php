@@ -17,13 +17,14 @@ $loginStatus = false;
 $loginMember = 0;
 $infoName = '';
 $errorCode = 0;
+$shopCarCount = 0;
 error_reporting(0);
 
 
 ?>
-<script>
+<!-- <script>
     var shopCarCount = 0;
-</script>
+</script> -->
 
 <!DOCTYPE html>
 <html>
@@ -119,6 +120,7 @@ error_reporting(0);
                             $cmd = "SELECT * FROM `小農` WHERE `使用者帳號`= '" . $userName . "' AND `使用者密碼`='" . $passwd . "';";
                             $sqlData = mysqli_query($conn, $cmd);
                             if ($sqlData->num_rows > 0) {
+                                $sqlArray = mysqli_fetch_array($sqlData, MYSQLI_ASSOC);
                                 $loginStatus = true;
                                 $loginMember = 2;
                                 $errorCode = 0;
@@ -286,12 +288,26 @@ error_reporting(0);
                 <?php
                 function creatByuCar($name, $count)
                 {
-                    echo '<script> console.log(' . $name . ":" . $count . ')</script>';
+                    echo '<script> 
+                        console.log("' . $name . '");
+                        console.log("' . $count . '");
+                        document.getElementById(\'shopCar\').style = "";
+                    </script>';
+                    if (isset($_COOKIE['buyCarList'])) {
+                        $list = unserialize($_COOKIE['buyCarList']);
+                    }
+                    $list[] = array($name, $count);
+                    setcookie('buyCarList', serialize($list));
+                    $str = print_r($list, true);
+                    // echo '<script> 
+                    // console.log(\'' . $str . '\');
+                    // </script>';
                 }
-                if (isset($_POST['commodity'])) {   //如果有東西加到購物車內
+                if (isset($_POST['buyButton'])) {   //如果有東西加到購物車內
+                    $shopCarCount++;
                     $commodityIndex = $_POST['commodityIndex'];
                     $buyCount = $_POST['buyCount'];
-                    unset($_POST['commodity']);
+                    unset($_POST['buyButton']);
                     creatByuCar($commodityIndex, $buyCount);
                 }
 
@@ -321,11 +337,66 @@ error_reporting(0);
             </div>
         </div>
 
-        <!--透過SQL增加賣場資訊-->
+        <!--透過SQL增加商品資訊-->
         <div class="mainDiv">
-            <table class="StoreInfoTable" id="storeInfoTemplate">
+            <?php
+            $cmd = 'SELECT `名稱`,`價格`,`願意配銷地點`,`配銷方式`,`剩餘數量`,`產品資訊`.`產品編號`
+            FROM (`小農` INNER JOIN `個人賣場2` ON `小農`.`賣場編號`=`個人賣場2`.`賣場編號`)
+            INNER JOIN `產品資訊` ON `個人賣場2`.`產品編號`=`產品資訊`.`產品編號`
+            WHERE `小農`.`賣場編號`="' . $store . '";';
+            $sqlData = mysqli_query($conn, $cmd);
+            if ($sqlData->num_rows > 0) {
+                while ($sqlArray = mysqli_fetch_array($sqlData, MYSQLI_ASSOC)) {
+                    echo '
+                    <table class="StoreInfoTable" id="storeInfoTemplate">
+                        <form name="commodity" id="commodity" action="storePage.php" method="post" align="center" style="margin:auto auto auto auto;">
+                            <input type="hidden" name="commodityIndex" value="' . $sqlArray['產品編號'] . '"></input>
+                            <tbody>
+                                <tr>
+                                    <td rowspan="3" align="center" style="width: 100px; height:100px;"><img src="image/carrot.png" alt="123"><span id="sql" style="font-size:smaller;">有機</span>
+                                    </td>
+                                    <td rowspan="3">
+                                        <hr width=" 3px" size=100px color="#000000" style="margin: 0% auto 0% auto; border: 0px;">
+                                    </td>
+                                    <td rowspan="3" id="sql">
+                                        <table style="border:0px; border-collapse:collapse; width:400px; height:100px; font-weight: bold; font-size:18px;">
+                                            <tr style="border: 3px solid #000000; border-top:0px; border-right:0px; border-left:0px; ">
+                                                <td name="CID" style="border: 3px solid #000000; border-top:0px; border-left:0px; width:200px;">
+                                                    品名：' . $sqlArray['名稱'] . '</td>
+                                                <td>' . $sqlArray['價格'] . ' 元/把</td>
+                                            </tr>
+                                            <tr style="border: 3px solid #000000; border-right:0px;  border-left:0px;">
+                                                <td style="border: 3px solid #000000; border-left:0px;">配銷地點：' . $sqlArray['願意配銷地點'] . '</td>
+                                                <td>運送方式：' . $sqlArray['配銷方式'] . '</td>
+                                            </tr>
+                                            <tr style="border: 3px solid #000000; border-right:0px; border-bottom:0px; border-left:0px;">
+                                                <td style="border: 3px solid #000000; border-left:0px; border-bottom:0px;">
+                                                    剩餘數量：' . $sqlArray['剩餘數量'] . '</td>
+                                                <td>購買數量 <input type="text" name="buyCount" style="width:50px;" value=1></input></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+
+                                    <td rowspan="3">
+                                        <hr width=" 3px" size=100px color="#000000" style="margin: 0% auto 0% auto; border: 0px;">
+                                    </td>
+                                    <td align="center" style="right:0px; position: relative; width: 100px; font-size:24px; font-weight: bolder; ">
+                                        <button type="submit" name="buyButton" font color="blue" align="center" style=" font-size:24px; font-weight: bolder; background-color: #FFFFFF;">購<br>買</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </form>
+                    </table>
+                    ';
+                }
+            } else {
+                echo '資料取得失敗';
+            }
+
+            ?>
+            <!-- <table class="StoreInfoTable" id="storeInfoTemplate">
                 <form name="commodity" id="commodity" action="storePage.php" method="post" align="center" style="margin:auto auto auto auto;">
-                    <input type="hidden" name="commodityIndex" value="產品編號:123"></input>
+                    <input type="hidden" name="commodityIndex" value="'.$sqlArray['產品編號'].'"></input>
                     <tbody>
                         <tr>
                             <td rowspan="3" align="center" style="width: 100px; height:100px;"><img src="image/carrot.png" alt="123"><span id="sql" style="font-size:smaller;">有機</span>
@@ -337,16 +408,16 @@ error_reporting(0);
                                 <table style="border:0px; border-collapse:collapse; width:400px; height:100px; font-weight: bold; font-size:18px;">
                                     <tr style="border: 3px solid #000000; border-top:0px; border-right:0px; border-left:0px; ">
                                         <td name='CID' value='123456' style="border: 3px solid #000000; border-top:0px; border-left:0px; width:200px;">
-                                            品名：</td>
-                                        <td>n 元/把</td>
+                                            品名：'.$sqlArray['名稱'].'</td>
+                                        <td>'.$sqlArray['價格'].' 元/把</td>
                                     </tr>
                                     <tr style="border: 3px solid #000000; border-right:0px;  border-left:0px;">
-                                        <td style="border: 3px solid #000000; border-left:0px;">配銷地點：OO市</td>
-                                        <td>運送方式：宅配</td>
+                                        <td style="border: 3px solid #000000; border-left:0px;">配銷地點：'.$sqlArray['願意配銷地點'].'</td>
+                                        <td>運送方式：'.$sqlArray['配銷方式'].'</td>
                                     </tr>
                                     <tr style="border: 3px solid #000000; border-right:0px; border-bottom:0px; border-left:0px;">
                                         <td style="border: 3px solid #000000; border-left:0px; border-bottom:0px;">
-                                            剩餘數量：n把</td>
+                                            剩餘數量：'.$sqlArray['剩餘數量''].'</td>
                                         <td>購買數量 <input type="text" name="buyCount" style="width:50px;" value=1></input></td>
                                     </tr>
                                 </table>
@@ -356,20 +427,12 @@ error_reporting(0);
                                 <hr width=" 3px" size=100px color="#000000" style="margin: 0% auto 0% auto; border: 0px;">
                             </td>
                             <td align="center" style="right:0px; position: relative; width: 100px; font-size:24px; font-weight: bolder; ">
-                                <script>
-                                    function buy() {
-                                        // document.cookie = name;
-                                        document.getElementById("commodity").submit();
-                                    }
-                                </script>
-                                <a href="#" onclick="buy()">
-                                    <font color="blue" align="center">購<br>買</font>
-                                </a>
+                                <button type="submit" name="buyButton" font color="blue" align="center" style=" font-size:24px; font-weight: bolder; background-color: #FFFFFF;">購<br>買</button>
                             </td>
                         </tr>
                     </tbody>
                 </form>
-            </table>
+            </table> -->
 
         </div>
 
