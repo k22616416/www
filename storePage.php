@@ -3,6 +3,20 @@
 <script src="script.js" async></script>
 <?php
 $titleStr = '小農線上市集媒合系統';
+
+$DBNAME = "小農2";
+$DBUSER = "root";
+$DBHOST = "localhost";
+$conn = mysqli_connect($DBHOST, $DBUSER, '');
+if (empty($conn)) {
+    print mysqli_error($conn);
+    die("資料庫連線失敗");
+    exit;
+}
+if (!mysqli_select_db($conn, $DBNAME)) {
+    die("資料庫連線失敗");
+}
+
 if (isset($_POST['storeNumber'])) {
     $store = $_POST['storeNumber'];
     $_SESSION['storeNumber'] = $store;
@@ -13,6 +27,7 @@ if (isset($_POST['storeNumber'])) {
     echo '<script>document.location.href="index.php"</script>';
     exit;
 }
+
 $loginStatus = false;
 $loginMember = 0;
 $infoName = '';
@@ -73,18 +88,7 @@ function debug($str)
                     echo '<script>console.log("' . $infoName . '")</script>';
                     echo '<script>console.log("' . $userName . '")</script>';
                 } else {
-                    $DBNAME = "小農2";
-                    $DBUSER = "root";
-                    $DBHOST = "localhost";
-                    $conn = mysqli_connect($DBHOST, $DBUSER, '');
-                    if (empty($conn)) {
-                        print mysqli_error($conn);
-                        die("資料庫連線失敗");
-                        exit;
-                    }
-                    if (!mysqli_select_db($conn, $DBNAME)) {
-                        die("資料庫連線失敗");
-                    }
+
 
                     if (isset($_POST['memberSubmit'])) {
                         if (empty($_POST['user']) || empty($_POST['password'])) {
@@ -279,21 +283,31 @@ function debug($str)
                     echo '<script>document.getElementById(\'shopCar\').style = "";</script>';
                     if ($name != null) {
 
-                        if (!isset($_SESSION['buyCarList'])) {
-                            $list[] = array('CID' => $CID, 'name' => $name, 'CCash' => $CCash, 'count' => $count);
+                        if (isset($_SESSION['buyCarList'])) {
+                            // $list[] = array('CID' => $CID, 'name' => $name, 'CCash' => $CCash, 'count' => $count);
+                            $list = unserialize($_SESSION['buyCarList']);
+                            $r = false;
+                            for ($i = 0; $i < count($list, COUNT_NORMAL); $i++) {
+                                if ($list[$i]['CID'] == $CID) {
+                                    $list[$i]['CCash'] = $CCash;
+                                    $list[$i]['count'] = $count;
+                                    $r = true;
+                                    break;
+                                }
+                            }
+                            if (!$r) {
+                                $list[] = array('CID' => $CID, 'name' => $name, 'CCash' => $CCash, 'count' => $count);
+                                // $list[] = array('CID' => $CID, 'name' => $name, 'CCash' => $CCash, 'count' => $count);
+                                // debug('List Lenght:' . count($list, COUNT_NORMAL));
+
+                                // print_r($list);
+                            }
+                            $_SESSION['buyCarList'] = serialize($list);
 
                             // print_r($list);
                         } else {
-                            $list = unserialize($_SESSION['buyCarList']);
-                            if (!strpos($list, '"CID";i:' . $CID . ';')) {
-
-                                $list[] = array('CID' => $CID, 'name' => $name, 'CCash' => $CCash, 'count' => $count);
-                                debug('List Lenght:' . count($list, COUNT_NORMAL));
-
-                                // print_r($list);
-                            } else {
-                                // $list[strpos($list, '"CID";i:' . $CID . ';')] = array('CID' => $CID, 'name' => $name, 'CCash' => $CCash, 'count' => $count);
-                            }
+                            $list[] = array('CID' => $CID, 'name' => $name, 'CCash' => $CCash, 'count' => $count);
+                            $_SESSION['buyCarList'] = serialize($list);
                         }
                         debug(print_r($list, true));
 
@@ -315,7 +329,7 @@ function debug($str)
                     for ($i = 0; $i < count($list, COUNT_NORMAL); $i++) {
                         // if (!is_array($list[$i])) continue;
                         echo '
-                        <table class="shopCarTable' . $i . '" id="shopCarTableTemplate">
+                        <table class="shopCarTable" id="shopCarTableTemplate' . $i . '">
                             <form name="shopCarTable" method="post" action="storePage.php" >
                                 <tbody>
                                     <tr>
@@ -352,22 +366,31 @@ function debug($str)
                     unset($_POST['buyButton']);
                     creatByuCar($_POST['CName'], $_POST['commodityIndex'], $_POST['cash'], $_POST['buyCount']);
                 } else if (isset($_POST['cancel'])) {
-                    $list = unserialize($_SESSION['buyCarList']);
-                    for ($i = 0; $i < count($list, COUNT_NORMAL); $i++) {
-                        if ($list[$i]['CID'] == $_POST['commodityIndex']) {
-                            debug('unset:' . $i);
-                            unset($list[$i]['CID']);
-                            unset($list[$i]['name']);
-                            unset($list[$i]['CCash']);
-                            unset($list[$i]['count']);
-                            unset($list[$i]);
+                    $oldlist = unserialize($_SESSION['buyCarList']);
+
+                    for ($i = 0; $i < count($oldlist, COUNT_NORMAL); $i++) {
+                        if ($oldlist[$i]['CID'] != $_POST['commodityIndex']) {
+                            $list[] = array('CID' => $oldlist[$i]['CID'], 'name' => $oldlist[$i]['name'], 'CCash' => $oldlist[$i]['CCash'], 'count' => $oldlist[$i]['count']);
+                            debug('set:' . $i);
+                            // unset($oldlist[$i]['CID']);
+                            // unset($oldlist[$i]['name']);
+                            // unset($oldlist[$i]['CCash']);
+                            // unset($oldlist[$i]['count']);
+                            // unset($oldlist[$i]);
                             // print_r($list);
-                            $_SESSION['buyCarList'] = serialize($list);
-                            break;
+
+                            // break;
                         }
                     }
-                    debug($_SESSION['buyCarList']);
-                    creatByuCar(null, null, null, null);
+                    if (count($list, COUNT_NORMAL) == 0)  unset($_SESSION['buyCarList']);
+                    else {
+
+                        $_SESSION['buyCarList'] = serialize($list);
+                        debug("listIndex:" . count($list, COUNT_NORMAL));
+                        debug($_SESSION['buyCarList']);
+                        creatByuCar(null, null, null, null);
+                    }
+
                     // session_destroy();
                 } else if (isset($_SESSION['buyCarList'])) {
                     creatByuCar(null, null, null, null);

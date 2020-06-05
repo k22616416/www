@@ -1,0 +1,23 @@
+
+-- --------------------------------------------------------
+
+--
+-- 資料表結構 `消費者`
+--
+
+CREATE TABLE `消費者` (
+  `使用者帳號` varchar(255) NOT NULL,
+  `姓名` varchar(255) NOT NULL,
+  `使用者密碼` varchar(255) NOT NULL,
+  `地址` varchar(255) NOT NULL,
+  `Email` varchar(255) NOT NULL,
+  `連絡電話` int(11) NOT NULL,
+  `購物車` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`購物車`))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- 傾印資料表的資料 `消費者`
+--
+
+INSERT INTO `消費者` (`使用者帳號`, `姓名`, `使用者密碼`, `地址`, `Email`, `連絡電話`, `購物車`) VALUES
+('qaz', '消費者1', '123', 'aaaaaa', 'sss@ddd', 123456789, '');
