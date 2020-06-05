@@ -9,7 +9,7 @@ if (isset($_POST['storeNumber'])) {
 } else if ($_SESSION['storeNumber'] != null) {
     $store = $_SESSION['storeNumber'];
 } else {
-    die("取得賣場編號失敗");
+    echo "取得賣場編號失敗";
     echo '<script>document.location.href="index.php"</script>';
     exit;
 }
@@ -17,11 +17,18 @@ $loginStatus = false;
 $loginMember = 0;
 $infoName = '';
 $errorCode = 0;
-$shopCarCount = 0;
+
 error_reporting(0);
 
+function debug($str)
+{
+    echo '<script>
+    console.log(\'' . $str . '\');
+    </script>';
+}
 
 ?>
+
 <!-- <script>
     var shopCarCount = 0;
 </script> -->
@@ -136,6 +143,7 @@ error_reporting(0);
                         }
                     }
                 }
+
                 ?>
                 <!-- 已登入 -->
                 <table class="loginTable" style="border-collapse:collapse; border:2px solid #000000; background-color: RGBA(255,255,255,0.50); <?php if (!$loginStatus) echo 'display:none;'; ?>">
@@ -264,76 +272,110 @@ error_reporting(0);
                         </tr>
                     </tbody>
                 </table>
-                <!-- <script>
-                    function checkBuyCar(cookieStr) {
-                        if (shopCarCount == 0) return;
-                        document.getElementById('shopCar').style = "";
 
+                <?php
+                function creatByuCar($name, $CID, $CCash, $count)
+                {
+                    echo '<script>document.getElementById(\'shopCar\').style = "";</script>';
+                    if ($name != null) {
 
-                        for (var i = 0; i < shopCarCount; i++) {
-                            var a = $_SESSION['commodity' + shopCarCount];
-                            console.log("SESSION:" + a);
-                            var tmp = document.getElementById('shopCarTableTemplate');
-                            var clone = tmp.cloneNode(true);
-                            clone.style = "";
-                            clone.id = "shopCarTable" + i;
-                            tmp.parentNode.appendChild(tmp);
+                        if (!isset($_SESSION['buyCarList'])) {
+                            $list[] = array('CID' => $CID, 'name' => $name, 'CCash' => $CCash, 'count' => $count);
+
+                            // print_r($list);
+                        } else {
+                            $list = unserialize($_SESSION['buyCarList']);
+                            if (!strpos($list, '"CID";i:' . $CID . ';')) {
+
+                                $list[] = array('CID' => $CID, 'name' => $name, 'CCash' => $CCash, 'count' => $count);
+                                debug('List Lenght:' . count($list, COUNT_NORMAL));
+
+                                // print_r($list);
+                            } else {
+                                // $list[strpos($list, '"CID";i:' . $CID . ';')] = array('CID' => $CID, 'name' => $name, 'CCash' => $CCash, 'count' => $count);
+                            }
+                        }
+                        debug(print_r($list, true));
+
+                        $_SESSION['buyCarList'] = serialize($list);
+                        if (!isset($_SESSION['buyCarList']))  //購物車資訊存到cookie
+                        {
+                            die("SESSION儲存失敗");
+                        } else {
+                            // print($_SESSION['buyCarList']);
+                        }
+                        $str = print_r($list, true);
+                        debug($_SESSION['buyCarList']);
+                    } else {
+                        $list = unserialize($_SESSION['buyCarList']);
+                    }
+                    $index = 0;
+                    // 建立購物車內容
+                    // foreach ($list as $i => $val) {
+                    for ($i = 0; $i < count($list, COUNT_NORMAL); $i++) {
+                        // if (!is_array($list[$i])) continue;
+                        echo '
+                        <table class="shopCarTable' . $i . '" id="shopCarTableTemplate">
+                            <form name="shopCarTable" method="post" action="storePage.php" >
+                                <tbody>
+                                    <tr>
+                                        <input type="hidden" name="commodityIndex" value="' . $list[$i]['CID'] . '"></input>
+                                        <td align="left" id="target">' . $list[$i]['name'] . '</td>
+                                        <script>
+                                            function cashTotal(cash, count) {
+                                                document.getElementById("cashTotal' . $i . '").innerHTML = "小計:"+(cash * count);
+                                            }
+                                        </script>
+                                        <td align="left" id="cashTotal' . $i . '">小計:' . $list[$i]['CCash'] * $list[$i]['count'] . '</td>
+                                        <td align="center"><input type="count" onkeydown="if(event.keyCode==13){return false;}" onchange="cashTotal(' . $list[$i]['CCash'] . ',this.value,' . $i . ')" value="' . $list[$i]['count'] . '" style="width:40px; text-align:center;"></input></td>
+        
+                                        <td><input type="submit"  name="cancel" style="background-color:rgba(0,0,0,0); ;background-image:url(Image/cancel.png); width:32px; height:32px; border:0px; padding:0 0 0 0;" value=""></input> </td>
+                                        
+        
+                                    </tr>
+                                    <tr>
+                                        <td colspan="4">
+                                            <hr id="shopCarHr">
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </form>
+                        </table>';
+                    }
+                }
+
+                if (isset($_POST['buyButton'])) {   //如果有東西加到購物車內
+                    // $commodityIndex = $_POST['commodityIndex'];
+                    // $buyCount = $_POST['buyCount'];
+                    // $commodityName = $_POST['CName'];
+                    // $cash = $_POST['cash'];
+                    unset($_POST['buyButton']);
+                    creatByuCar($_POST['CName'], $_POST['commodityIndex'], $_POST['cash'], $_POST['buyCount']);
+                } else if (isset($_POST['cancel'])) {
+                    $list = unserialize($_SESSION['buyCarList']);
+                    for ($i = 0; $i < count($list, COUNT_NORMAL); $i++) {
+                        if ($list[$i]['CID'] == $_POST['commodityIndex']) {
+                            debug('unset:' . $i);
+                            unset($list[$i]['CID']);
+                            unset($list[$i]['name']);
+                            unset($list[$i]['CCash']);
+                            unset($list[$i]['count']);
+                            unset($list[$i]);
+                            // print_r($list);
+                            $_SESSION['buyCarList'] = serialize($list);
+                            break;
                         }
                     }
-                    if (document.cookie) {
-                        console.log(document.cookie);
-                        checkBuyCar();
-                    }
-                </script> -->
-                <?php
-                function creatByuCar($name, $count)
-                {
-                    echo '<script> 
-                        console.log("' . $name . '");
-                        console.log("' . $count . '");
-                        document.getElementById(\'shopCar\').style = "";
-                    </script>';
-                    if (isset($_COOKIE['buyCarList'])) {
-                        $list = unserialize($_COOKIE['buyCarList']);
-                    }
-                    $list[] = array($name, $count);
-                    setcookie('buyCarList', serialize($list));
-                    $str = print_r($list, true);
-                    // echo '<script> 
-                    // console.log(\'' . $str . '\');
-                    // </script>';
-                }
-                if (isset($_POST['buyButton'])) {   //如果有東西加到購物車內
-                    $shopCarCount++;
-                    $commodityIndex = $_POST['commodityIndex'];
-                    $buyCount = $_POST['buyCount'];
-                    unset($_POST['buyButton']);
-                    creatByuCar($commodityIndex, $buyCount);
+                    debug($_SESSION['buyCarList']);
+                    creatByuCar(null, null, null, null);
+                    // session_destroy();
+                } else if (isset($_SESSION['buyCarList'])) {
+                    creatByuCar(null, null, null, null);
                 }
 
                 ?>
-                <table class="shopCarTable" id="shopCarTableTemplate">
-                    <tbody>
-                        <tr>
-                            <td align="left" id="target">品名</td>
-                            <td align="center">數量<input type="number" value="1" style="width:40px; text-align:center;"></td>
-                        </tr>
-                        <tr>
-                            <td colspan="2">
-                                <hr id="shopCarHr">
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <script>
-                    function buyDone() {
-                        for (var i = 0; i < shopCarCount; i++) {
-                            unset($_SESSION['commodity' + shopCarCount]);
-                        }
-                    }
-                </script>
+
                 <button class="checkoutButton" onclick="buyDone">結帳</button>
-                <!-- </form> -->
             </div>
         </div>
 
@@ -361,8 +403,10 @@ error_reporting(0);
                                     <td rowspan="3" id="sql">
                                         <table style="border:0px; border-collapse:collapse; width:400px; height:100px; font-weight: bold; font-size:18px;">
                                             <tr style="border: 3px solid #000000; border-top:0px; border-right:0px; border-left:0px; ">
-                                                <td name="CID" style="border: 3px solid #000000; border-top:0px; border-left:0px; width:200px;">
+                                            <input type="hidden" name="CName" value="' . $sqlArray['名稱'] . '"></input>
+                                                <td  style="border: 3px solid #000000; border-top:0px; border-left:0px; width:200px;">
                                                     品名：' . $sqlArray['名稱'] . '</td>
+                                                    <input type="hidden" name="cash" value="' . $sqlArray['價格'] . '"></input>
                                                 <td>' . $sqlArray['價格'] . ' 元/把</td>
                                             </tr>
                                             <tr style="border: 3px solid #000000; border-right:0px;  border-left:0px;">
@@ -372,7 +416,7 @@ error_reporting(0);
                                             <tr style="border: 3px solid #000000; border-right:0px; border-bottom:0px; border-left:0px;">
                                                 <td style="border: 3px solid #000000; border-left:0px; border-bottom:0px;">
                                                     剩餘數量：' . $sqlArray['剩餘數量'] . '</td>
-                                                <td>購買數量 <input type="text" name="buyCount" style="width:50px;" value=1></input></td>
+                                                <td>購買數量 <input type="text" name="buyCount" style="width:50px;" onkeydown="if(event.keyCode==13){return false;}" value=1></input></td>
                                             </tr>
                                         </table>
                                     </td>
