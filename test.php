@@ -8,3 +8,6 @@ $a = serialize($array);
 echo $a;
 $a = unserialize($a);
 print_r($a);
+Array ( 
+    [0] => Array ( [CID] => 1 [name] => 產品1 [CCash] => 10 [count] => 1 ) 
+    [2] => Array ( [CID] => 3 [name] => 產品3 [CCash] => 30 [count] => 1 ) )
