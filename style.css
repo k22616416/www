@@ -310,10 +310,11 @@ a{
 }
 
 .shopCar{
-	width: 200px;
-	height: 300px;
+	width: 220px;
+	/* height: 300px; */
+	height: auto;
 	position: absolute;
-	right: 0%;
+	right: -20px;
 	top: 170px;
 	/* border: 2px solid #000000; */
 	/* border-radius: 15px; */
@@ -332,7 +333,7 @@ a{
 	border-radius: 15px;
 	padding: 1 1 1 1;
 	margin: 2px auto 2px auto;
-
+	overflow: auto;
 }
 
 #shopCarHr{
@@ -344,8 +345,9 @@ a{
 .checkoutButton{
 	width: 200px;
 	height: 30px;
-	position: absolute;
+	position: relative; 
 	bottom: 0px;
+	left: 10px;
 	background-color: rgba(0,255,0,0.80);
 	font-size: 18px;
 	font-weight: bold;

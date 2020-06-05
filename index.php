@@ -15,11 +15,14 @@ $DBHOST = "localhost";
 $conn = mysqli_connect($DBHOST, $DBUSER, '');
 if (empty($conn)) {
   print mysqli_error($conn);
-  die("資料庫連線失敗");
-  exit;
+  echo ("資料庫連線失敗");
+  sleep(2);
+  echo '<script>document.location.href="index.php"</script>';
 }
 if (!mysqli_select_db($conn, $DBNAME)) {
-  die("資料庫連線失敗");
+  echo ("資料庫連線失敗");
+  sleep(2);
+  echo '<script>document.location.href="index.php"</script>';
 }
 ?>
 
@@ -28,7 +31,8 @@ if (!mysqli_select_db($conn, $DBNAME)) {
 
 <head>
   <meta charset="UTF-8">
-
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 
   <title>
     小農線上市集媒合系統
@@ -309,6 +313,7 @@ if (!mysqli_select_db($conn, $DBNAME)) {
 
 
   </div>
+
 </body>
 
 </html>

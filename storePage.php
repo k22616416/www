@@ -10,11 +10,14 @@ $DBHOST = "localhost";
 $conn = mysqli_connect($DBHOST, $DBUSER, '');
 if (empty($conn)) {
     print mysqli_error($conn);
-    die("資料庫連線失敗");
-    exit;
+    echo ("資料庫連線失敗");
+    sleep(2);
+    echo '<script>document.location.href="index.php"</script>';
 }
 if (!mysqli_select_db($conn, $DBNAME)) {
-    die("資料庫連線失敗");
+    echo ("資料庫連線失敗");
+    sleep(2);
+    echo '<script>document.location.href="index.php"</script>';
 }
 
 if (isset($_POST['storeNumber'])) {
@@ -24,6 +27,7 @@ if (isset($_POST['storeNumber'])) {
     $store = $_SESSION['storeNumber'];
 } else {
     echo "取得賣場編號失敗";
+    sleep(2);
     echo '<script>document.location.href="index.php"</script>';
     exit;
 }
@@ -32,6 +36,9 @@ $loginStatus = false;
 $loginMember = 0;
 $infoName = '';
 $errorCode = 0;
+$storeInfo = '';
+$storeOrder = 0;
+$storeBrowse = 0;
 
 error_reporting(0);
 
@@ -68,7 +75,7 @@ function debug($str)
                 線上市集<br>
             </div>
 
-            <button type="button" style="position: absolute; top:36px;left:210px; background-color:RGBA(255,0,0,0.60);">離開此賣場</button>
+            <button type="button" onclick="goHome()" style="position: absolute; top:36px;left:210px; background-color:RGBA(255,0,0,0.60);">離開此賣場</button>
             <div class="LoginArea">
                 <!-- 判斷有沒有登入 -->
                 <?php
@@ -155,10 +162,10 @@ function debug($str)
                     <tbody>
                         <tr>
                             <td style="border:2px solid #000000; width:150px;">
-                                <span style="font-size: 16px;"><?php echo '歡迎' . $infoName; ?>
+                                <span style="font-size: 16px;"><?php echo '歡迎:' . $infoName; ?>
                             </td>
                             <form method="post" action="storePage.php">
-                                <td style="border:2px solid #000000;"><button name="logout" type="submit" class="LoginButton" style=" width: auto; background-color: RGBA(255,0,0,0.70);">登出</button></td>
+                                <td style="border:2px solid #000000;"><button name="logout" type="submit" class="LoginButton" style=" position:relative ;right:0px;top:0px; width: 48px; height:25px; background-color: RGBA(255,0,0,0.70);">登出</button></td>
 
                             </form>
                         </tr>
@@ -233,6 +240,21 @@ function debug($str)
             </div>
 
             <div class=" TopDiv">
+                <?php
+                $cmd = "SELECT * FROM `小農` WHERE `賣場編號`= '" . $store . "'";
+                $sqlData = mysqli_query($conn, $cmd);
+                if ($sqlData->num_rows > 0) {
+                    $sqlArray = mysqli_fetch_array($sqlData, MYSQLI_ASSOC);
+                    $storeInfo = $sqlArray['賣場簡介'];
+                    $storeOrder = $sqlArray['交易訂單數'];
+                    $storeBrowse = $sqlArray['瀏覽次數'];
+                } else {
+                    echo '取得賣場資訊時發生錯誤，將返回首頁';
+                    sleep(2);
+                    echo '<script>document.location.href="index.php"</script>';
+                }
+
+                ?>
                 <!--分割線上方Div-->
                 <table class="StoreTopTable">
                     <tbody>
@@ -241,19 +263,19 @@ function debug($str)
                             <td rowspan="2">
                                 <hr width=" 3px" size=70px color="#000000" style="margin: 0% auto 0% auto; border: 0px;">
                             </td>
-                            <td rowspan="2" style="width:500px" id="sql">賣場資訊</td>
+                            <td rowspan="2" style="width:500px" id="sql"><?php echo $storeInfo; ?></td>
                             <!--賣場資訊-->
                             <td rowspan="2">
                                 <hr width=" 3px" size=70px color="#000000" style="margin: 0% auto 0% auto; border: 0px;">
                             </td>
                             <td style="right:0px; position: relative; width:150px; font-size:14px;">
                                 已成交訂單數:<br>
-                                <font color="red">000</font>
+                                <font color="red" style="font-weight: bolder;"><?php echo $storeOrder; ?></font>
                             </td>
                         <tr>
                             <td style=" font-size:14px;">
                                 瀏覽次數:<br>
-                                <font color="red">000</font>
+                                <font color="red" style="font-weight: bolder;"><?php echo $storeBrowse; ?></font>
                             </td>
                         </tr>
                         </tr>
@@ -280,7 +302,7 @@ function debug($str)
                 <?php
                 function creatByuCar($name, $CID, $CCash, $count)
                 {
-                    echo '<script>document.getElementById(\'shopCar\').style = "";</script>';
+                    echo '<script>document.getElementById(\'shopCar\').style = "overflow: auto;";</script>';
                     if ($name != null) {
 
                         if (isset($_SESSION['buyCarList'])) {
@@ -336,12 +358,12 @@ function debug($str)
                                         <input type="hidden" name="commodityIndex" value="' . $list[$i]['CID'] . '"></input>
                                         <td align="left" id="target">' . $list[$i]['name'] . '</td>
                                         <script>
-                                            function cashTotal(cash, count) {
+                                            function cashTotal' . $i . '(cash, count) {
                                                 document.getElementById("cashTotal' . $i . '").innerHTML = "小計:"+(cash * count);
                                             }
                                         </script>
                                         <td align="left" id="cashTotal' . $i . '">小計:' . $list[$i]['CCash'] * $list[$i]['count'] . '</td>
-                                        <td align="center"><input type="count" onkeydown="if(event.keyCode==13){return false;}" onchange="cashTotal(' . $list[$i]['CCash'] . ',this.value,' . $i . ')" value="' . $list[$i]['count'] . '" style="width:40px; text-align:center;"></input></td>
+                                        <td align="center"><input type="count" onkeydown="if(event.keyCode==13){return false;}" onchange="cashTotal' . $i . '(' . $list[$i]['CCash'] . ',this.value,' . $i . ')" value="' . $list[$i]['count'] . '" style="width:20px; text-align:center;"></input></td>
         
                                         <td><input type="submit"  name="cancel" style="background-color:rgba(0,0,0,0); ;background-image:url(Image/cancel.png); width:32px; height:32px; border:0px; padding:0 0 0 0;" value=""></input> </td>
                                         
@@ -461,45 +483,7 @@ function debug($str)
             }
 
             ?>
-            <!-- <table class="StoreInfoTable" id="storeInfoTemplate">
-                <form name="commodity" id="commodity" action="storePage.php" method="post" align="center" style="margin:auto auto auto auto;">
-                    <input type="hidden" name="commodityIndex" value="'.$sqlArray['產品編號'].'"></input>
-                    <tbody>
-                        <tr>
-                            <td rowspan="3" align="center" style="width: 100px; height:100px;"><img src="image/carrot.png" alt="123"><span id="sql" style="font-size:smaller;">有機</span>
-                            </td>
-                            <td rowspan="3">
-                                <hr width=" 3px" size=100px color="#000000" style="margin: 0% auto 0% auto; border: 0px;">
-                            </td>
-                            <td rowspan="3" id="sql">
-                                <table style="border:0px; border-collapse:collapse; width:400px; height:100px; font-weight: bold; font-size:18px;">
-                                    <tr style="border: 3px solid #000000; border-top:0px; border-right:0px; border-left:0px; ">
-                                        <td name='CID' value='123456' style="border: 3px solid #000000; border-top:0px; border-left:0px; width:200px;">
-                                            品名：'.$sqlArray['名稱'].'</td>
-                                        <td>'.$sqlArray['價格'].' 元/把</td>
-                                    </tr>
-                                    <tr style="border: 3px solid #000000; border-right:0px;  border-left:0px;">
-                                        <td style="border: 3px solid #000000; border-left:0px;">配銷地點：'.$sqlArray['願意配銷地點'].'</td>
-                                        <td>運送方式：'.$sqlArray['配銷方式'].'</td>
-                                    </tr>
-                                    <tr style="border: 3px solid #000000; border-right:0px; border-bottom:0px; border-left:0px;">
-                                        <td style="border: 3px solid #000000; border-left:0px; border-bottom:0px;">
-                                            剩餘數量：'.$sqlArray['剩餘數量''].'</td>
-                                        <td>購買數量 <input type="text" name="buyCount" style="width:50px;" value=1></input></td>
-                                    </tr>
-                                </table>
-                            </td>
 
-                            <td rowspan="3">
-                                <hr width=" 3px" size=100px color="#000000" style="margin: 0% auto 0% auto; border: 0px;">
-                            </td>
-                            <td align="center" style="right:0px; position: relative; width: 100px; font-size:24px; font-weight: bolder; ">
-                                <button type="submit" name="buyButton" font color="blue" align="center" style=" font-size:24px; font-weight: bolder; background-color: #FFFFFF;">購<br>買</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </form>
-            </table> -->
 
         </div>
 

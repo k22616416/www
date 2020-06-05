@@ -1,13 +1,15 @@
-<?php
-$array[0]['name'] = 1;
-$array[0]['cash'] = 2;
-$array[] = array('name' => 1, 'cash' => 2);
-echo '<pre>';
-print_r($array);
-$a = serialize($array);
-echo $a;
-$a = unserialize($a);
-print_r($a);
-Array ( 
-    [0] => Array ( [CID] => 1 [name] => 產品1 [CCash] => 10 [count] => 1 ) 
-    [2] => Array ( [CID] => 3 [name] => 產品3 [CCash] => 30 [count] => 1 ) )
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
+<link rel="stylesheet" href="/resources/demos/style.css">
+<script>
+    $(function() {
+        $(document).tooltip();
+    });
+</script>
+<style>
+    label {
+        display: inline-block;
+        width: 5em;
+    }
+</style>
