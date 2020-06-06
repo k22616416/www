@@ -25,8 +25,19 @@ if (isset($_POST['storeNumber'])) {
     $_SESSION['storeNumber'] = $store;
 } else if ($_SESSION['storeNumber'] != null) {
     $store = $_SESSION['storeNumber'];
+} else if (isset($_POST['enterStore'])) {
+    echo '<script>alert("1");</script>';
+    $userName = $_POST['storeNumber'];
+    $cmd = "SELECT * FROM `小農` WHERE `使用者帳號`= '" . $userName . "';";
+    $sqlData = mysqli_query($conn, $cmd);
+    if ($sqlData->num_rows > 0) {
+        $sqlArray = mysqli_fetch_array($sqlData, MYSQLI_ASSOC);
+        $store = $sqlArray['賣場編號'];
+        $storeName = $sqlArray['使用者帳號'];
+    }
 } else {
-    echo "取得賣場編號失敗";
+    echo '<script>alert("取得賣場編號失敗");</script>';
+    // echo "取得賣場編號失敗";
     sleep(2);
     echo '<script>document.location.href="index.php"</script>';
     exit;
@@ -36,6 +47,7 @@ $loginStatus = false;
 $loginMember = 0;
 $infoName = '';
 $errorCode = 0;
+$storeName = '';
 $storeInfo = '';
 $storeOrder = 0;
 $storeBrowse = 0;
@@ -50,7 +62,104 @@ function debug($str)
 }
 
 ?>
+<!-- 判斷有沒有登入 -->
+<?php
+if (isset($_POST['logout'])) {
+    unset($_POST['logout']);
+    unset($_SESSION['user']);
+    unset($_SESSION['name']);
+    unset($_SESSION['member']);
+} else if ($_SESSION['user'] != null) {
+    $loginStatus = true;
+    $loginMember = $_SESSION['member'];
+    $infoName = $_SESSION['name'];
+    $userName = $_SESSION['user'];
+    $farmStoreNumber = $_SESSION['farmStoreNumber'];
+    $errorCode = 0;
 
+    echo '<script>console.log("' . $loginMember . '")</script>';
+    echo '<script>console.log("' . $infoName . '")</script>';
+    echo '<script>console.log("' . $userName . '")</script>';
+} else {
+
+
+    if (isset($_POST['memberSubmit'])) {
+        if (empty($_POST['user']) || empty($_POST['password'])) {
+            $errorCode = 1;
+        } else {
+            $userName = $_POST['user'];
+            $passwd = $_POST['password'];
+            //$task = $_POST['newTask'];
+
+            $cmd = "SELECT * FROM `消費者` WHERE `使用者帳號`= '" . $userName . "' AND `使用者密碼`='" . $passwd . "';";
+            //echo $cmd;
+            $sqlData = mysqli_query($conn, $cmd);
+            if (mysqli_num_rows($sqlData) > 0) {
+                // mysqli_num_rows($sqlData) > 0;
+                $sqlArray = mysqli_fetch_array($sqlData, MYSQLI_ASSOC);
+                $loginStatus = true;
+                $loginMember = 1;
+                $infoName = $sqlArray['姓名'];
+                $_SESSION['user'] = $userName;
+                $_SESSION['name'] = $sqlArray['姓名'];
+                $_SESSION['member'] = $loginMember;
+                $errorCode = 0;
+            } else {
+                //echo "0筆資料";
+                $errorCode = 2;
+            }
+
+            // mysqli_close($conn);
+            unset($_POST['user']);
+            unset($_POST['password']);
+        }
+    }
+    if (isset($_POST['farmerSubmit'])) {
+        if (empty($_POST['user']) || empty($_POST['password'])) {
+            $errorCode = 1;
+        } else {
+            $userName = $_POST['user'];
+            $passwd = $_POST['password'];
+
+            $cmd = "SELECT * FROM `小農` WHERE `使用者帳號`= '" . $userName . "' AND `使用者密碼`='" . $passwd . "';";
+            $sqlData = mysqli_query($conn, $cmd);
+            if ($sqlData->num_rows > 0) {
+                $sqlArray = mysqli_fetch_array($sqlData, MYSQLI_ASSOC);
+                $loginStatus = true;
+                $loginMember = 2;
+                $errorCode = 0;
+                $infoName = $sqlArray['姓名'];
+                $_SESSION['user'] = $userName;
+                $_SESSION['name'] = $sqlArray['姓名'];
+                $_SESSION['member'] = $loginMember;
+            } else {
+                $errorCode = 2;
+            }
+            unset($_POST['user']);
+            unset($_POST['password']);
+        }
+    }
+}
+
+// topDiv info
+$cmd = "SELECT * FROM `小農` WHERE `賣場編號`= '" . $store . "'";
+$sqlData = mysqli_query($conn, $cmd);
+if ($sqlData->num_rows > 0) {
+    $sqlArray = mysqli_fetch_array($sqlData, MYSQLI_ASSOC);
+    $storeInfo = $sqlArray['賣場簡介'];
+    $storeOrder = $sqlArray['交易訂單數'];
+    $storeBrowse = $sqlArray['瀏覽次數'];
+    $storeName = $sqlArray['使用者帳號'];
+} else {
+    echo '<script>alert("取得賣場資訊時發生錯誤，將返回首頁\n' . $store . '");</script>';
+    // echo '取得賣場資訊時發生錯誤，將返回首頁';
+    sleep(2);
+    echo '<script>document.location.href="index.php"</script>';
+}
+
+
+
+?>
 <!-- <script>
     var shopCarCount = 0;
 </script> -->
@@ -61,7 +170,7 @@ function debug($str)
 <head>
     <meta charset="UTF-8">
     <title id="sql">
-        <?php echo $store ?>的農場
+        <?php echo $storeName ?>的農場
     </title>
 </head>
 
@@ -69,7 +178,7 @@ function debug($str)
 
     <div class="WebLayout">
         <div class="topArea">
-            <div class="titleDiv" id="sql"><?php echo $store ?>的農場</div>
+            <div class="titleDiv" id="sql"><?php echo $storeName ?>的農場</div>
             <div class="WebNameDiv" onclick=goHome()>
                 小農<br>
                 線上市集<br>
@@ -77,85 +186,7 @@ function debug($str)
 
             <button type="button" onclick="goHome()" style="position: absolute; top:36px;left:210px; background-color:RGBA(255,0,0,0.60);">離開此賣場</button>
             <div class="LoginArea">
-                <!-- 判斷有沒有登入 -->
-                <?php
-                if (isset($_POST['logout'])) {
-                    unset($_POST['logout']);
-                    unset($_SESSION['user']);
-                    unset($_SESSION['name']);
-                    unset($_SESSION['member']);
-                } else if ($_SESSION['user'] != null) {
-                    $loginStatus = true;
-                    $loginMember = $_SESSION['member'];
-                    $infoName = $_SESSION['姓名'];
-                    $userName = $_SESSION['user'];
-                    $errorCode = 0;
 
-                    echo '<script>console.log("' . $loginMember . '")</script>';
-                    echo '<script>console.log("' . $infoName . '")</script>';
-                    echo '<script>console.log("' . $userName . '")</script>';
-                } else {
-
-
-                    if (isset($_POST['memberSubmit'])) {
-                        if (empty($_POST['user']) || empty($_POST['password'])) {
-                            $errorCode = 1;
-                        } else {
-                            $userName = $_POST['user'];
-                            $passwd = $_POST['password'];
-                            //$task = $_POST['newTask'];
-
-                            $cmd = "SELECT * FROM `消費者` WHERE `使用者帳號`= '" . $userName . "' AND `使用者密碼`='" . $passwd . "';";
-                            //echo $cmd;
-                            $sqlData = mysqli_query($conn, $cmd);
-                            if (mysqli_num_rows($sqlData) > 0) {
-                                // mysqli_num_rows($sqlData) > 0;
-                                $sqlArray = mysqli_fetch_array($sqlData, MYSQLI_ASSOC);
-                                $loginStatus = true;
-                                $loginMember = 1;
-                                $infoName = $sqlArray['姓名'];
-                                $_SESSION['user'] = $userName;
-                                $_SESSION['name'] = $sqlArray['姓名'];
-                                $_SESSION['member'] = $loginMember;
-                                $errorCode = 0;
-                            } else {
-                                //echo "0筆資料";
-                                $errorCode = 2;
-                            }
-
-                            // mysqli_close($conn);
-                            unset($_POST['user']);
-                            unset($_POST['password']);
-                        }
-                    }
-                    if (isset($_POST['farmerSubmit'])) {
-                        if (empty($_POST['user']) || empty($_POST['password'])) {
-                            $errorCode = 1;
-                        } else {
-                            $userName = $_POST['user'];
-                            $passwd = $_POST['password'];
-
-                            $cmd = "SELECT * FROM `小農` WHERE `使用者帳號`= '" . $userName . "' AND `使用者密碼`='" . $passwd . "';";
-                            $sqlData = mysqli_query($conn, $cmd);
-                            if ($sqlData->num_rows > 0) {
-                                $sqlArray = mysqli_fetch_array($sqlData, MYSQLI_ASSOC);
-                                $loginStatus = true;
-                                $loginMember = 2;
-                                $errorCode = 0;
-                                $infoName = $sqlArray['姓名'];
-                                $_SESSION['user'] = $userName;
-                                $_SESSION['name'] = $sqlArray['姓名'];
-                                $_SESSION['member'] = $loginMember;
-                            } else {
-                                $errorCode = 2;
-                            }
-                            unset($_POST['user']);
-                            unset($_POST['password']);
-                        }
-                    }
-                }
-
-                ?>
                 <!-- 已登入 -->
                 <table class="loginTable" style="border-collapse:collapse; border:2px solid #000000; background-color: RGBA(255,255,255,0.50); <?php if (!$loginStatus) echo 'display:none;'; ?>">
 
@@ -179,8 +210,14 @@ function debug($str)
                             echo '</tr>';
                             echo '<tr >';
                             echo '<form method="post" action="storePage.php">';
-                            echo '<input type="hidden" name="user" value="' . $userName . '">';
-                            echo '<td colspan=2><button class="RegisterButton">進入個人賣場</button></td>';
+                            echo '<input type="hidden" name="storeNumber" value="' . $farmStoreNumber . '">';
+                            echo '<td colspan=2><button class="RegisterButton" name="enterStore" type="submit">進入個人賣場</button></td>';
+                            echo '</form>';
+                            echo '</tr>';
+                            echo '<tr >';
+                            echo '<form method="post" action="farmManagement.php">';
+                            echo '<input type="hidden" name="farmIndex" value="' . $userName . '">';
+                            echo '<td colspan=2><button class="RegisterButton" name="enterStore" >進入農場管理頁面</button></td>';
                             echo '</form>';
                             echo '</tr>';
                         } else if ($loginMember == 1) //消費者身分
@@ -240,21 +277,7 @@ function debug($str)
             </div>
 
             <div class=" TopDiv">
-                <?php
-                $cmd = "SELECT * FROM `小農` WHERE `賣場編號`= '" . $store . "'";
-                $sqlData = mysqli_query($conn, $cmd);
-                if ($sqlData->num_rows > 0) {
-                    $sqlArray = mysqli_fetch_array($sqlData, MYSQLI_ASSOC);
-                    $storeInfo = $sqlArray['賣場簡介'];
-                    $storeOrder = $sqlArray['交易訂單數'];
-                    $storeBrowse = $sqlArray['瀏覽次數'];
-                } else {
-                    echo '取得賣場資訊時發生錯誤，將返回首頁';
-                    sleep(2);
-                    echo '<script>document.location.href="index.php"</script>';
-                }
 
-                ?>
                 <!--分割線上方Div-->
                 <table class="StoreTopTable">
                     <tbody>
@@ -440,7 +463,7 @@ function debug($str)
                             <input type="hidden" name="commodityIndex" value="' . $sqlArray['產品編號'] . '"></input>
                             <tbody>
                                 <tr>
-                                    <td rowspan="3" align="center" style="width: 100px; height:100px;"><img src="image/carrot.png" alt="123"><span id="sql" style="font-size:smaller;">有機</span>
+                                    <td rowspan="3" align="center" style="width: 100px; height:100px;"><img src="image/carrot.png" alt="123"><span id="sql" style="font-size:smaller;">' . ($sqlArray['是否有機'] ? '有機' : '非有機') . '</span>
                                     </td>
                                     <td rowspan="3">
                                         <hr width=" 3px" size=100px color="#000000" style="margin: 0% auto 0% auto; border: 0px;">

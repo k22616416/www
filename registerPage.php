@@ -44,23 +44,28 @@ if (isset($_POST['user'])) {
         sleep(2);
         echo '<script>document.location.href="index.php"</script>';
     }
-
-    $cmd = 'INSERT INTO `註冊審核`(`編號`,`註冊身分類別`, `使用者帳號`, `使用者密碼`, `聯絡電話`, `Email`, `住址`, `地圖經緯度`) VALUES (\'\',' . $member . ',"' . $user . '","' . $passwd . '","' . $phone . '","' . $email . '","' . $address . '","' . $gMap . '")';
+    $cmd = 'SELECT * FROM `註冊審核` WHERE `使用者帳號`=\'' . $user . '\' AND `註冊身分類別`=\'' . $member . '\'';
     if ($sqlData = mysqli_query($conn, $cmd) == false) {
-        echo '<script>alert("資料庫存取失敗");</script>';
-        sleep(10);
-        echo '<script>document.location.href="index.php"</script>';
+        $cmd = 'INSERT INTO `註冊審核`(`編號`,`註冊身分類別`, `使用者帳號`, `使用者密碼`, `聯絡電話`, `Email`, `住址`, `地圖經緯度`) VALUES (\'\',' . $member . ',"' . $user . '","' . $passwd . '","' . $phone . '","' . $email . '","' . $address . '","' . $gMap . '")';
+        if ($sqlData = mysqli_query($conn, $cmd) == false) {
+            echo '<script>alert("資料庫存取失敗");</script>';
+            sleep(10);
+            echo '<script>document.location.href="index.php"</script>';
+        } else {
+            echo '<script>alert("註冊資訊提交成功!\n請等待管理員審核");</script>';
+            unset($_POST['user']);
+            unset($_POST['passwd']);
+            unset($_POST['passwd2']);
+            unset($_POST['email']);
+            unset($_POST['address']);
+            unset($_POST['phoneNumber']);
+            if ($member == 1)
+                unset($_POST['gMap']);
+            echo '<script>document.location.href="index.php"</script>';
+        }
     } else {
-        echo '<script>alert("註冊資訊提交成功!\n請等待管理員審核");</script>';
-        unset($_POST['user']);
-        unset($_POST['passwd']);
-        unset($_POST['passwd2']);
-        unset($_POST['email']);
-        unset($_POST['address']);
-        unset($_POST['phoneNumber']);
-        if ($member == 1)
-            unset($_POST['gMap']);
-        echo '<script>document.location.href="index.php"</script>';
+        echo '<script>alert("此帳號已被註冊!");</script>';
+        echo '<script>document.location.href="registerPage.php"</script>';
     }
 }
 
@@ -91,7 +96,8 @@ if (isset($_POST['user'])) {
             <form action="registerPage.php" method="post">
                 <input name="memberInput" type="hidden" value="<?php if ($member == 0) echo '1';
                                                                 else echo '0'; ?>"></input>
-                <button name="memberType" type="submit" style="position: absolute; top:15px; left:210px; width:100px">
+                <button name="memberType" type="submit" style="position: absolute; top:15px; left:210px; width:100px; <?php if ($member == 0) echo ' background-color: #FFD306;';
+                                                                                                                        else echo 'background-color: #C4E1FF;'; ?>">
                     轉至<?php if ($member == 0) echo '小農';
                         else echo '會員'; ?>申請頁面</button>
             </form>

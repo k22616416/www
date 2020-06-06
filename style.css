@@ -388,3 +388,31 @@ a{
 	color: #FF0000;
 	font-weight: bolder;
 }
+.ManagementMethodDiv{
+	border: 1px outset #000000;
+	position: relative;
+	left: -1px;
+	top:-1px;
+	text-align: center;
+	vertical-align: middle;
+	line-height: 70px;
+	height: 71px;
+	width: 100px;
+	background-color: rgba(0,0,0,0);
+	transition-duration: 0.4s;
+	float: left;
+	font-weight: bolder;
+
+}
+.ManagementMethodDiv:hover{
+	background-color: rgba(255, 255, 0, 0.9);
+}
+.ManagementMethodDiv:after {
+	border: 0px;
+	border-radius: 0px;
+	
+}
+.ManagementMethodDiv:active:after {
+	border: 0px;
+	border-radius: 0px;
+}

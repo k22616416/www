@@ -64,6 +64,7 @@ if (!mysqli_select_db($conn, $DBNAME)) {
           $loginMember = $_SESSION['member'];
           $infoName = $_SESSION['姓名'];
           $userName = $_SESSION['user'];
+          $farmStoreNumber = $_SESSION['farmStoreNumber'];
           $errorCode = 0;
 
           echo '<script>console.log("' . $loginMember . '")</script>';
@@ -112,13 +113,18 @@ if (!mysqli_select_db($conn, $DBNAME)) {
               $cmd = "SELECT * FROM `小農` WHERE `使用者帳號`= '" . $userName . "' AND `使用者密碼`='" . $passwd . "';";
               $sqlData = mysqli_query($conn, $cmd);
               if ($sqlData->num_rows > 0) {
+                $sqlArray = mysqli_fetch_array($sqlData, MYSQLI_ASSOC);
                 $loginStatus = true;
                 $loginMember = 2;
                 $errorCode = 0;
                 $infoName = $sqlArray['姓名'];
+                $farmStoreNumber = $sqlArray['賣場編號'];
+
                 $_SESSION['user'] = $userName;
                 $_SESSION['name'] = $sqlArray['姓名'];
                 $_SESSION['member'] = $loginMember;
+                $_SESSION['farmStoreNumber'] = $sqlArray['賣場編號'];
+                $_SESSION['姓名'] = $infoName;
               } else {
                 $errorCode = 2;
               }
@@ -135,7 +141,7 @@ if (!mysqli_select_db($conn, $DBNAME)) {
           <tbody>
             <tr>
               <td style="border:2px solid #000000; width:150px;">
-                <span style="font-size: 16px;"><?php echo '歡迎' . $infoName; ?>
+                <span style="font-size: 16px;"><?php echo '歡迎:' . $infoName; ?>
               </td>
               <form method="post" action="index.php">
                 <td style="border:2px solid #000000;"><button name="logout" type="submit" class="LoginButton" style=" width: auto; background-color: RGBA(255,0,0,0.70);">登出</button></td>
@@ -147,14 +153,19 @@ if (!mysqli_select_db($conn, $DBNAME)) {
             {
               echo '<tr >';
               echo '<form method="post" action="storePage.php">';
-              echo '<input type="hidden" name="storeNumber" value="' . $userName . '">';
               echo '<td colspan=2><button class="RegisterButton" name="fixed" type="submit">修改個人資料</button></td>';
               echo '</form>';
               echo '</tr>';
               echo '<tr >';
               echo '<form method="post" action="storePage.php">';
-              echo '<input type="hidden" name="storeNumber" value="' . $userName . '">';
-              echo '<td colspan=2><button class="RegisterButton" type="submit">進入個人賣場</button></td>';
+              echo '<input type="hidden" name="storeNumber" value="' . $farmStoreNumber . '">';
+              echo '<td colspan=2><button class="RegisterButton" name="enterStore" type="submit">進入個人賣場</button></td>';
+              echo '</form>';
+              echo '</tr>';
+              echo '<tr >';
+              echo '<form method="post" action="farmManagement.php">';
+              echo '<input type="hidden" name="farmIndex" value="' . $userName . '">';
+              echo '<td colspan=2><button class="RegisterButton" name="enterStore" >進入農場管理頁面</button></td>';
               echo '</form>';
               echo '</tr>';
             } else if ($loginMember == 1) //消費者身分

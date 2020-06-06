@@ -1,15 +1,30 @@
-<link rel="stylesheet" href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css">
-<script src="//code.jquery.com/jquery-1.10.2.js"></script>
-<script src="//code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
-<link rel="stylesheet" href="/resources/demos/style.css">
+<html>
+
+<head>
+    <script src="jquery-3.5.1.min.js"></script>
+
+</head>
+
+<body>
+    <form action="/somewhere/to/upload" enctype="multipart/form-data">
+        <input type="file" id="progressbarTWInput" accept="image/gif, image/jpeg, image/png" />
+        <img id="previewImg" src="#" />
+    </form>
+</body>
 <script>
-    $(function() {
-        $(document).tooltip();
+    $("#progressbarTWInput").change(function() {
+        readURL(this);
     });
-</script>
-<style>
-    label {
-        display: inline-block;
-        width: 5em;
+
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                $("#previewImg").attr('src', e.target.result);
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
     }
-</style>
+</script>
+
+</html>
