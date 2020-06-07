@@ -9,6 +9,16 @@ function checkRoot()
 <link href="style.css" rel="stylesheet" type="text/css">
 
 <?php
+$loginStatus = false;
+$loginMember = 0;
+$infoName = '';
+$errorCode = 0;
+$storeName = '';
+$storeInfo = '';
+$storeOrder = 0;
+$storeBrowse = 0;
+
+
 $titleStr = '小農線上市集媒合系統';
 
 $DBNAME = "小農2";
@@ -53,14 +63,7 @@ if (isset($_POST['storeNumber'])) {
     if (!checkRoot()) echo '<script>document.location.href="index.php"</script>';
 }
 
-$loginStatus = false;
-$loginMember = 0;
-$infoName = '';
-$errorCode = 0;
-$storeName = '';
-$storeInfo = '';
-$storeOrder = 0;
-$storeBrowse = 0;
+
 
 error_reporting(0);
 
@@ -184,7 +187,7 @@ $orderArray = ConnectSql($sqlConn, $cmd);
                             echo '</form>';
                             echo '</tr>';
                             echo '<tr >';
-                            echo '<form method="post" action="FarmManagement.php">';
+                            echo '<form method="post" action="farmManagement.php?method=1">';
                             echo '<input type="hidden" name="user" value="' . $userName . '">';
                             echo '<td colspan=2><button class="RegisterButton" name="enterStore" >進入農場管理頁面</button></td>';
                             echo '</form>';
@@ -207,8 +210,8 @@ $orderArray = ConnectSql($sqlConn, $cmd);
             <div class=" TopDiv">
                 <form action="farmManagement.php" method="get">
                     <!--分割線上方Div-->
-                    <button class="ManagementMethodDiv" type="submit" name="method" value="1">商品清單</button>
-                    <button class="ManagementMethodDiv" type="submit" name="method" value="2">訂單清單<img src="Image/attention.png" style="width:16px; height:16px; position:relative; bottom:20px; right:0px;"></img></button>
+                    <button class="ManagementMethodDiv" type="submit" name="method" value="1" <?php if ($_GET['method'] == 1) echo "style=\"background-color:rgba(255, 255, 0, 0.9);\"" ?>>商品清單</button>
+                    <button class="ManagementMethodDiv" type="submit" name="method" value="2" <?php if ($_GET['method'] == 2) echo "style=\"background-color:rgba(255, 255, 0, 0.9);\"" ?>>訂單清單<img src="Image/attention.png" style="width:16px; height:16px; position:relative; bottom:20px; right:0px;"></img></button>
                     <button style="display: none;" class="ManagementMethodDiv" type="submit" name="orderInfo" value="<?php echo $_GET['orderIndex']; ?>">訂單：<?php echo $_GET['orderIndex']; ?></button>
                 </form>
             </div>
@@ -220,22 +223,27 @@ $orderArray = ConnectSql($sqlConn, $cmd);
         <!--透過SQL增加商品資訊-->
         <div class="mainDiv">
             <?php
-            $cmd = 'SELECT `名稱`,`價格`,`願意配銷地點`,`配銷方式`,`剩餘數量`,`產品資訊`.`產品編號`,`產品資訊`.`是否有機`
-            FROM (`小農` INNER JOIN `個人賣場2` ON `小農`.`賣場編號`=`個人賣場2`.`賣場編號`)
-            INNER JOIN `產品資訊` ON `個人賣場2`.`產品編號`=`產品資訊`.`產品編號`
-            WHERE `小農`.`賣場編號`="' . $store . '";';
-            $index = 0;
-            $sqlData = mysqli_query($conn, $cmd);
-            if ($sqlData->num_rows > 0) {
-                while ($sqlArray = mysqli_fetch_array($sqlData, MYSQLI_ASSOC)) {
-                    echo '
-                <table class="StoreInfoTable" id="storeInfoTemplate">
-                <form name="commodity" id="commodity' . $index . '" action="farmManagement.php" enctype="multipart/form-data" method="post" align="center" style="margin:auto auto auto auto;">
+            if ($_GET["method"] == 1) {
+
+
+                $cmd = 'SELECT `名稱`,`價格`,`願意配銷地點`,`配銷方式`,`剩餘數量`,`產品資訊`.`產品編號`,`產品資訊`.`是否有機`,`產品資訊`.`審核狀態`
+                        FROM (`小農` INNER JOIN `個人賣場2` ON `小農`.`賣場編號`=`個人賣場2`.`賣場編號`)
+                        INNER JOIN `產品資訊` ON `個人賣場2`.`產品編號`=`產品資訊`.`產品編號`
+                        WHERE `小農`.`賣場編號`="' . $store . '";';
+                $index = 0;
+                $sqlData = mysqli_query($conn, $cmd);
+                if ($sqlData->num_rows > 0) {
+                    while ($sqlArray = mysqli_fetch_array($sqlData, MYSQLI_ASSOC)) {
+                        echo '
+                <table class="StoreInfoTable" id="storeInfoTemplate"';
+                        if ($sqlArray['審核狀態'] == 0) echo 'style="background-color: #ADADAD;"';
+                        echo '>
+                <form name="commodity" id="commodity' . $index . '" action="submitStoreFixedInfo.php"  method="post" align="center" style="margin:auto auto auto auto;">
                     <input type="hidden" name="commodityIndex" disabled = "disabled" value="' . $sqlArray['產品編號'] . '"></input>
                     <tbody>
                         <tr>
                             <td rowspan="3" align="center" style="width: 100px; height:100px;">
-                            <input style="width:70px;display:none;" type="file" id="imgInput' . $index . '" targetID="previewImg' . $index . '"" onchange="readURL(this)" accept="image/gif, image/jpeg, image/png" />
+                            <input style="width:70px;display:none;" type="file" name="imgInput" id="imgInput' . $index . '" targetID="previewImg' . $index . '"" onchange="readURL(this)" accept="image/gif, image/jpeg, image/png" />
                             <img id="previewImg' . $index . '" src="image/carrot.png">
                             <span id="sql" style="font-size:smaller;">有機</span>
                             
@@ -248,7 +256,7 @@ $orderArray = ConnectSql($sqlConn, $cmd);
                                     <tr style="border: 3px solid #000000; border-top:0px; border-right:0px; border-left:0px; ">
 
                                         <td style="border: 3px solid #000000; border-top:0px; border-left:0px; width:200px;">
-                                            品名：<input name="CName" id="CName' . $index . '"disabled = "disabled"  value="' . $sqlArray['名稱'] . '" style="width: 100px;" onkeydown="if(event.keyCode==13){return false;}"></input></td>
+                                            品名：<input name="CName" id="CName' . $index . '"disabled = "disabled"  value="' . $sqlArray['名稱'] . '" style="width: 100px;" onkeydown="if(event.keyCode==13){return false;}"/></td>
 
                                         <td><input name="cash" id="cash' . $index . '"disabled = "disabled" value="' . $sqlArray['價格'] . '" style="width: 50px;" onkeydown="if(event.keyCode==13){return false;}"></input>元/把</td>
                                     </tr>
@@ -258,7 +266,7 @@ $orderArray = ConnectSql($sqlConn, $cmd);
                                     </tr>
                                     <tr style="border: 3px solid #000000; border-right:0px; border-bottom:0px; border-left:0px;">
                                         <td style="border: 3px solid #000000; border-left:0px; border-bottom:0px;">
-                                            剩餘數量：<input name="maxCount" id="maxCount' . $index . '" disabled = "disabled" value="' . $sqlArray[' 剩餘數量'] . '" style="width: 50px;" onkeydown="if(event.keyCode==13){return false;}"></input></td>
+                                            剩餘數量：<input name="maxCount" id="maxCount' . $index . '" disabled = "disabled" value="' . $sqlArray['剩餘數量'] . '" style="width: 50px;" onkeydown="if(event.keyCode==13){return false;}"></input></td>
                                         <td></td>
                                     </tr>
                                 </table>
@@ -267,19 +275,81 @@ $orderArray = ConnectSql($sqlConn, $cmd);
                             <td rowspan="3">
                                 <hr width=" 3px" size=100px color="#000000" style="margin: 0% auto 0% auto; border: 0px;">
                             </td>
-                            <td align="center" style="right:0px; position: relative; width: 100px; font-size:24px; font-weight: bolder; ">
-                                <button type="submit" name="fixedButton' . $index . '" id="fixedButton' . $index . '" onclick="if(!fixed(' . $index . ',' . true . ')){return false;}" font color="blue" align="center" style=" font-size:24px; font-weight: bolder; background-color: #BEBEBE;">修<br>改</button>
-                                <button type="submit" name="submitButton' . $index . '" id="submitButton' . $index . '" onclick="if(fixed(' . $index . ',' . false . ')){return false;}" font color="blue" align="center" style=" font-size:16px; width:40px;font-weight: bolder; background-color: #53FF53;display:none;">提交修改</button>
-                            </td>
+                            <td align="center" style="right:0px; position: relative; width: 100px; font-size:24px; font-weight: bolder; ">';
+                        if ($sqlArray['審核狀態'] == 1)
+                            echo '<button type="button" name="fixedButton' . $index . '" id="fixedButton' . $index . '" onclick="if(!fixed(' . $index . ',' . true . ')){return false;}" font color="blue" align="center" style=" font-size:24px; font-weight: bolder; background-color: #BEBEBE;">修<br>改</button>
+                                <button type="submit" name="submitButton' . $index . '" id="submitButton' . $index . '" onclick="if(fixed(' . $index . ',' . false . ')){return false;}" font color="blue" align="center" style=" font-size:16px; width:40px;font-weight: bolder; background-color: #53FF53;display:none;">提交修改</button>';
+                        else
+                            echo '<div id="fixedButton' . $index . '"  align="center" style="color:#EEEEEE; font-size:24px; font-weight: bolder; ">審<br>核<br>中</div>';
+
+                        echo '</td>
                         </tr>
                     </tbody>
                 </form>
             </table>';
 
-                    $index++;
+                        $index++;
+                    }
+                }
+            } else if ($_GET["method"] == 2) {  //訂單資訊
+                $cmd = 'SELECT `訂單編號`, `訂購者帳號`, `訂單日期`, `販售者帳號`, `賣場編號`, `訂單金額`, `配銷方式`, `訂單狀態` FROM `訂單` WHERE `販售者帳號`="' . $sotreName . '"';
+                $sqlData = mysqli_query($conn, $cmd);
+                if ($sqlData->num_rows > 0) {
+                    while ($sqlArray = mysqli_fetch_array($sqlData, MYSQLI_ASSOC)) {
+                    }
                 }
             }
             ?>
+            <style>
+                .orderInfoSpan {
+                    font-size: 18px;
+                    font-weight: bold;
+                }
+
+                .td {
+                    width: 280px;
+                }
+
+                .tr {
+                    width: 280px;
+                }
+            </style>
+            <table class="StoreInfoTable" border="1px" style="width:590px; border-collapse:collapse; ">
+                <tbody>
+                    <tr>
+                        <td>
+                            <span class=" orderInfoSpan">賣家帳號:</span><span class="orderInfoSpan" style="color:red;">XXXXXX</span>
+                        </td>
+                        <td>
+                            <span class="orderInfoSpan">訂單總金額:</span><span class="orderInfoSpan" style="color:red;">XXXXXX</span>
+                        </td>
+                        <td rowspan="3">
+                            <form name="orderDetail" method="get" action="farmManagement.php">
+                                <input type="hidden" name="orderIndex" value="123" />
+                                <span class="orderInfoSpan" style="color:red; font-size:14px; width: 50px;">查<br>看<br>詳<br>細<br>資<br>訊</span>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <span class="orderInfoSpan">訂單編號:</span><span class="orderInfoSpan" style="color:red;">XXXXXX</span>
+                        </td>
+                        <td>
+                            <span class="orderInfoSpan">訂單建立日期:</span><span class="orderInfoSpan" style="color:red;">XXXXXX</span>
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td>
+                            <span class="orderInfoSpan">購買者聯絡電話:</span><span class="orderInfoSpan" style="color:red;">XXXXXX</span>
+                        </td>
+                        <td>
+                            <span class="orderInfoSpan">訂單狀態:</span><span class="orderInfoSpan" style="color:red;">XXXXXX</span>
+                        </td>
+
+                    </tr>
+                </tbody>
+            </table>
             <script>
                 function fixed(index, status) {
                     var idStr = [
@@ -301,12 +371,13 @@ $orderArray = ConnectSql($sqlConn, $cmd);
                     if (!status) {
                         document.getElementById("imgInput" + index).style.display = "none";
                         document.getElementById("submitButton" + index).style.display = "none";
-                        document.getElementById("fixedButton" + index).style.display = "";
+                        // document.getElementById("fixedButton" + index).style.display = "";
                         document.getElementById('commodity' + index).submit();
                     } else {
                         document.getElementById("imgInput" + index).style.display = "";
                         document.getElementById("submitButton" + index).style.display = "";
-                        document.getElementById("fixedButton" + index).style.display = "none";
+                        // document.getElementById("fixedButton" + index).style.display = "none";
+
                     }
                 }
 

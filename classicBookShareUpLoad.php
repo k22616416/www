@@ -1,4 +1,6 @@
 <?php
+echo $_POST['CName'];
+exit;
 $DBNAME = "小農2";
 $DBUSER = "root";
 $DBHOST = "localhost";
@@ -31,6 +33,7 @@ $sql = "INSERT INTO  `imgtest`(`img`, `imgtype`)  VALUES ('$fileContents','$imgT
 //
 if ($conn->query($sql) === TRUE) {
     echo "成功";
+    echo $_POST['textInput'];
 } else {
     //echo "Error: " . $sql . "<br>" . $conn->error;
     echo "失敗";

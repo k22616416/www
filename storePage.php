@@ -26,7 +26,7 @@ if (isset($_POST['storeNumber'])) {
 } else if ($_SESSION['storeNumber'] != null) {
     $store = $_SESSION['storeNumber'];
 } else if (isset($_POST['enterStore'])) {
-    echo '<script>alert("1");</script>';
+    // echo '<script>alert("1");</script>';
     $userName = $_POST['storeNumber'];
     $cmd = "SELECT * FROM `小農` WHERE `使用者帳號`= '" . $userName . "';";
     $sqlData = mysqli_query($conn, $cmd);
@@ -215,7 +215,7 @@ if ($sqlData->num_rows > 0) {
                             echo '</form>';
                             echo '</tr>';
                             echo '<tr >';
-                            echo '<form method="post" action="farmManagement.php">';
+                            echo '<form method="post" action="farmManagement.php?method=1">';
                             echo '<input type="hidden" name="farmIndex" value="' . $userName . '">';
                             echo '<td colspan=2><button class="RegisterButton" name="enterStore" >進入農場管理頁面</button></td>';
                             echo '</form>';

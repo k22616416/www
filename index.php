@@ -163,7 +163,7 @@ if (!mysqli_select_db($conn, $DBNAME)) {
               echo '</form>';
               echo '</tr>';
               echo '<tr >';
-              echo '<form method="post" action="farmManagement.php">';
+              echo '<form method="post" action="farmManagement.php?method=1">';
               echo '<input type="hidden" name="farmIndex" value="' . $userName . '">';
               echo '<td colspan=2><button class="RegisterButton" name="enterStore" >進入農場管理頁面</button></td>';
               echo '</form>';
