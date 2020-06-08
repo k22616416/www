@@ -21,28 +21,11 @@ $storeBrowse = 0;
 
 $titleStr = '小農線上市集媒合系統';
 
-$DBNAME = "小農2";
-$DBUSER = "root";
-$DBHOST = "localhost";
-$conn = mysqli_connect($DBHOST, $DBUSER, '');
-if (empty($conn)) {
-    print mysqli_error($conn);
-    echo ("資料庫連線失敗");
-    sleep(2);
-    if (!checkRoot()) echo '<script>document.location.href="index.php"</script>';
+include_once("sqlConnectAPI.php");
+if (($conn = ConnectDB()) == null) {
+    die("資料庫連線失敗");
 }
-if (!mysqli_select_db($conn, $DBNAME)) {
-    echo ("資料庫連線失敗");
-    sleep(2);
-    if (!checkRoot()) echo '<script>document.location.href="index.php"</script>';
-}
-function ConnectSql($sqlConn, $cmd)
-{
-    $sqlData = mysqli_query($sqlConn, $cmd);
-    if ($sqlData->num_rows > 0) {
-        return mysqli_fetch_array($sqlData, MYSQLI_ASSOC);
-    } else return null;
-}
+
 if (isset($_POST['storeNumber'])) {
     $store = $_POST['storeNumber'];
     $_SESSION['storeNumber'] = $store;
@@ -52,9 +35,11 @@ if (isset($_POST['storeNumber'])) {
     echo '<script>alert("1");</script>';
     $userName = $_POST['storeNumber'];
     $cmd = "SELECT * FROM `小農` WHERE `使用者帳號`= '" . $userName . "';";
-    if (($sqlArray = ConnectSql($sqlConn, $cmd)) != null) {
-        $store = $sqlArray['賣場編號'];
-        $storeName = $sqlArray['使用者帳號'];
+    if (($sqlData = SqlCommit($conn, $cmd)) != null) {
+        while ($row = $sqlData->fetch_assoc()) {
+            $store = $sqlArray['賣場編號'];
+            $storeName = $sqlArray['使用者帳號'];
+        }
     }
 } else {
     echo '<script>alert("取得賣場編號失敗");</script>';
@@ -67,12 +52,7 @@ if (isset($_POST['storeNumber'])) {
 
 error_reporting(0);
 
-function debug($str)
-{
-    echo '<script>
-    console.log(\'' . $str . '\');
-    </script>';
-}
+
 
 ?>
 <!-- 判斷有沒有登入 -->
@@ -129,10 +109,13 @@ if (isset($_POST['logout'])) {
 
 // 訂單與商品資訊
 
-$cmd = "SELECT * FROM `個人賣場2` WHERE `賣場編號`='" . $store . "';";
-$commodityArray = ConnectSql($sqlConn, $cmd);
-$cmd = "SELECT * FROM `訂單` WHERE `賣場編號`= '" . $store . "'";
-$orderArray = ConnectSql($sqlConn, $cmd);
+// $cmd = "SELECT * FROM `個人賣場2` WHERE `賣場編號`='" . $store . "';";
+// $commodityArray;
+// if (($TMP = SqlCommit($sqlConn, $cmd)) != null) {
+//     $commodityArray = $TMP->fetch_assoc();
+// }
+// $cmd = "SELECT * FROM `訂單` WHERE `賣場編號`= '" . $store . "'";
+// $orderArray = SqlCommit($sqlConn, $cmd)->fetch_assoc();
 ?>
 
 <!DOCTYPE html>
@@ -217,16 +200,13 @@ $orderArray = ConnectSql($sqlConn, $cmd);
             </div>
             <hr class="TopHr">
             </hr>
-
         </div>
 
         <!--透過SQL增加商品資訊-->
         <div class="mainDiv">
             <?php
             if ($_GET["method"] == 1) {
-
-
-                $cmd = 'SELECT `名稱`,`價格`,`願意配銷地點`,`配銷方式`,`剩餘數量`,`產品資訊`.`產品編號`,`產品資訊`.`是否有機`,`產品資訊`.`審核狀態`
+                $cmd = 'SELECT `名稱`,`價格`,`願意配銷地點`,`配銷方式`,`剩餘數量`,`產品資訊`.`產品編號`,`產品資訊`.`是否有機`,`產品資訊`.`審核狀態`,`產品資訊`.`示意圖`,`產品資訊`.`圖片編碼格式`
                         FROM (`小農` INNER JOIN `個人賣場2` ON `小農`.`賣場編號`=`個人賣場2`.`賣場編號`)
                         INNER JOIN `產品資訊` ON `個人賣場2`.`產品編號`=`產品資訊`.`產品編號`
                         WHERE `小農`.`賣場編號`="' . $store . '";';
@@ -238,15 +218,22 @@ $orderArray = ConnectSql($sqlConn, $cmd);
                 <table class="StoreInfoTable" id="storeInfoTemplate"';
                         if ($sqlArray['審核狀態'] == 0) echo 'style="background-color: #ADADAD;"';
                         echo '>
-                <form name="commodity" id="commodity' . $index . '" action="submitStoreFixedInfo.php"  method="post" align="center" style="margin:auto auto auto auto;">
-                    <input type="hidden" name="commodityIndex" disabled = "disabled" value="' . $sqlArray['產品編號'] . '"></input>
+                <form name="commodity" id="commodity' . $index . '" action="submitStoreFixedInfo.php" Enctype="multipart/form-data" method="post" align="center" style="margin:auto auto auto auto;">
+                    <input type="hidden" name="commodityIndex" value="' . $sqlArray['產品編號'] . '"></input>
                     <tbody>
                         <tr>
                             <td rowspan="3" align="center" style="width: 100px; height:100px;">
-                            <input style="width:70px;display:none;" type="file" name="imgInput" id="imgInput' . $index . '" targetID="previewImg' . $index . '"" onchange="readURL(this)" accept="image/gif, image/jpeg, image/png" />
-                            <img id="previewImg' . $index . '" src="image/carrot.png">
-                            <span id="sql" style="font-size:smaller;">有機</span>
-                            
+                            <input style="width:70px;display:none;" type="file" name="imgInput" id="imgInput' . $index . '" targetID="previewImg' . $index . '"" onchange="readURL(this)" accept="image/gif, image/jpeg, image/png" />';
+
+                        if ($sqlArray['示意圖'] != null)
+                            echo '<img id="previewImg' . $index . '"src="data:' . $sqlArray['圖片編碼格式'] . ';base64,' . $sqlArray['示意圖'] . '" />';
+                        else
+                            echo '<img id="previewImg' . $index . '"src="Image/carrot.png" />';
+                        echo '
+                            <select name="organic" id="organic' . $index . '" disabled = "disabled" style="font-size:smaller;">
+                                <option value="1">有機</option>
+                                <option value="0">非有機</option>
+                            </select>
                             </td>
                             <td rowspan="3">
                                 <hr width=" 3px" size=100px color="#000000" style="margin: 0% auto 0% auto; border: 0px;">
@@ -277,8 +264,8 @@ $orderArray = ConnectSql($sqlConn, $cmd);
                             </td>
                             <td align="center" style="right:0px; position: relative; width: 100px; font-size:24px; font-weight: bolder; ">';
                         if ($sqlArray['審核狀態'] == 1)
-                            echo '<button type="button" name="fixedButton' . $index . '" id="fixedButton' . $index . '" onclick="if(!fixed(' . $index . ',' . true . ')){return false;}" font color="blue" align="center" style=" font-size:24px; font-weight: bolder; background-color: #BEBEBE;">修<br>改</button>
-                                <button type="submit" name="submitButton' . $index . '" id="submitButton' . $index . '" onclick="if(fixed(' . $index . ',' . false . ')){return false;}" font color="blue" align="center" style=" font-size:16px; width:40px;font-weight: bolder; background-color: #53FF53;display:none;">提交修改</button>';
+                            echo '<button type="button" name="fixedButton' . $index . '" id="fixedButton' . $index . '" onclick="if(!fixed(' . $index . ',' . true . ')){return false;}" font color="blue" align="center" style=" font-size:16px; font-weight: bolder; background-color: #BEBEBE;">修<br>改</button>
+                                <button type="submit" name="submitButton' . $index . '" id="submitButton' . $index . '"  font color="blue" align="center" style=" font-size:16px; width:40px;font-weight: bolder; background-color: #53FF53;display:none;">提交修改</button>';
                         else
                             echo '<div id="fixedButton' . $index . '"  align="center" style="color:#EEEEEE; font-size:24px; font-weight: bolder; ">審<br>核<br>中</div>';
 
@@ -300,83 +287,83 @@ $orderArray = ConnectSql($sqlConn, $cmd);
                 }
             }
             ?>
-            <style>
-                .orderInfoSpan {
-                    font-size: 18px;
-                    font-weight: bold;
-                }
 
-                .td {
-                    width: 280px;
-                }
-
-                .tr {
-                    width: 280px;
-                }
-            </style>
             <table class="StoreInfoTable" border="1px" style="width:590px; border-collapse:collapse; ">
-                <tbody>
-                    <tr>
-                        <td>
-                            <span class=" orderInfoSpan">賣家帳號:</span><span class="orderInfoSpan" style="color:red;">XXXXXX</span>
-                        </td>
-                        <td>
-                            <span class="orderInfoSpan">訂單總金額:</span><span class="orderInfoSpan" style="color:red;">XXXXXX</span>
-                        </td>
-                        <td rowspan="3">
-                            <form name="orderDetail" method="get" action="farmManagement.php">
+                <form name="orderDetail" method="get" action="farmManagement.php">
+                    <tbody>
+                        <tr>
+                            <td>
+                                賣家帳號:XXXXXX
+                            </td>
+                            <td>
+                                訂單總金額:XXXXXX
+                            </td>
+                            <td rowspan="3">
                                 <input type="hidden" name="orderIndex" value="123" />
-                                <span class="orderInfoSpan" style="color:red; font-size:14px; width: 50px;">查<br>看<br>詳<br>細<br>資<br>訊</span>
-                            </form>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <span class="orderInfoSpan">訂單編號:</span><span class="orderInfoSpan" style="color:red;">XXXXXX</span>
-                        </td>
-                        <td>
-                            <span class="orderInfoSpan">訂單建立日期:</span><span class="orderInfoSpan" style="color:red;">XXXXXX</span>
-                        </td>
+                                <p style="text-align:center;color:red; ">查<br>看<br>詳<br>細<br>資<br>訊</p>
 
-                    </tr>
-                    <tr>
-                        <td>
-                            <span class="orderInfoSpan">購買者聯絡電話:</span><span class="orderInfoSpan" style="color:red;">XXXXXX</span>
-                        </td>
-                        <td>
-                            <span class="orderInfoSpan">訂單狀態:</span><span class="orderInfoSpan" style="color:red;">XXXXXX</span>
-                        </td>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                訂單編號:XXXXXX
+                            </td>
+                            <td>
+                                訂單建立日期:XXXXXX
+                            </td>
 
-                    </tr>
-                </tbody>
+                        </tr>
+                        <tr>
+                            <td>
+                                購買者聯絡電話:XXXXXX
+                            </td>
+                            <td>
+                                訂單狀態:XXXXXX
+                            </td>
+
+                        </tr>
+                    </tbody>
+                </form>
             </table>
             <script>
                 function fixed(index, status) {
+                    var n = false;
                     var idStr = [
                         "CName",
                         "cash",
                         "location",
                         "transport",
                         "maxCount",
-                        "imgInput"
+                        "organic"
                     ];
                     for (var i = 0; i < idStr.length; i++) {
                         if (idStr[i] == "imgInput") continue;
-                        if (status)
+                        if (!document.getElementById(idStr[i] + index).disabled == "")
                             document.getElementById(idStr[i] + index).disabled = "";
                         else
                             document.getElementById(idStr[i] + index).disabled = "disabled";
                     }
 
-                    if (!status) {
+                    if (document.getElementById("imgInput" + index).style.display == "") {
                         document.getElementById("imgInput" + index).style.display = "none";
-                        document.getElementById("submitButton" + index).style.display = "none";
-                        // document.getElementById("fixedButton" + index).style.display = "";
-                        document.getElementById('commodity' + index).submit();
+                        // document.getElementById("organic" + index).style.display = "none";
+
                     } else {
                         document.getElementById("imgInput" + index).style.display = "";
+                        // document.getElementById("organic" + index).style.display = "";
+
+
+                    }
+                    if (document.getElementById("submitButton" + index).style.display == "") {
+                        document.getElementById("submitButton" + index).style.display = "none";
+                    } else {
                         document.getElementById("submitButton" + index).style.display = "";
-                        // document.getElementById("fixedButton" + index).style.display = "none";
+                    }
+                    if (document.getElementById("fixedButton" + index).innerHTML == "修<br>改") {
+                        document.getElementById("fixedButton" + index).innerHTML = "取<br>消<br>修<br>改";
+                        // document.getElementById("fixedButton" + index).onclick = "if(!fixed(' . $index . ',' . false . ')){return false;}";
+                    } else {
+                        document.getElementById("fixedButton" + index).innerHTML = "修<br>改";
 
                     }
                 }

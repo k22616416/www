@@ -9,20 +9,9 @@ $loginMember = 0;
 $infoName = '';
 $errorCode = 0;
 error_reporting(0);
-$DBNAME = "小農2";
-$DBUSER = "root";
-$DBHOST = "localhost";
-$conn = mysqli_connect($DBHOST, $DBUSER, '');
-if (empty($conn)) {
-  print mysqli_error($conn);
-  echo ("資料庫連線失敗");
-  sleep(2);
-  echo '<script>document.location.href="index.php"</script>';
-}
-if (!mysqli_select_db($conn, $DBNAME)) {
-  echo ("資料庫連線失敗");
-  sleep(2);
-  echo '<script>document.location.href="index.php"</script>';
+include_once("sqlConnectAPI.php");
+if (($conn = ConnectDB()) == null) {
+  die("資料庫連線失敗");
 }
 ?>
 
@@ -232,10 +221,10 @@ if (!mysqli_select_db($conn, $DBNAME)) {
               </td>
               <!-- Sql農產品篩選條件 -->
               <?php
-              $cmd = "SELECT `名稱` FROM `農產品` WHERE 1";
-              $sqlData = mysqli_query($conn, $cmd);
-              if (mysqli_num_rows($sqlData) > 0) {
-                while ($row = mysqli_fetch_assoc($sqlData)) {
+              $cmd = "SELECT `名稱` FROM `農產品` WHERE 1;";
+
+              if (($sqlData = SqlCommit($conn, $cmd)) > 0) {
+                while ($row = $sqlData->fetch_assoc()) {
                   echo '<td><input type="checkbox" name="" value="" id="sql">' . $row['名稱'] . '</td>';
                 }
               }
@@ -274,18 +263,25 @@ if (!mysqli_select_db($conn, $DBNAME)) {
         }
       </script>
       <?php
-      $cmd = "SELECT `賣場編號`,`賣場圖片`,`賣場簡介`,`交易訂單數`,`瀏覽次數` FROM `小農`";
-      $sqlData = mysqli_query($conn, $cmd);
-      if (mysqli_num_rows($sqlData) > 0) {
+      $cmd = "SELECT * FROM `小農` WHERE 1;";
+      if (($sqlData = SqlCommit($conn, $cmd)) != null) {
         $i = 0;
-        while ($row = mysqli_fetch_assoc($sqlData)) {
+        while ($row = $sqlData->fetch_assoc()) {
+
           // $img = $row['賣場圖片'];
           // printf("%d", $i);
           echo '<form id="entryStore' . $i . '" method="post" action="storePage.php">';
           echo '<table class="StoreInfoTable" id="storeInfoTemplate">
                 <tbody>
                   <tr>
-                    <td rowspan="3" align="center" style="width: 100px; height:100px;"><img src="image/user.png" alt="123"><button class="StoreHrefText" >進入此賣場</button><input type="hidden" name="storeNumber" value="' . $row['賣場編號'] . '"></a></td>
+                    <td rowspan="3" align="center" style="width: 100px; height:100px;">';
+          if ($row['賣場圖片'] != null)
+            echo '<img src="data:' . $row['圖片編碼格式'] . ';base64,' . $row['賣場圖片'] . '" />';
+          else
+            echo '<img src="image/user.png"/>';
+
+
+          echo '<button class="StoreHrefText" >進入此賣場</button><input type="hidden" name="storeNumber" value="' . $row['賣場編號'] . '"></a></td>
         
                     <td rowspan="3">
                       <hr width=" 3px" size=100px color="#000000" style="margin: 0% auto 0% auto; border: 0px;">

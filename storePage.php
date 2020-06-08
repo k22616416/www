@@ -3,21 +3,9 @@
 <script src="script.js" async></script>
 <?php
 $titleStr = '小農線上市集媒合系統';
-
-$DBNAME = "小農2";
-$DBUSER = "root";
-$DBHOST = "localhost";
-$conn = mysqli_connect($DBHOST, $DBUSER, '');
-if (empty($conn)) {
-    print mysqli_error($conn);
-    echo ("資料庫連線失敗");
-    sleep(2);
-    echo '<script>document.location.href="index.php"</script>';
-}
-if (!mysqli_select_db($conn, $DBNAME)) {
-    echo ("資料庫連線失敗");
-    sleep(2);
-    echo '<script>document.location.href="index.php"</script>';
+include_once("sqlConnectAPI.php");
+if (($conn = ConnectDB()) == null) {
+    die("資料庫連線失敗");
 }
 
 if (isset($_POST['storeNumber'])) {
@@ -54,12 +42,7 @@ $storeBrowse = 0;
 
 error_reporting(0);
 
-function debug($str)
-{
-    echo '<script>
-    console.log(\'' . $str . '\');
-    </script>';
-}
+
 
 ?>
 <!-- 判斷有沒有登入 -->
@@ -69,6 +52,7 @@ if (isset($_POST['logout'])) {
     unset($_SESSION['user']);
     unset($_SESSION['name']);
     unset($_SESSION['member']);
+    echo '<script>document.location.href="index.php"</script>';
 } else if ($_SESSION['user'] != null) {
     $loginStatus = true;
     $loginMember = $_SESSION['member'];
@@ -450,7 +434,7 @@ if ($sqlData->num_rows > 0) {
         <!--透過SQL增加商品資訊-->
         <div class="mainDiv">
             <?php
-            $cmd = 'SELECT `名稱`,`價格`,`願意配銷地點`,`配銷方式`,`剩餘數量`,`產品資訊`.`產品編號`
+            $cmd = 'SELECT *
             FROM (`小農` INNER JOIN `個人賣場2` ON `小農`.`賣場編號`=`個人賣場2`.`賣場編號`)
             INNER JOIN `產品資訊` ON `個人賣場2`.`產品編號`=`產品資訊`.`產品編號`
             WHERE `小農`.`賣場編號`="' . $store . '";';
@@ -463,7 +447,13 @@ if ($sqlData->num_rows > 0) {
                             <input type="hidden" name="commodityIndex" value="' . $sqlArray['產品編號'] . '"></input>
                             <tbody>
                                 <tr>
-                                    <td rowspan="3" align="center" style="width: 100px; height:100px;"><img src="image/carrot.png" alt="123"><span id="sql" style="font-size:smaller;">' . ($sqlArray['是否有機'] ? '有機' : '非有機') . '</span>
+                                    <td rowspan="3" align="center" style="width: 100px; height:100px;">';
+                    if ($sqlArray['示意圖'] != null)
+                        echo '<img src="data:' . $sqlArray['圖片編碼格式'] . ';base64,' . $sqlArray['示意圖'] . '" />';
+                    else
+                        echo '<img src="image/carrot.png"/>';
+                    // <img src="image/carrot.png" alt="123">
+                    echo '<span id="sql" style="font-size:smaller;">' . ($sqlArray['是否有機'] ? '有機' : '非有機') . '</span>
                                     </td>
                                     <td rowspan="3">
                                         <hr width=" 3px" size=100px color="#000000" style="margin: 0% auto 0% auto; border: 0px;">

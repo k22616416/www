@@ -1,4 +1,4 @@
-<!-- <html>
+<html>
 
 <body>
     <Form Action="classicBookShareUpLoad.php" Method="POST" Enctype="multipart/form-data">
@@ -7,63 +7,7 @@
     </Form>
 </body>
 
-</html> -->
-<?php
-
-echo '
-                <table class="StoreInfoTable" id="storeInfoTemplate"';
-if (0) echo 'style="background-color: #ADADAD;"';
-echo '>
-                <form name="commodity" id="commodity' . 1 . '" action="submitStoreFixedInfo.php"  method="post" align="center" style="margin:auto auto auto auto;">
-                    <input type="hidden" name="commodityIndex" value="' . 3 . '"></input>
-                    <tbody>
-                        <tr>
-                            <td rowspan="3" align="center" style="width: 100px; height:100px;">
-                            <input style="width:70px;display:none;" type="file" name="imgInput" id="imgInput' . 1 . '" targetID="previewImg' . 1 . '"" onchange="readURL(this)" accept="image/gif, image/jpeg, image/png" />
-                            <img id="previewImg' . 1 . '" src="image/carrot.png">
-                            <span id="sql" style="font-size:smaller;">有機</span>
-                            
-                            </td>
-                            <td rowspan="3">
-                                <hr width=" 3px" size=100px color="#000000" style="margin: 0% auto 0% auto; border: 0px;">
-                            </td>
-                            <td rowspan="3" id="sql">
-                                <table style="border:0px; border-collapse:collapse; width:400px; height:100px; font-weight: bold; font-size:18px;">
-                                    <tr style="border: 3px solid #000000; border-top:0px; border-right:0px; border-left:0px; ">
-
-                                        <td style="border: 3px solid #000000; border-top:0px; border-left:0px; width:200px;">
-                                            品名：<input name="CName" id="CName' . 1 . '"  value="' . '產品3' . '" style="width: 100px;" onkeydown="if(event.keyCode==13){return false;}"/></td>
-
-                                        <td><input name="cash" id="cash' . 1 . '" value="' . 30 . '" style="width: 50px;" onkeydown="if(event.keyCode==13){return false;}"></input>元/把</td>
-                                    </tr>
-                                    <tr style="border: 3px solid #000000; border-right:0px;  border-left:0px;">
-                                        <td style="border: 3px solid #000000; border-left:0px;">配銷地點：<input name="location" id="location' . 1 . '"  value="' . "123" . '" style="width: 50px;" onkeydown="if(event.keyCode==13){return false;}"></td>
-                                        <td>運送方式：<input name="transport" id="transport' . 1 . '"   value="' . '配銷方式3' . '" style="width: 50px;" onkeydown="if(event.keyCode==13){return false;}"></input></td>
-                                    </tr>
-                                    <tr style="border: 3px solid #000000; border-right:0px; border-bottom:0px; border-left:0px;">
-                                        <td style="border: 3px solid #000000; border-left:0px; border-bottom:0px;">
-                                            剩餘數量：<input name="maxCount" id="maxCount' . 1 . '"  value="' . 20 . '" style="width: 50px;" onkeydown="if(event.keyCode==13){return false;}"></input></td>
-                                        <td></td>
-                                    </tr>
-                                </table>
-                            </td>
-
-                            <td rowspan="3">
-                                <hr width=" 3px" size=100px color="#000000" style="margin: 0% auto 0% auto; border: 0px;">
-                            </td>
-                            <td align="center" style="right:0px; position: relative; width: 100px; font-size:24px; font-weight: bolder; ">';
-if (1)
-    echo '<button type="button" name="fixedButton' . 1 . '" id="fixedButton' . 1 . '" onclick="fixed(' . 1 . ',' . true . ')" font color="blue" align="center" style=" font-size:24px; font-weight: bolder; background-color: #BEBEBE;">修<br>改</button>
-                                <button type="button" name="submitButton' . 1 . '" id="submitButton' . 1 . '" onclick="fixed(' . 1 . ',' . false . ')" font color="blue" align="center" style=" font-size:16px; width:40px;font-weight: bolder; background-color: #53FF53;display:none;">提交修改</button>';
-else
-    echo '<div id="fixedButton' . 1 . '"  align="center" style="color:#EEEEEE; font-size:24px; font-weight: bolder; ">審<br>核<br>中</div>';
-
-echo '</td>
-                        </tr>
-                    </tbody>
-                </form>
-            </table>';
-?>
+</html>
 <script>
     function fixed(index, status) {
         var idStr = [
