@@ -133,7 +133,7 @@ if (($conn = ConnectDB()) == null) {
                 <span style="font-size: 16px;"><?php echo '歡迎:' . $infoName; ?>
               </td>
               <form method="post" action="index.php">
-                <td style="border:2px solid #000000;"><button name="logout" type="submit" class="LoginButton" style=" width: auto; background-color: RGBA(255,0,0,0.70);">登出</button></td>
+                <td style="border:2px solid #000000;"><button name="logout" type="submit" class="LoginButton" style=" position:relative ;right:0px;top:0px; width: 48px; height:25px; background-color: RGBA(255,0,0,0.70);">登出</button></td>
 
               </form>
             </tr>

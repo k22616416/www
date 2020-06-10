@@ -52,7 +52,7 @@ if (isset($_POST['logout'])) {
     unset($_SESSION['user']);
     unset($_SESSION['name']);
     unset($_SESSION['member']);
-    echo '<script>document.location.href="index.php"</script>';
+    echo '<script>document.location.href="storePage.php"</script>';
 } else if ($_SESSION['user'] != null) {
     $loginStatus = true;
     $loginMember = $_SESSION['member'];
@@ -307,7 +307,7 @@ if ($sqlData->num_rows > 0) {
                 </table>
 
                 <?php
-                function creatByuCar($name, $CID, $CCash, $count)
+                function creatByuCar($seller, $name, $CID, $CCash, $count)
                 {
                     echo '<script>document.getElementById(\'shopCar\').style = "overflow: auto;";</script>';
                     if ($name != null) {
@@ -325,7 +325,7 @@ if ($sqlData->num_rows > 0) {
                                 }
                             }
                             if (!$r) {
-                                $list[] = array('CID' => $CID, 'name' => $name, 'CCash' => $CCash, 'count' => $count);
+                                $list[] = array('seller' => $seller, 'CID' => $CID, 'name' => $name, 'CCash' => $CCash, 'count' => $count);
                                 // $list[] = array('CID' => $CID, 'name' => $name, 'CCash' => $CCash, 'count' => $count);
                                 // debug('List Lenght:' . count($list, COUNT_NORMAL));
 
@@ -335,7 +335,7 @@ if ($sqlData->num_rows > 0) {
 
                             // print_r($list);
                         } else {
-                            $list[] = array('CID' => $CID, 'name' => $name, 'CCash' => $CCash, 'count' => $count);
+                            $list[] = array('seller' => $seller, 'CID' => $CID, 'name' => $name, 'CCash' => $CCash, 'count' => $count);
                             $_SESSION['buyCarList'] = serialize($list);
                         }
                         debug(print_r($list, true));
@@ -362,6 +362,7 @@ if ($sqlData->num_rows > 0) {
                             <form name="shopCarTable" method="post" action="storePage.php" >
                                 <tbody>
                                     <tr>
+                                        <input type="hidden" name="seller" value="' . $list[$i]['seller'] . '"></input>
                                         <input type="hidden" name="commodityIndex" value="' . $list[$i]['CID'] . '"></input>
                                         <td align="left" id="target">' . $list[$i]['name'] . '</td>
                                         <script>
@@ -393,7 +394,7 @@ if ($sqlData->num_rows > 0) {
                     // $commodityName = $_POST['CName'];
                     // $cash = $_POST['cash'];
                     unset($_POST['buyButton']);
-                    creatByuCar($_POST['CName'], $_POST['commodityIndex'], $_POST['cash'], $_POST['buyCount']);
+                    creatByuCar($_POST['seller'], $_POST['CName'], $_POST['commodityIndex'], $_POST['cash'], $_POST['buyCount']);
                 } else if (isset($_POST['cancel'])) {
                     $oldlist = unserialize($_SESSION['buyCarList']);
 
@@ -427,7 +428,7 @@ if ($sqlData->num_rows > 0) {
 
                 ?>
 
-                <button class="checkoutButton" onclick="buyDone">結帳</button>
+                <button class="checkoutButton" onclick='Javascript:document.location.href=" buyCarResult.php"'>結帳</button>
             </div>
         </div>
 
@@ -444,7 +445,8 @@ if ($sqlData->num_rows > 0) {
                     echo '
                     <table class="StoreInfoTable" id="storeInfoTemplate">
                         <form name="commodity" id="commodity" action="storePage.php" method="post" align="center" style="margin:auto auto auto auto;">
-                            <input type="hidden" name="commodityIndex" value="' . $sqlArray['產品編號'] . '"></input>
+                            <input type="hidden" name="seller" value="' . $sqlArray['使用者帳號'] . '"/>
+                            <input type="hidden" name="commodityIndex" value="' . $sqlArray['產品編號'] . '"/>
                             <tbody>
                                 <tr>
                                     <td rowspan="3" align="center" style="width: 100px; height:100px;">';

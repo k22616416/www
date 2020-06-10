@@ -1,5 +1,5 @@
 <?php session_start();
-$_SESSION['root'] = 1;  /////////////////////for test
+$_SESSION['root'] = 0;  /////////////////////for test
 
 function checkRoot()
 {
@@ -17,7 +17,7 @@ $storeName = '';
 $storeInfo = '';
 $storeOrder = 0;
 $storeBrowse = 0;
-
+// $order = $_GET['orderIndex'];
 
 $titleStr = '小農線上市集媒合系統';
 
@@ -205,7 +205,9 @@ if (isset($_POST['logout'])) {
         <!--透過SQL增加商品資訊-->
         <div class="mainDiv">
             <?php
-            if ($_GET["method"] == 1) {
+            if ($_POST["orderIndex"] != null) {
+                echo $_POST["orderIndex"];
+            } else if ($_GET["method"] == 1) {
                 $cmd = 'SELECT `名稱`,`價格`,`願意配銷地點`,`配銷方式`,`剩餘數量`,`產品資訊`.`產品編號`,`產品資訊`.`是否有機`,`產品資訊`.`審核狀態`,`產品資訊`.`示意圖`,`產品資訊`.`圖片編碼格式`
                         FROM (`小農` INNER JOIN `個人賣場2` ON `小農`.`賣場編號`=`個人賣場2`.`賣場編號`)
                         INNER JOIN `產品資訊` ON `個人賣場2`.`產品編號`=`產品資訊`.`產品編號`
@@ -279,52 +281,57 @@ if (isset($_POST['logout'])) {
                     }
                 }
             } else if ($_GET["method"] == 2) {  //訂單資訊
-                $cmd = 'SELECT `訂單編號`, `訂購者帳號`, `訂單日期`, `販售者帳號`, `賣場編號`, `訂單金額`, `配銷方式`, `訂單狀態` FROM `訂單` WHERE `販售者帳號`="' . $sotreName . '"';
+                echo $storeName;
+                $cmd = 'SELECT `訂單編號`, `訂購者帳號`, `訂單日期`, `販售者帳號`, `賣場編號`, `訂單金額`, `配銷方式`, `訂單狀態` ,`消費者`.`連絡電話`
+                FROM `訂單` INNER JOIN `消費者`
+                ON `訂單`.`訂購者帳號` = `消費者`.`使用者帳號`
+                WHERE `賣場編號`="' . $store . '"';
                 $sqlData = mysqli_query($conn, $cmd);
                 if ($sqlData->num_rows > 0) {
                     while ($sqlArray = mysqli_fetch_array($sqlData, MYSQLI_ASSOC)) {
+                        echo '<table class="StoreInfoTable" border="1px" style="width:590px; border-collapse:collapse; ">
+                            <form name="orderDetail" id="orderDetail" method="post" action="farmManagement.php?method=2">
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            訂購者帳號:' . $sqlArray['訂購者帳號'] . '
+                                        </td>
+                                        <td>
+                                            訂單總金額:<span style="color:red">' . $sqlArray['訂單金額'] . '</span>
+                                        </td>
+                                        <td rowspan="3">
+                                            <input type="hidden" name="orderIndex" value="123456" />
+                                            <p style="text-align:center; width:50px; margin:auto auto auto auto;"><button class="detailButton" type="submit">詳<br>細<br>資<br>訊</button></p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            訂單編號:' . $sqlArray['訂單編號'] . '
+                                        </td>
+                                        <td>
+                                            訂單建立日期:' . $sqlArray['訂單日期'] . '
+                                        </td>
+            
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            購買者聯絡電話:' . $sqlArray['連絡電話'] . '
+                                        </td>
+                                        <td>
+                                            訂單狀態:<span style="color:red">' . $sqlArray['訂單狀態'] . '</span>
+                                        </td>
+            
+                                    </tr>
+                                </tbody>
+                            </form>
+                        </table>';
                     }
                 }
             }
+
             ?>
 
-            <table class="StoreInfoTable" border="1px" style="width:590px; border-collapse:collapse; ">
-                <form name="orderDetail" method="get" action="farmManagement.php">
-                    <tbody>
-                        <tr>
-                            <td>
-                                賣家帳號:XXXXXX
-                            </td>
-                            <td>
-                                訂單總金額:XXXXXX
-                            </td>
-                            <td rowspan="3">
-                                <input type="hidden" name="orderIndex" value="123" />
-                                <p style="text-align:center;color:red; ">查<br>看<br>詳<br>細<br>資<br>訊</p>
 
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                訂單編號:XXXXXX
-                            </td>
-                            <td>
-                                訂單建立日期:XXXXXX
-                            </td>
-
-                        </tr>
-                        <tr>
-                            <td>
-                                購買者聯絡電話:XXXXXX
-                            </td>
-                            <td>
-                                訂單狀態:XXXXXX
-                            </td>
-
-                        </tr>
-                    </tbody>
-                </form>
-            </table>
             <script>
                 function fixed(index, status) {
                     var n = false;
@@ -378,6 +385,10 @@ if (isset($_POST['logout'])) {
                         }
                         reader.readAsDataURL(input.files[0]);
                     }
+                }
+
+                function orderJump(index) {
+                    document.getElementById("orderDetail").submit();
                 }
             </script>
         </div>

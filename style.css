@@ -262,6 +262,12 @@ body {
 	background-color: rgba(0,0,0,0);
 	width: 100px;
 	border: 0px;
+	
+}
+.StoreHrefText:hover{
+	background-color: rgba(0, 150, 0, 0.2);
+	border:1px solid rgba(0,0,0,1);
+	border-radius: 5px;
 }
 
 
@@ -415,4 +421,27 @@ a{
 .ManagementMethodDiv:active:after {
 	border: 0px;
 	border-radius: 0px;
+}
+
+.detailButton {
+background-color: rgba(0, 0, 0, 0);
+height: 20px;
+text-align: center;
+width: 50px;
+height: 100px;
+font-size: 16px;
+font-weight: bold;
+color: red;
+}
+
+.detailButton:hover {
+	background-color: rgba(200, 200, 200, 0.6);
+}
+
+.buyCarResultTable{
+	border:2px #000000 solid;
+	padding:5px;
+	margin:40px auto auto auto;	
+	font-family: '微軟正黑體','Microsoft JhengHei UI','Times New Roman';
+
 }
