@@ -14,47 +14,80 @@ for ($i = 0; $i < count($list); $i++) {
     if (!in_array($list[$i]['seller'], $sellerList)) {
         $sellerList[] = $list[$i]['seller'];
         $sellerCount++;
-        $orderDetail[$list[$i]['seller']][] = array('CID' => $list[$i]['CID'], 'name' => $list[$i]['name'], 'CCash' => $list[$i]['CCash'], 'count' => $list[$i]['count']);
-        //0610 21:13
+        $orderDetail[$list[$i]['seller']][] = array('CID' => $list[$i]['CID'], 'name' => urlencode($list[$i]['name']), 'CCash' => $list[$i]['CCash'], 'count' => $list[$i]['count']);
+    } else {
+        // array_search($list[$i]['seller'], $sellerList);
+        $orderDetail[$list[$i]['seller']][] = array('CID' => $list[$i]['CID'], 'name' => urlencode($list[$i]['name']), 'CCash' => $list[$i]['CCash'], 'count' => $list[$i]['count']);
     }
+    // print_r("<pre>");
+    // print_r($orderDetail);
+    // echo count($orderDetail);
 }
-echo $_SESSION['user'];
-
-for ($i = 0; $i < count($sellerList); $i++) {
-}
-
-// for ($i = 0; $i < count($list, COUNT_NORMAL); $i++) {
-//     $cmd = 'INSERT INTO `訂單`
-//     (`訂單編號`,
-//     `訂購者帳號`,
-//     `訂單日期`,
-//     `販售者帳號`,
-//     `賣場編號`,
-//     `購買清單`,
-//     `訂單金額`,
-//     `配銷方式`,
-//     `訂單狀態`)
-//     VALUES("",
-//     "'..'")';
-//     if (($sqlData = SqlCommit($conn, $cmd)) != null) {
+// print_r("<pre>");
+// print_r(json_encode($orderDetail['qaz']));
+// print_r(json_decode(json_encode($orderDetail['qaz'])));
+// for ($i = 0; $i < count($orderDetail); $i++) {
+//     foreach ($orderDetail[$sellerList[$i]] as $index => $var) {
+//         echo $index . "=>" . $var["CID"] . "<br>";
 //     }
 // }
 
+date_default_timezone_set("Asia/Taipei");
+$error = false;
+$errorStr = "";
+for ($i = 0; $i < count($orderDetail); $i++) {
+    // $total = 0;
+    // for ($k = 0; $k < count($orderDetail[$sellerList[$i]]); $k++)
+    //     $totla += $orderDetail[$sellerList[$i]]["count"] * $orderDetail[$sellerList[$i]]["CCash"];
+    // echo $total;
+    $storeIndex = getStoreIndex($sellerList[$i]);
+    $cmd = 'INSERT INTO `訂單`
+    (`訂單編號`,
+    `訂購者帳號`,
+    `訂單日期`,
+    `販售者帳號`,
+    `賣場編號`,
+    `購買清單`,
+    `訂單金額`,
+    `配銷方式`,
+    `訂單狀態`)
+    VALUES("",
+    "' . $_SESSION['user'] . '",
+    "' . date("Y/m/d H:i:s") . '",
+    "' . $sellerList[$i] . '",
+    "' . $storeIndex . '",
+    \'' . json_encode($orderDetail[$sellerList[$i]]) . '\',
+    "' . "123" . '",
+    "' . "面交" . '",
+    "' . "0" . '")';
+    echo $cmd;
+    if (($sqlData = mysqli_query($conn, $cmd)) != true) {
+        $error = true;
+        $errorStr += $conn->error . "\n";
+    }
+}
+if ($error) {
+    echo $errorStr;
+    echo '<script>alert("訂單提交失敗!");</script>';
+} else {
+    echo '<script>alert("訂單提交成功!");</script>';
+    unset($_SESSION['buyCarList']);
+}
+echo '<script>document.location.href = "index.php";</script>';
 
 
-
-function getSeller($index)
+function getStoreIndex($user)
 {
+    echo $user;
     global $conn;
     $result = "";
-    $cmd = 'SELECT `小農`.`使用者帳號` FROM `小農` 
-            INNER JOIN `個人賣場2` 
-            ON `小農`.`賣場編號`=`個人賣場2`.`賣場編號`
-            WHERE `個人賣場2`.`產品編號`=' . $index . '';
+    $cmd = 'SELECT * FROM `小農` 
+            WHERE `使用者帳號`="' . $user . '"';
     if (($sqlData = SqlCommit($conn, $cmd)) != null) {
         $row = $sqlData->fetch_array();
-        $result = $row['使用者帳號'];
-    } else
+        $result = $row['賣場編號'];
+    } else {
         $result = null;
+    }
     return $result;
 }

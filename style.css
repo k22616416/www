@@ -401,7 +401,7 @@ a{
 	top:-1px;
 	text-align: center;
 	vertical-align: middle;
-	line-height: 70px;
+	/* line-height: 70px; */
 	height: 71px;
 	width: 100px;
 	background-color: rgba(0,0,0,0);

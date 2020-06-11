@@ -215,11 +215,11 @@ if (($conn = ConnectDB()) == null) {
         <table border="0" width="600" high="70">
           　 <tr>
             　 <td>
-              <h3>總購買數量：n</h3>
+              <h3 id="totalCount">總購買數量：</h3>
             </td>
             <td>
               <p align="right">
-                <h3>總金額：n</h3>
+                <h3 id="totalCash">總金額：</h3>
               </p>
             </td>
             　
@@ -257,6 +257,7 @@ if (($conn = ConnectDB()) == null) {
               if (isset($_SESSION['buyCarList'])) {
                 $list = unserialize($_SESSION['buyCarList']);
                 debug(print_r($list, true));
+                $totalCount = 0;
                 $totalCash = 0;
                 for ($i = 0; $i < count($list, COUNT_NORMAL); $i++) {
                   // if (!is_array($list[$i])) continue;
@@ -276,6 +277,7 @@ if (($conn = ConnectDB()) == null) {
                         </td>
                       </tr>';
                   $totalCash += $list[$i]['CCash'] * $list[$i]['count'];
+                  $totalCount += $list[$i]['count'];
                 }
                 echo '<tr>
                       <td bgcolor="#FFFF33" colspan="1" width="140">
@@ -287,7 +289,11 @@ if (($conn = ConnectDB()) == null) {
                       <td bgcolor="#FFFF33" colspan="1" width="140">
                         <p align="center"><b>' . $totalCash . '</b></p>
                       </td>
-                    </tr>';
+                      </tr>';
+                echo '<script>
+                      document.getElementById("totalCount").innerHTML = "總購買數量：' . $totalCount . '";
+                      document.getElementById("totalCash").innerHTML = "總金額：' . $totalCash . '";
+                      </script>';
               }
               ?>
 

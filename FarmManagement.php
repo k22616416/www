@@ -1,4 +1,8 @@
-<?php session_start();
+<?php
+
+use function PHPSTORM_META\type;
+
+session_start();
 $_SESSION['root'] = 0;  /////////////////////for test
 
 function checkRoot()
@@ -193,9 +197,10 @@ if (isset($_POST['logout'])) {
             <div class=" TopDiv">
                 <form action="farmManagement.php" method="get">
                     <!--分割線上方Div-->
-                    <button class="ManagementMethodDiv" type="submit" name="method" value="1" <?php if ($_GET['method'] == 1) echo "style=\"background-color:rgba(255, 255, 0, 0.9);\"" ?>>商品清單</button>
-                    <button class="ManagementMethodDiv" type="submit" name="method" value="2" <?php if ($_GET['method'] == 2) echo "style=\"background-color:rgba(255, 255, 0, 0.9);\"" ?>>訂單清單<img src="Image/attention.png" style="width:16px; height:16px; position:relative; bottom:20px; right:0px;"></img></button>
-                    <button style="display: none;" class="ManagementMethodDiv" type="submit" name="orderInfo" value="<?php echo $_GET['orderIndex']; ?>">訂單：<?php echo $_GET['orderIndex']; ?></button>
+                    <button class="ManagementMethodDiv" type="submit" name="method" value="1" <?php if ($_GET['method'] == 1 && $_POST["orderIndex"] == null) echo "style=\"background-color:rgba(255, 255, 0, 0.9);\"" ?>>商品清單</button>
+                    <button class="ManagementMethodDiv" type="submit" name="method" value="2" <?php if ($_GET['method'] == 2 && $_POST["orderIndex"] == null) echo "style=\"background-color:rgba(255, 255, 0, 0.9);\"" ?>>訂單清單</button>
+                    <button class="ManagementMethodDiv" type="submit" name="method" id="orderDetail" style="display:none" ?>>訂單:</button>
+                    <!-- <button class="ManagementMethodDiv" type="submit" name="orderInfo" value="<?php echo $_GET['orderIndex']; ?>" <?php if (!($_GET['method'] == 2 && $_POST["orderIndex"] != null)) echo "style=display:\"none\" ;background-color:rgba(255, 255, 0, 0.9);"; ?>>訂單：<?php echo $_GET['orderIndex']; ?></button> -->
                 </form>
             </div>
             <hr class="TopHr">
@@ -206,7 +211,98 @@ if (isset($_POST['logout'])) {
         <div class="mainDiv">
             <?php
             if ($_POST["orderIndex"] != null) {
-                echo $_POST["orderIndex"];
+                // echo $_POST["orderIndex"];
+                $cmd = 'SELECT * FROM `訂單` INNER JOIN `消費者`
+                ON `訂單`.`訂購者帳號` = `消費者`.`使用者帳號`
+                WHERE `訂單編號`="' . $_POST["orderIndex"] . '"';
+                $sqlData = mysqli_query($conn, $cmd);
+                if ($sqlData->num_rows > 0) {
+                    $orderInfo = "";
+                    while (($sqlArray = mysqli_fetch_array($sqlData, MYSQLI_ASSOC)) != null) {
+                        echo '<table class="StoreInfoTable" border="1px" style="width:590px; border-collapse:collapse; ">
+                            <form name="orderDetail" id="orderDetail" method="post" action="farmManagement.php?method=2">
+                                <tbody>
+                                    <tr>
+                                        <td style="width:295px;">
+                                            訂購者帳號:' . $sqlArray['訂購者帳號'] . '
+                                        </td>
+                                        <td>
+                                            訂單總金額:<span style="color:red">' . $sqlArray['訂單金額'] . '</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width:295px;">
+                                            訂單編號:' . $sqlArray['訂單編號'] . '
+                                        </td>
+                                        <td>
+                                            訂單建立日期:' . $sqlArray['訂單日期'] . '
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width:295px;">
+                                            購買者聯絡電話:' . $sqlArray['連絡電話'] . '
+                                        </td>
+                                        <td>
+                                            訂單狀態:<span style="color:red">' . $sqlArray['訂單狀態'] . '</span>
+                                        </td>
+            
+                                    </tr>
+                                </tbody>
+                            </form>
+                        </table>';
+                        echo '<script>
+                            document.getElementById("orderDetail").innerHTML = "訂單編號：' . $_POST["orderIndex"] . '";
+                            document.getElementById("orderDetail").style="background-color:rgba(255, 255, 0, 0.9);";
+                            </script>';
+                        $orderInfo = json_decode($sqlArray['購買清單']);
+                        // print_r("<pre>");
+                        // print_r($orderInfo);
+                    }
+                    echo '
+                    <table class="buyCarResultTable" rules="all" cellpadding="5">
+                        <tbody>
+                            <tr>
+                                <td bgcolor="#FFC8B4" width="140" high="50" align="center" valign="center">
+                                    <p align="center"><b>品項名稱</b></p>
+                                </td>
+                                <td bgcolor="#FFC8B4" width="140" high="50" align="center" valign="center">
+                                    <p align="center"><b>單價</b></p>
+                                </td>
+                                <td bgcolor="#FFC8B4" width="140" high="50" align="center" valign="center">
+                                    <p align="center"><b>數量</b></p>
+                                </td>
+                                <td bgcolor="#FFC8B4" width="140" high="50" align="center" valign="center">
+                                    <p align="center"><b>小計</b></p>
+                                </td>
+                            </tr>
+                        ';
+                    for ($i = 0; $i < count($orderInfo); $i++) {
+                        echo '
+                        <tr>
+                            <td bgcolor="#FFFFFF" width="140" high="50" align="center" valign="center">
+                                <p align="center"><b>' . urldecode($orderInfo[$i]->name) . '</b></p>
+                            </td>
+                            <td bgcolor="#FFFFFF" width="140" high="50" align="center" valign="center">
+                                <p align="center"><b>' . $orderInfo[$i]->CCash . '</b></p>
+                            </td>
+                            <td bgcolor="#FFFFFF" width="140" high="50" align="center" valign="center">
+                                <p align="center"><b>' . $orderInfo[$i]->count . '</b></p>
+                            </td>
+                            <td bgcolor="#FFFFFF" width="140" high="50" align="center" valign="center">
+                                <p align="center"><b>' . $orderInfo[$i]->CCash * $orderInfo[$i]->count . '</b></p>
+                            </td>
+                        </tr>';
+                        // echo urldecode($orderInfo[$i]->name);
+                        // echo "<br>";
+                    }
+                    echo '
+                        </tbody>
+                    </table>
+                    <form name="orderDetail" id="orderDetail" method="post" action="farmManagement.php?method=2">
+                            <button type="submit" name="method" value="2" style="width:150px; margin: 20px 10px auto 10px;">返回訂單清單</button>
+                    </form>
+                    ';
+                }
             } else if ($_GET["method"] == 1) {
                 $cmd = 'SELECT `名稱`,`價格`,`願意配銷地點`,`配銷方式`,`剩餘數量`,`產品資訊`.`產品編號`,`產品資訊`.`是否有機`,`產品資訊`.`審核狀態`,`產品資訊`.`示意圖`,`產品資訊`.`圖片編碼格式`
                         FROM (`小農` INNER JOIN `個人賣場2` ON `小農`.`賣場編號`=`個人賣場2`.`賣場編號`)
@@ -281,13 +377,14 @@ if (isset($_POST['logout'])) {
                     }
                 }
             } else if ($_GET["method"] == 2) {  //訂單資訊
-                echo $storeName;
-                $cmd = 'SELECT `訂單編號`, `訂購者帳號`, `訂單日期`, `販售者帳號`, `賣場編號`, `訂單金額`, `配銷方式`, `訂單狀態` ,`消費者`.`連絡電話`
+                // echo $storeName;
+                $cmd = 'SELECT `訂單編號`, `訂購者帳號`, `訂單日期`, `販售者帳號`, `賣場編號`, `購買清單`, `訂單金額`, `配銷方式`, `訂單狀態` ,`消費者`.`連絡電話`
                 FROM `訂單` INNER JOIN `消費者`
                 ON `訂單`.`訂購者帳號` = `消費者`.`使用者帳號`
                 WHERE `賣場編號`="' . $store . '"';
                 $sqlData = mysqli_query($conn, $cmd);
                 if ($sqlData->num_rows > 0) {
+
                     while ($sqlArray = mysqli_fetch_array($sqlData, MYSQLI_ASSOC)) {
                         echo '<table class="StoreInfoTable" border="1px" style="width:590px; border-collapse:collapse; ">
                             <form name="orderDetail" id="orderDetail" method="post" action="farmManagement.php?method=2">
@@ -300,7 +397,7 @@ if (isset($_POST['logout'])) {
                                             訂單總金額:<span style="color:red">' . $sqlArray['訂單金額'] . '</span>
                                         </td>
                                         <td rowspan="3">
-                                            <input type="hidden" name="orderIndex" value="123456" />
+                                            <input type="hidden" name="orderIndex" value="' . $sqlArray['訂單編號'] . '" />
                                             <p style="text-align:center; width:50px; margin:auto auto auto auto;"><button class="detailButton" type="submit">詳<br>細<br>資<br>訊</button></p>
                                         </td>
                                     </tr>
@@ -320,7 +417,6 @@ if (isset($_POST['logout'])) {
                                         <td>
                                             訂單狀態:<span style="color:red">' . $sqlArray['訂單狀態'] . '</span>
                                         </td>
-            
                                     </tr>
                                 </tbody>
                             </form>
@@ -330,7 +426,6 @@ if (isset($_POST['logout'])) {
             }
 
             ?>
-
 
             <script>
                 function fixed(index, status) {
