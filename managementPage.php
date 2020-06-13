@@ -3,7 +3,7 @@
 use function PHPSTORM_META\type;
 
 session_start();
-$_SESSION['root'] = 0;  /////////////////////for test
+$_SESSION['root'] = 1;  /////////////////////for test
 
 function checkRoot()
 {
@@ -30,26 +30,25 @@ if (($conn = ConnectDB()) == null) {
     die("資料庫連線失敗");
 }
 
-if (isset($_POST['storeNumber'])) {
-    $store = $_POST['storeNumber'];
-    $_SESSION['storeNumber'] = $store;
-} else if ($_SESSION['storeNumber'] != null) {
-    $store = $_SESSION['storeNumber'];
-} else if (isset($_POST['enterStore'])) {
-    $userName = $_POST['storeNumber'];
-    $cmd = "SELECT * FROM `小農` WHERE `使用者帳號`= '" . $userName . "';";
-    if (($sqlData = SqlCommit($conn, $cmd)) != null) {
-        while ($row = $sqlData->fetch_assoc()) {
-            $store = $sqlArray['賣場編號'];
-            $storeName = $sqlArray['使用者帳號'];
-        }
-    }
-} else {
-    echo '<script>alert("取得賣場編號失敗");</script>';
-    // echo "取得賣場編號失敗";
-    sleep(2);
-    if (!checkRoot()) echo '<script>document.location.href="index.php"</script>';
-}
+// if (isset($_POST['enterStore'])) {
+
+//     $userName = $_POST['storeNumber'];
+//     $cmd = "SELECT * FROM `小農` WHERE `使用者帳號`= '" . $userName . "';";
+//     if (($sqlData = SqlCommit($conn, $cmd)) != null) {
+//         while ($row = $sqlData->fetch_assoc()) {
+//             $store = $sqlArray['賣場編號'];
+//             $storeName = $sqlArray['使用者帳號'];
+//         }
+//     }
+// } else {
+//     echo '<script>alert("取得賣場編號失敗");</script>';
+//     // echo "取得賣場編號失敗";
+//     sleep(2);
+// if (!checkRoot()) {
+//     echo '<script>document.location.href="index.php"</script>';
+// } else
+//     echo '測試模式';
+//}
 
 
 
@@ -65,48 +64,24 @@ if (isset($_POST['logout'])) {
     unset($_SESSION['user']);
     unset($_SESSION['name']);
     unset($_SESSION['member']);
+    echo '<script>document.location.href="index.php"</script>';
 } else if ($_SESSION['user'] != null) {
     $loginStatus = true;
     $loginMember = $_SESSION['member'];
     $infoName = $_SESSION['name'];
     $userName = $_SESSION['user'];
-    $farmStoreNumber = $_SESSION['farmStoreNumber'];
+    // $farmStoreNumber = $_SESSION['farmStoreNumber'];
     $errorCode = 0;
-} else {
-    if (isset($_POST['farmerSubmit'])) {
-        if (empty($_POST['user']) || empty($_POST['password'])) {
-            $errorCode = 1;
-        } else {
-            $userName = $_POST['user'];
-            $passwd = $_POST['password'];
-
-            $cmd = "SELECT * FROM `小農` WHERE `使用者帳號`= '" . $userName . "' AND `使用者密碼`='" . $passwd . "';";
-            $sqlData = mysqli_query($conn, $cmd);
-            if ($sqlData->num_rows > 0) {
-                $sqlArray = mysqli_fetch_array($sqlData, MYSQLI_ASSOC);
-                $loginStatus = true;
-                $loginMember = 2;
-                $errorCode = 0;
-                $infoName = $sqlArray['姓名'];
-                $_SESSION['user'] = $userName;
-                $_SESSION['name'] = $sqlArray['姓名'];
-                $_SESSION['member'] = $loginMember;
-            } else {
-                $errorCode = 2;
-            }
-            unset($_POST['user']);
-            unset($_POST['password']);
-        }
-    }
-
-    if ($errorCode != 0) {
-        echo '<script>alert("取得資訊時發生錯誤，將返回首頁\n' . $store . '");</script>';
-        sleep(2);
-        if (!checkRoot()) echo '<script>document.location.href="index.php"</script>';
-    }
 }
 
+if ($errorCode != 0 || $loginMember != 3) {
 
+    if (!checkRoot()) {
+        echo '<script>alert("取得資訊時發生錯誤，將返回首頁\n' . $store . '");</script>';
+        echo '<script>document.location.href="index.php"</script>';
+    } else
+        echo '<script>console.log("測試模式");</script>';
+}
 ?>
 
 <!DOCTYPE html>
@@ -124,12 +99,12 @@ if (isset($_POST['logout'])) {
 
     <div class="WebLayout">
         <div class="topArea">
-            <div class="titleDiv" id="sql">農場管理頁面</div>
+            <div class="titleDiv" id="sql">管理者功能頁</div>
             <div class="WebNameDiv" onclick=goHome()>
                 小農<br>
                 線上市集<br>
             </div>
-
+            <button type="button" onclick="Javascript:document.location.href='managementPage.php?method=1'" style="position: absolute; top:36px;left:210px; background-color:RGBA(255,0,0,0.60);">回功能首頁</button>
             <div class="LoginArea">
 
                 <!-- 已登入 -->
@@ -146,31 +121,32 @@ if (isset($_POST['logout'])) {
                             </form>
                         </tr>
                         <?php
-                        if ($loginMember == 2) //小農身分
-                        {
-                            echo '<tr >';
-                            echo '<form method="post" action="storePage.php">';
-                            echo '<td colspan=2><button class="RegisterButton" name="fixed" type="submit">修改個人資料</button></td>';
-                            echo '</form>';
-                            echo '</tr>';
-                            echo '<tr >';
-                            echo '<form method="post" action="storePage.php">';
-                            echo '<input type="hidden" name="storeNumber" value="' . $farmStoreNumber . '">';
-                            echo '<td colspan=2><button class="RegisterButton" name="enterStore" type="submit">進入個人賣場</button></td>';
-                            echo '</form>';
-                            echo '</tr>';
-                            echo '<tr >';
-                            echo '<form method="post" action="farmManagement.php?method=1">';
-                            echo '<input type="hidden" name="user" value="' . $userName . '">';
-                            echo '<td colspan=2><button class="RegisterButton" name="enterStore" >進入農場管理頁面</button></td>';
-                            echo '</form>';
-                            echo '</tr>';
-                        } else if ($loginMember == 1) //消費者身分
-                        {
-                            echo '<tr>';
-                            echo '<td colspan="2"><button class="RegisterButton" name="logout" type="submit">修改個人資料</button></td>';
-                            echo '</tr>';
-                        }
+
+                        // if ($loginMember == 2) //小農身分
+                        // {
+                        //     echo '<tr >';
+                        //     echo '<form method="post" action="storePage.php">';
+                        //     echo '<td colspan=2><button class="RegisterButton" name="fixed" type="submit">修改個人資料</button></td>';
+                        //     echo '</form>';
+                        //     echo '</tr>';
+                        //     echo '<tr >';
+                        //     echo '<form method="post" action="storePage.php">';
+                        //     echo '<input type="hidden" name="storeNumber" value="' . $farmStoreNumber . '">';
+                        //     echo '<td colspan=2><button class="RegisterButton" name="enterStore" type="submit">進入個人賣場</button></td>';
+                        //     echo '</form>';
+                        //     echo '</tr>';
+                        //     echo '<tr >';
+                        //     echo '<form method="post" action="farmManagement.php?method=1">';
+                        //     echo '<input type="hidden" name="user" value="' . $userName . '">';
+                        //     echo '<td colspan=2><button class="RegisterButton" name="enterStore" >進入農場管理頁面</button></td>';
+                        //     echo '</form>';
+                        //     echo '</tr>';
+                        // } else if ($loginMember == 1) //消費者身分
+                        // {
+                        //     echo '<tr>';
+                        //     echo '<td colspan="2"><button class="RegisterButton" name="logout" type="submit">修改個人資料</button></td>';
+                        //     echo '</tr>';
+                        // }
                         ?>
                     </tbody>
 
@@ -179,17 +155,39 @@ if (isset($_POST['logout'])) {
             </div>
             <!-- 未登入 轉跳 -->
 
+            <style>
+                .methodTable {
+                    height: 70px;
+                    width: auto;
+                    border-collapse: collapse;
+                    margin: 1px 1px 1px 1px;
+                }
 
+                .managementMethodDiv {
+                    height: 35px;
+                    width: 120px;
+                }
+            </style>
             <div class=" TopDiv">
-                <form action="farmManagement.php" method="get">
-                    <!--分割線上方Div-->
-                    <button class="ManagementMethodDiv" type="submit" name="method" value="1" <?php if ($_GET['method'] == 1 && $_POST["orderIndex"] == null) echo "style=\"background-color:rgba(255, 255, 0, 0.9);\"" ?>>商品清單</button>
-                    <button class="ManagementMethodDiv" type="submit" name="method" value="2" <?php if ($_GET['method'] == 2 && $_POST["orderIndex"] == null) echo "style=\"background-color:rgba(255, 255, 0, 0.9);\"" ?>>訂單清單</button>
-                    <button class="ManagementMethodDiv" type="submit" name="method" id="orderDetail" style="display:none" ?>>訂單""</button>
-                </form>
+                <table class="methodTable">
+                    <form action="managementPage.php" method="get">
+                        <tr>
+                            <!--分割線上方Div-->
+                            <td><button class="ManagementMethodDiv" type="submit" name="method" value="1" <?php if ($_GET['method'] == 1 && $_POST["orderIndex"] == null) echo "style=\"background-color:rgba(255, 255, 0, 0.9);\"" ?>>小農清單</button></td>
+                            <td><button class="ManagementMethodDiv" type="submit" name="method" value="2" <?php if ($_GET['method'] == 2 && $_POST["orderIndex"] == null) echo "style=\"background-color:rgba(255, 255, 0, 0.9);\"" ?>>訂單清單</button></td>
+                            <td><button class="ManagementMethodDiv" type="submit" name="method" value="3" <?php if ($_GET['method'] == 3 && $_POST["orderIndex"] == null) echo "style=\"background-color:rgba(255, 255, 0, 0.9);\"" ?>>農產上架審核</button></td>
+                            <td><button class="ManagementMethodDiv" type="submit" name="method" id="orderDetail" style="display:none" ?>>訂單""</button></td>
+                        </tr>
+                        <tr>
+                            <td><button class="ManagementMethodDiv" type="submit" name="method" value="4" <?php if ($_GET['method'] == 4 && $_POST["orderIndex"] == null) echo "style=\"background-color:rgba(255, 255, 0, 0.9);\"" ?>>農場商品設定</button></td>
+                            <td><button class="ManagementMethodDiv" type="submit" name="method" value="5" <?php if ($_GET['method'] == 5 && $_POST["orderIndex"] == null) echo "style=\"background-color:rgba(255, 255, 0, 0.9);\"" ?>>小農申請清單</button></td>
+                            <td><button class="ManagementMethodDiv" type="submit" name="method" value="6" <?php if ($_GET['method'] == 6 && $_POST["orderIndex"] == null) echo "style=\"background-color:rgba(255, 255, 0, 0.9);\"" ?>>匯出功能</button></td>
+                        </tr>
+                    </form>
+                </table>
             </div>
-            <hr class="TopHr">
-            </hr>
+            <hr class="TopHr" />
+
         </div>
         <style>
             .farmMethodItem {
@@ -215,11 +213,50 @@ if (isset($_POST['logout'])) {
             .addCommodity:active {
                 background-color: rgba(0, 255, 0, 0.7);
             }
+
+            .entryStoreButton {
+                width: 100px;
+                margin: auto auto auto auto;
+            }
+
+            .storeCheckbox {
+                width: 20px;
+                height: 20px;
+
+            }
+
+            .option {
+                position: relative;
+                top: 40px;
+
+            }
         </style>
         <!--透過SQL增加商品資訊-->
         <div class="mainDiv">
-            <div class="farmMethodItem">
-                <button class="addCommodity" onclick="addNewCommodity()">新增產品</button>
+            <div style="display: flex;">
+
+                <table class="StoreInfoTable" rules="all" id="storeInfoTemplate" style="width:550px;">
+                    <input type="hidden" name="storeNumber" value="2">
+                    <form id="entryStore' . $i . '" method="post" action="storePage.php">
+                        <tbody>
+                            <tr>
+                                <td rowspan="2" style="width:70px;"><img src="image/user.png" /><button class="StoreHrefText">進入此賣場</button></td>
+                                <td colspan="2" style="width:auto;">使用者帳號：<b>123</b></td>
+                                <td style="width:100px;"><span style="font-size:14px;">瀏覽次數：<br>0</span></td>
+                                <td style="width:100px;"><span style="font-size:14px;">已成交訂單數：<br>0</span></td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">農場簡介：</td>
+                                <td><button class="entryStoreButton" onclick="if(!storeOrderInfo(1)){return false;}">查看該賣場<br>訂單資訊</button></td>
+                            </tr>
+                        </tbody>
+                    </form>
+                </table>
+
+                <div class="option">
+                    <input type="checkbox" class="storeCheckbox" value="1" onchange="" />
+                </div>
+
             </div>
             <?php
             if ($_POST["orderIndex"] != null) {
@@ -532,5 +569,9 @@ if (isset($_POST['logout'])) {
 <script>
     function goHome() {
         document.location.href = "index.php";
+    }
+
+    function storeOrderInfo(store) {
+        console.log(store);
     }
 </script>

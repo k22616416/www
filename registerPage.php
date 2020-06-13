@@ -29,20 +29,9 @@ if (isset($_POST['user'])) {
     if ($member == 1)
         $gMap = $_POST['gMap'];
 
-    $DBNAME = "小農2";
-    $DBUSER = "root";
-    $DBHOST = "localhost";
-    $conn = mysqli_connect($DBHOST, $DBUSER, '');
-    if (empty($conn)) {
-        print mysqli_error($conn);
-        echo '<script>alert("資料庫連線失敗");</script>';
-        sleep(2);
-        echo '<script>document.location.href="index.php"</script>';
-    }
-    if (!mysqli_select_db($conn, $DBNAME)) {
-        echo '<script>alert("資料庫連線失敗");</script>';
-        sleep(2);
-        echo '<script>document.location.href="index.php"</script>';
+    include_once("sqlConnectAPI.php");
+    if (($conn = ConnectDB()) == null) {
+        die("資料庫連線失敗");
     }
     $cmd = 'SELECT * FROM `註冊審核` WHERE `使用者帳號`=\'' . $user . '\' AND `註冊身分類別`=\'' . $member . '\'';
     if ($sqlData = mysqli_query($conn, $cmd) == false) {
@@ -322,7 +311,7 @@ if (isset($_POST['user'])) {
                             console.log("clear");
                         }
                     </script>
-                    <button name="clear" onclick="clearInfo()" style="width: 100px; height:50px; background-color:crimson; font-weight:bolder; font-size:30px;">清除</button>
+                    <button name="clear" onclick="if(!clearInfo()){return false;}" style="width: 100px; height:50px; background-color:crimson; font-weight:bolder; font-size:30px;">清除</button>
             </form>
         </div>
 

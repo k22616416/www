@@ -55,10 +55,6 @@ if (($conn = ConnectDB()) == null) {
           $userName = $_SESSION['user'];
           $farmStoreNumber = $_SESSION['farmStoreNumber'];
           $errorCode = 0;
-
-          echo '<script>console.log("' . $loginMember . '")</script>';
-          echo '<script>console.log("' . $infoName . '")</script>';
-          echo '<script>console.log("' . $userName . '")</script>';
         } else {
 
           if (isset($_POST['memberSubmit'])) {

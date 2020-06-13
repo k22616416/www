@@ -416,7 +416,9 @@ a{
 .ManagementMethodDiv:after {
 	border: 0px;
 	border-radius: 0px;
-	
+}
+.ManagementMethodDiv:active{
+	border:0px;
 }
 .ManagementMethodDiv:active:after {
 	border: 0px;

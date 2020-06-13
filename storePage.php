@@ -60,10 +60,6 @@ if (isset($_POST['logout'])) {
     $userName = $_SESSION['user'];
     $farmStoreNumber = $_SESSION['farmStoreNumber'];
     $errorCode = 0;
-
-    echo '<script>console.log("' . $loginMember . '")</script>';
-    echo '<script>console.log("' . $infoName . '")</script>';
-    echo '<script>console.log("' . $userName . '")</script>';
 } else {
 
 
@@ -124,6 +120,11 @@ if (isset($_POST['logout'])) {
         }
     }
 }
+
+// 點擊數
+
+$cmd = 'UPDATE `小農` SET `瀏覽次數`= `瀏覽次數`+1 WHERE `賣場編號`="' . $store . '";';
+SqlCommit($conn, $cmd);
 
 // topDiv info
 $cmd = "SELECT * FROM `小農` WHERE `賣場編號`= '" . $store . "'";
@@ -218,7 +219,7 @@ if ($sqlData->num_rows > 0) {
                 <!-- 未登入 -->
 
 
-                <table class="loginTable" cellpadding="0" style="<?php if ($loginStatus) echo 'display:none;'; ?>">
+                <table class="loginTable" cellpadding="0" <?php if ($loginStatus) echo 'style="display:none;"'; ?>>
                     <form id="login" class="title-add" method="post" action="storePage.php">
                         <tbody>
                             <tr>
@@ -237,7 +238,7 @@ if ($sqlData->num_rows > 0) {
                         document.location.href = "registerPage.php";
                     }
                 </script>
-                <button onclick=goRegister() type="button" class="RegisterButton" style="<?php if ($loginStatus) echo 'display:none;'; ?>">
+                <button onclick=goRegister() type="button" class="RegisterButton" <?php if ($loginStatus) echo 'style="display:none;"'; ?>>
                     註冊成為新的小農或會員
                 </button>
                 <div class="LoginErrorDiv">
@@ -418,12 +419,12 @@ if ($sqlData->num_rows > 0) {
                         $_SESSION['buyCarList'] = serialize($list);
                         debug("listIndex:" . count($list, COUNT_NORMAL));
                         debug($_SESSION['buyCarList']);
-                        creatByuCar(null, null, null, null);
+                        creatByuCar(null, null, null, null, null);
                     }
 
                     // session_destroy();
                 } else if (isset($_SESSION['buyCarList'])) {
-                    creatByuCar(null, null, null, null);
+                    creatByuCar(null, null, null, null, null);
                 }
 
                 ?>
@@ -454,7 +455,6 @@ if ($sqlData->num_rows > 0) {
                         echo '<img src="data:' . $sqlArray['圖片編碼格式'] . ';base64,' . $sqlArray['示意圖'] . '" />';
                     else
                         echo '<img src="image/carrot.png"/>';
-                    // <img src="image/carrot.png" alt="123">
                     echo '<span id="sql" style="font-size:smaller;">' . ($sqlArray['是否有機'] ? '有機' : '非有機') . '</span>
                                     </td>
                                     <td rowspan="3">

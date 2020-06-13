@@ -1,4 +1,5 @@
 <?php
+
 function ConnectDB()
 {
     $DBNAME = "40643223";
