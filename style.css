@@ -447,3 +447,59 @@ color: red;
 	font-family: '微軟正黑體','Microsoft JhengHei UI','Times New Roman';
 
 }
+
+.farmMethodItem {
+	background-color: #FFFFFF;
+	width: 100px;
+	height: auto;
+	position: absolute;
+	top: 10px;
+	right: -125px;
+	padding: 5 5 5 5;
+	border: 1px solid #000000;
+}
+
+.addCommodity {
+	background-color: rgba(0, 255, 0, 0.7);
+
+}
+
+.addCommodity:hover {
+	background-color: rgba(0, 200, 0, 0.7);
+}
+
+.addCommodity:active {
+	background-color: rgba(0, 255, 0, 0.7);
+}
+
+.entryStoreButton {
+	width: 90px;
+	position: relative;
+	top: 50%;
+	left: 50%;
+	margin-left: -45px;
+	/* margin: 2 2 2 2; */
+	font-size: 14px;
+}
+
+.storeCheckbox,.orderCheckbox {
+	width: 20px;
+	height: 20px;
+
+}
+/* .orderCheckbox{
+	width: 20px;
+	height: 20px;
+} */
+.option {
+	position: relative;
+	top: 40px;
+
+}
+
+.statusSubmit{
+	background-color: #00DB00;
+}
+.statusSubmit:hover{
+	background-color: #00CA00;
+}

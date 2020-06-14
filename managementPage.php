@@ -21,7 +21,8 @@ $storeName = '';
 $storeInfo = '';
 $storeOrder = 0;
 $CommodityIndex = 0;
-// $order = $_GET['orderIndex'];
+
+//$order = $_GET['orderIndex'];
 
 $titleStr = '小農線上市集媒合系統';
 
@@ -167,6 +168,11 @@ if ($errorCode != 0 || $loginMember != 3) {
                     height: 35px;
                     width: 120px;
                 }
+
+                #orderDetail {
+                    height: 70px;
+                    width: 240px;
+                }
             </style>
             <div class=" TopDiv">
                 <table class="methodTable">
@@ -176,91 +182,65 @@ if ($errorCode != 0 || $loginMember != 3) {
                             <td><button class="ManagementMethodDiv" type="submit" name="method" value="1" <?php if ($_GET['method'] == 1 && $_POST["orderIndex"] == null) echo "style=\"background-color:rgba(255, 255, 0, 0.9);\"" ?>>小農清單</button></td>
                             <td><button class="ManagementMethodDiv" type="submit" name="method" value="2" <?php if ($_GET['method'] == 2 && $_POST["orderIndex"] == null) echo "style=\"background-color:rgba(255, 255, 0, 0.9);\"" ?>>訂單清單</button></td>
                             <td><button class="ManagementMethodDiv" type="submit" name="method" value="3" <?php if ($_GET['method'] == 3 && $_POST["orderIndex"] == null) echo "style=\"background-color:rgba(255, 255, 0, 0.9);\"" ?>>農產上架審核</button></td>
-                            <td><button class="ManagementMethodDiv" type="submit" name="method" id="orderDetail" style="display:none" ?>>訂單""</button></td>
+                            <?php if ($_POST["orderIndex"] != null)
+                                echo '<td rowspan="2"><button class="ManagementMethodDiv" id="orderDetail" type="submit" name="method" value="7" style="<?php if ($_GET[\'method\'] == 7 && $_POST["orderIndex"] != null) echo "background-color:rgba(255, 255, 0, 0.9);" ?>">訂單:</button></td>';
+                            ?>
+
                         </tr>
                         <tr>
                             <td><button class="ManagementMethodDiv" type="submit" name="method" value="4" <?php if ($_GET['method'] == 4 && $_POST["orderIndex"] == null) echo "style=\"background-color:rgba(255, 255, 0, 0.9);\"" ?>>農場商品設定</button></td>
                             <td><button class="ManagementMethodDiv" type="submit" name="method" value="5" <?php if ($_GET['method'] == 5 && $_POST["orderIndex"] == null) echo "style=\"background-color:rgba(255, 255, 0, 0.9);\"" ?>>小農申請清單</button></td>
                             <td><button class="ManagementMethodDiv" type="submit" name="method" value="6" <?php if ($_GET['method'] == 6 && $_POST["orderIndex"] == null) echo "style=\"background-color:rgba(255, 255, 0, 0.9);\"" ?>>匯出功能</button></td>
+
                         </tr>
                     </form>
                 </table>
+
             </div>
             <hr class="TopHr" />
+            <style>
+                .storeMethodDiv,
+                .orderMethodDiv {
+                    width: 200px;
+                    height: auto;
+                    position: absolute;
+                    top: 105%;
+                    right: 0px;
+                    background-color: rgba(255, 255, 255, 0.7);
+                    padding: 2 auto auto auto;
+
+                    /* display: inline-block; */
+                }
+            </style>
+            <div class="storeMethodDiv" id="storeMethodDiv" style="display: none;">
+                <p>賣場編號</p>
+                <input type="hidden" value="123" />
+                <button>關閉此賣場</button><br>
+                <button>查看此小農的個人資訊</button><br>
+                <button>封鎖此小農</button><br>
+            </div>
+            <div class="orderMethodDiv" id="orderMethodDiv" style="display: none;">
+                <p>選取的訂單編號:</p>
+                <input type="hidden" value="123" />
+                <button>全部通過</button><button>全部拒絕</button><br>
+                <!--預估做法：
+                    1.動態生成許多hidden input 把訂單清單個別埋在裡面 
+                    然後建表單送到另一個php內處理
+                    2.生成一個hidden input 把訂單清單格式化字串埋在input內
+                    然後建表單送到另一個php內處理
+                -->
+            </div>
 
         </div>
         <style>
-            .farmMethodItem {
-                background-color: #FFFFFF;
-                width: 100px;
-                height: auto;
-                position: absolute;
-                top: 10px;
-                right: -125px;
-                padding: 5 5 5 5;
-                border: 1px solid #000000;
-            }
 
-            .addCommodity {
-                background-color: rgba(0, 255, 0, 0.7);
-
-            }
-
-            .addCommodity:hover {
-                background-color: rgba(0, 200, 0, 0.7);
-            }
-
-            .addCommodity:active {
-                background-color: rgba(0, 255, 0, 0.7);
-            }
-
-            .entryStoreButton {
-                width: 100px;
-                margin: auto auto auto auto;
-            }
-
-            .storeCheckbox {
-                width: 20px;
-                height: 20px;
-
-            }
-
-            .option {
-                position: relative;
-                top: 40px;
-
-            }
         </style>
         <!--透過SQL增加商品資訊-->
         <div class="mainDiv">
-            <div style="display: flex;">
 
-                <table class="StoreInfoTable" rules="all" id="storeInfoTemplate" style="width:550px;">
-                    <input type="hidden" name="storeNumber" value="2">
-                    <form id="entryStore' . $i . '" method="post" action="storePage.php">
-                        <tbody>
-                            <tr>
-                                <td rowspan="2" style="width:70px;"><img src="image/user.png" /><button class="StoreHrefText">進入此賣場</button></td>
-                                <td colspan="2" style="width:auto;">使用者帳號：<b>123</b></td>
-                                <td style="width:100px;"><span style="font-size:14px;">瀏覽次數：<br>0</span></td>
-                                <td style="width:100px;"><span style="font-size:14px;">已成交訂單數：<br>0</span></td>
-                            </tr>
-                            <tr>
-                                <td colspan="3">農場簡介：</td>
-                                <td><button class="entryStoreButton" onclick="if(!storeOrderInfo(1)){return false;}">查看該賣場<br>訂單資訊</button></td>
-                            </tr>
-                        </tbody>
-                    </form>
-                </table>
-
-                <div class="option">
-                    <input type="checkbox" class="storeCheckbox" value="1" onchange="" />
-                </div>
-
-            </div>
             <?php
-            if ($_POST["orderIndex"] != null) {
-                // echo $_POST["orderIndex"];
+            include_once("layoutFunction.php");
+            if ($_POST["orderIndex"] != null) { //訂單詳細
                 $cmd = 'SELECT * FROM `訂單` INNER JOIN `消費者`
                 ON `訂單`.`訂購者帳號` = `消費者`.`使用者帳號`
                 WHERE `訂單編號`="' . $_POST["orderIndex"] . '"';
@@ -268,45 +248,14 @@ if ($errorCode != 0 || $loginMember != 3) {
                 if ($sqlData->num_rows > 0) {
                     $orderInfo = "";
                     while (($sqlArray = mysqli_fetch_array($sqlData, MYSQLI_ASSOC)) != null) {
-                        echo '<table class="StoreInfoTable" border="1px" style="width:590px; border-collapse:collapse; ">
-                            <form name="orderDetail" id="orderDetail" method="post" action="farmManagement.php?method=2">
-                                <tbody>
-                                    <tr>
-                                        <td style="width:295px;">
-                                            訂購者帳號:' . $sqlArray['訂購者帳號'] . '
-                                        </td>
-                                        <td>
-                                            訂單總金額:<span style="color:red">' . $sqlArray['訂單金額'] . '</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style="width:295px;">
-                                            訂單編號:' . $sqlArray['訂單編號'] . '
-                                        </td>
-                                        <td>
-                                            訂單建立日期:' . $sqlArray['訂單日期'] . '
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style="width:295px;">
-                                            購買者聯絡電話:' . $sqlArray['連絡電話'] . '
-                                        </td>
-                                        <td>
-                                            訂單狀態:<span style="color:red">' . $sqlArray['訂單狀態'] . '</span>
-                                        </td>
-            
-                                    </tr>
-                                </tbody>
-                            </form>
-                        </table>';
+                        orderDetailLayout($sqlArray);
                         echo '<script>
                             document.getElementById("orderDetail").innerHTML = "訂單編號<br>\"' . $_POST["orderIndex"] . '\"";
                             document.getElementById("orderDetail").style="background-color:rgba(255, 255, 0, 0.9);";
                             </script>';
                         $orderInfo = json_decode($sqlArray['購買清單']);
-                        // print_r("<pre>");
-                        // print_r($orderInfo);
                     }
+                    echo '';
                     echo '
                     <table class="buyCarResultTable" rules="all" cellpadding="5">
                         <tbody>
@@ -354,136 +303,39 @@ if ($errorCode != 0 || $loginMember != 3) {
                       <p align="center"><b>' . $total . '</b></p>
                     </td>
                     </tr>';
-                    echo '
-                    
-                        </tbody>
+                    echo '</tbody>
                     </table>
-                    <form name="orderDetail" id="orderDetail" method="post" action="farmManagement.php?method=2">
-                            <button type="submit" name="method" value="2" style="width:150px; margin: 20px 10px auto 10px;">返回訂單清單</button>
-                    </form>
-                    ';
+                    <form name="orderDetail" id="orderDetail" method="post" action="managementPage.php?method=2">
+                        <button type="submit" name="method" value="2" style="width:150px; margin: 20px 10px auto 10px;">返回訂單清單</button>
+                    </form>';
                 }
-            } else if ($_GET["method"] == 1) {
-                $cmd = 'SELECT `名稱`,`價格`,`願意配銷地點`,`配銷方式`,`剩餘數量`,`產品資訊`.`產品編號`,`產品資訊`.`是否有機`,`產品資訊`.`審核狀態`,`產品資訊`.`示意圖`,`產品資訊`.`圖片編碼格式`
-                        FROM (`小農` INNER JOIN `個人賣場2` ON `小農`.`賣場編號`=`個人賣場2`.`賣場編號`)
-                        INNER JOIN `產品資訊` ON `個人賣場2`.`產品編號`=`產品資訊`.`產品編號`
-                        WHERE `小農`.`賣場編號`="' . $store . '";';
+            } else if ($_GET["method"] == 1) {  //小農清單
+                $cmd = 'SELECT *
+                        FROM `小農` INNER JOIN `個人賣場2` ON `小農`.`賣場編號`=`個人賣場2`.`賣場編號`
+                        GROUP BY `個人賣場2`.`賣場編號`;';
                 $index = 0;
                 $sqlData = mysqli_query($conn, $cmd);
                 if ($sqlData->num_rows > 0) {
                     while ($sqlArray = mysqli_fetch_array($sqlData, MYSQLI_ASSOC)) {
-                        echo '
-                <table class="StoreInfoTable" id="storeInfoTemplate"';
-                        if ($sqlArray['審核狀態'] == 0) echo 'style="background-color: #ADADAD;"';
-                        echo '>
-                <form name="commodity" id="commodity' . $index . '" action="submitStoreFixedInfo.php" Enctype="multipart/form-data" method="post" align="center" style="margin:auto auto auto auto;">
-                    <input type="hidden" name="commodityIndex" value="' . $sqlArray['產品編號'] . '"></input>
-                    <tbody>
-                        <tr>
-                            <td rowspan="3" align="center" style="width: 100px; height:100px;">
-                            <input style="width:70px;display:none;" type="file" name="imgInput" id="imgInput' . $index . '" targetID="previewImg' . $index . '"" onchange="readURL(this)" accept="image/gif, image/jpeg, image/png" />';
-
-                        if ($sqlArray['示意圖'] != null)
-                            echo '<img id="previewImg' . $index . '"src="data:' . $sqlArray['圖片編碼格式'] . ';base64,' . $sqlArray['示意圖'] . '" />';
-                        else
-                            echo '<img id="previewImg' . $index . '"src="Image/carrot.png" />';
-                        echo '
-                            <select name="organic" id="organic' . $index . '" disabled = "disabled" style="font-size:smaller;">
-                                <option value="1">有機</option>
-                                <option value="0">非有機</option>
-                            </select>
-                            </td>
-                            <td rowspan="3">
-                                <hr width=" 3px" size=100px color="#000000" style="margin: 0% auto 0% auto; border: 0px;">
-                            </td>
-                            <td rowspan="3" id="sql">
-                                <table style="border:0px; border-collapse:collapse; width:400px; height:100px; font-weight: bold; font-size:18px;">
-                                    <tr style="border: 3px solid #000000; border-top:0px; border-right:0px; border-left:0px; ">
-
-                                        <td style="border: 3px solid #000000; border-top:0px; border-left:0px; width:200px;">
-                                            品名：<input name="CName" id="CName' . $index . '"disabled = "disabled"  value="' . $sqlArray['名稱'] . '" style="width: 100px;" onkeydown="if(event.keyCode==13){return false;}"/></td>
-
-                                        <td><input name="cash" id="cash' . $index . '"disabled = "disabled" value="' . $sqlArray['價格'] . '" style="width: 50px;" onkeydown="if(event.keyCode==13){return false;}"></input>元/把</td>
-                                    </tr>
-                                    <tr style="border: 3px solid #000000; border-right:0px;  border-left:0px;">
-                                        <td style="border: 3px solid #000000; border-left:0px;">配銷地點：<input name="location" id="location' . $index . '" disabled = "disabled" value="' . $sqlArray['願意配銷地點'] . '" style="width: 50px;" onkeydown="if(event.keyCode==13){return false;}"></td>
-                                        <td>運送方式：<input name="transport" id="transport' . $index . '" disabled = "disabled"value="' . $sqlArray['配銷方式'] . '" style="width: 50px;" onkeydown="if(event.keyCode==13){return false;}"></input></td>
-                                    </tr>
-                                    <tr style="border: 3px solid #000000; border-right:0px; border-bottom:0px; border-left:0px;">
-                                        <td style="border: 3px solid #000000; border-left:0px; border-bottom:0px;">
-                                            剩餘數量：<input name="maxCount" id="maxCount' . $index . '" disabled = "disabled" value="' . $sqlArray['剩餘數量'] . '" style="width: 50px;" onkeydown="if(event.keyCode==13){return false;}"></input></td>
-                                        <td></td>
-                                    </tr>
-                                </table>
-                            </td>
-
-                            <td rowspan="3">
-                                <hr width=" 3px" size=100px color="#000000" style="margin: 0% auto 0% auto; border: 0px;">
-                            </td>
-                            <td align="center" style="right:0px; position: relative; width: 100px; font-size:24px; font-weight: bolder; ">';
-                        if ($sqlArray['審核狀態'] == 1)
-                            echo '<button type="button" name="fixedButton' . $index . '" id="fixedButton' . $index . '" onclick="if(!fixed(' . $index . ',' . true . ')){return false;}" font color="blue" align="center" style=" font-size:16px; font-weight: bolder; background-color: #BEBEBE;">修<br>改</button>
-                                <button type="submit" name="submitButton' . $index . '" id="submitButton' . $index . '"  font color="blue" align="center" style=" font-size:16px; width:40px;font-weight: bolder; background-color: #53FF53;display:none;">提交修改</button>';
-                        else
-                            echo '<div id="fixedButton' . $index . '"  align="center" style="color:#EEEEEE; font-size:24px; font-weight: bolder; ">審<br>核<br>中</div>';
-
-                        echo '</td>
-                        </tr>
-                    </tbody>
-                </form>
-            </table>';
-
-                        $index++;
-                        $CommodityIndex++;
+                        ManagementStoreInfoLayout($sqlArray);
                     }
                 }
-            } else if ($_GET["method"] == 2) {  //訂單資訊
-                // echo $storeName;
+            } else if ($_GET["method"] == 2) {  //訂單清單
                 $cmd = 'SELECT `訂單編號`, `訂購者帳號`, `訂單日期`, `販售者帳號`, `賣場編號`, `購買清單`, `訂單金額`, `配銷方式`, `訂單狀態` ,`消費者`.`連絡電話`
                 FROM `訂單` INNER JOIN `消費者`
                 ON `訂單`.`訂購者帳號` = `消費者`.`使用者帳號`
-                WHERE `賣場編號`="' . $store . '"';
+                WHERE 1 ;';
                 $sqlData = mysqli_query($conn, $cmd);
                 if ($sqlData->num_rows > 0) {
 
                     while ($sqlArray = mysqli_fetch_array($sqlData, MYSQLI_ASSOC)) {
-                        echo '<table class="StoreInfoTable" border="1px" style="width:590px; border-collapse:collapse; ">
-                            <form name="orderDetail" id="orderDetail" method="post" action="farmManagement.php?method=2">
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            訂購者帳號:' . $sqlArray['訂購者帳號'] . '
-                                        </td>
-                                        <td>
-                                            訂單總金額:<span style="color:red">' . $sqlArray['訂單金額'] . '</span>
-                                        </td>
-                                        <td rowspan="3">
-                                            <input type="hidden" name="orderIndex" value="' . $sqlArray['訂單編號'] . '" />
-                                            <p style="text-align:center; width:50px; margin:auto auto auto auto;"><button class="detailButton" type="submit">詳<br>細<br>資<br>訊</button></p>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            訂單編號:' . $sqlArray['訂單編號'] . '
-                                        </td>
-                                        <td>
-                                            訂單建立日期:' . $sqlArray['訂單日期'] . '
-                                        </td>
-            
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            購買者聯絡電話:' . $sqlArray['連絡電話'] . '
-                                        </td>
-                                        <td>
-                                            訂單狀態:<span style="color:red">' . $sqlArray['訂單狀態'] . '</span>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </form>
-                        </table>';
+                        orderList($sqlArray);
                     }
                 }
+            } else if ($_GET["method"] == 3) {  //農產上架審核
+            } else if ($_GET["method"] == 4) {   //農場產品設定
+            } else if ($_GET["method"] == 5) {  //農產上架審核
+            } else if ($_GET["method"] == 6) {   //農場產品設定
             }
 
             ?>
@@ -571,7 +423,69 @@ if ($errorCode != 0 || $loginMember != 3) {
         document.location.href = "index.php";
     }
 
-    function storeOrderInfo(store) {
-        console.log(store);
+    // function storeOrderInfo(store) {
+    //     document.location.href = "managementPage.php?method=7";
+    //     var clone = document.getElementById(store).cloneNode;
+
+    //     document.getElementById("orderDetail").style = "";
+
+    // }
+
+    var oldcheck;
+
+    function storeMethod(obj, store) {
+        if (obj.checked) {
+            if (oldcheck != obj && oldcheck != null)
+                oldcheck.checked = false;
+            console.log("on");
+            var div = document.getElementById("storeMethodDiv");
+            // console.log(div.childNodes[1]);
+            div.childNodes[1].innerHTML = '賣場編號:' + store;
+            div.style.display = "";
+            oldcheck = obj;
+        } else {
+            var div = document.getElementById("storeMethodDiv");
+            div.childNodes[1].innerHTML = '賣場編號:' + store;
+            div.style.display = "none";
+        }
+
+    }
+    var checkStatus = "";
+
+    function orderMethod(obj) {
+        if (obj.checked) {
+            console.log(obj.value);
+            // checkStatus.push(obj);
+        }
+        // if (checkStatus.length != 0) {
+        //     var div = document.getElementById("orderMethodDiv");
+        //     var str = "";
+
+        //     for (var i = 0; i = checkStatus.length; i++) {
+        //         str += "<br>" + checkStatus[i].value;
+        //     }
+        //     div.childNodes[1].innerHTML = '選取的訂單:<br>' + str;
+        //     div.style.display = "";
+        //     // document.getElementsByClassName("orderMethod");
+        // }
+        var div = document.getElementById("orderMethodDiv");
+        if (obj.checked) {
+            checkStatus += "<br>" + obj.value;
+            div.childNodes[1].innerHTML = '選取的訂單:<br>' + checkStatus;
+            div.style.display = "";
+        } else {
+            checkStatus.replace("<br>" + obj.value, "");
+            div.childNodes[1].innerHTML = '選取的訂單:<br>' + checkStatus;
+        }
+        if (checkStatus == "") {
+            div.style.display = "none";
+            div.childNodes[1].innerHTML = '選取的訂單:';
+        }
+
+
+        // else {
+        //     div.style.display = "none";
+        // }
+
     }
 </script>
