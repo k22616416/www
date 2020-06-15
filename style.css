@@ -503,3 +503,20 @@ color: red;
 .statusSubmit:hover{
 	background-color: #00CA00;
 }
+.addProductInfo {
+	background-color: rgba(0, 0, 0, 0);
+	border-radius: 5px;
+}
+
+.addProductInfo:active {
+	transform: translate(0, 2px);
+}
+
+.trbg {
+	height: 30px;
+	background-color: #FFFFFF;
+}
+
+.trbg:hover {
+	background-color: #FFFF93;
+}

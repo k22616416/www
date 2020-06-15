@@ -105,7 +105,7 @@ if ($errorCode != 0 || $loginMember != 3) {
                 小農<br>
                 線上市集<br>
             </div>
-            <button type="button" onclick="Javascript:document.location.href='managementPage.php?method=1'" style="position: absolute; top:36px;left:210px; background-color:RGBA(255,0,0,0.60);">回功能首頁</button>
+            <button type="button" onclick="Javascript:document.location.href='managementPage.php?method=1'" style="position: absolute; top:36px;left:210px; background-color:RGBA(255,0,0,1);">回功能首頁</button>
             <div class="LoginArea">
 
                 <!-- 已登入 -->
@@ -121,34 +121,6 @@ if ($errorCode != 0 || $loginMember != 3) {
 
                             </form>
                         </tr>
-                        <?php
-
-                        // if ($loginMember == 2) //小農身分
-                        // {
-                        //     echo '<tr >';
-                        //     echo '<form method="post" action="storePage.php">';
-                        //     echo '<td colspan=2><button class="RegisterButton" name="fixed" type="submit">修改個人資料</button></td>';
-                        //     echo '</form>';
-                        //     echo '</tr>';
-                        //     echo '<tr >';
-                        //     echo '<form method="post" action="storePage.php">';
-                        //     echo '<input type="hidden" name="storeNumber" value="' . $farmStoreNumber . '">';
-                        //     echo '<td colspan=2><button class="RegisterButton" name="enterStore" type="submit">進入個人賣場</button></td>';
-                        //     echo '</form>';
-                        //     echo '</tr>';
-                        //     echo '<tr >';
-                        //     echo '<form method="post" action="farmManagement.php?method=1">';
-                        //     echo '<input type="hidden" name="user" value="' . $userName . '">';
-                        //     echo '<td colspan=2><button class="RegisterButton" name="enterStore" >進入農場管理頁面</button></td>';
-                        //     echo '</form>';
-                        //     echo '</tr>';
-                        // } else if ($loginMember == 1) //消費者身分
-                        // {
-                        //     echo '<tr>';
-                        //     echo '<td colspan="2"><button class="RegisterButton" name="logout" type="submit">修改個人資料</button></td>';
-                        //     echo '</tr>';
-                        // }
-                        ?>
                     </tbody>
 
                 </table>
@@ -200,7 +172,8 @@ if ($errorCode != 0 || $loginMember != 3) {
             <hr class="TopHr" />
             <style>
                 .storeMethodDiv,
-                .orderMethodDiv {
+                .orderMethodDiv,
+                .productMethodDiv {
                     width: 200px;
                     height: auto;
                     position: absolute;
@@ -210,6 +183,10 @@ if ($errorCode != 0 || $loginMember != 3) {
                     padding: 2 auto auto auto;
 
                     /* display: inline-block; */
+                }
+
+                .methodButton {
+                    margin: 3 3 3 3;
                 }
             </style>
             <div class="storeMethodDiv" id="storeMethodDiv" style="display: none;">
@@ -229,6 +206,11 @@ if ($errorCode != 0 || $loginMember != 3) {
                     2.生成一個hidden input 把訂單清單格式化字串埋在input內
                     然後建表單送到另一個php內處理
                 -->
+            </div>
+            <div class="productMethodDiv" id="productMethodDiv" style="display: none;">
+                <button class="methodButton" onclick="productMethodFunction(0)">儲存已勾選項目</button><br>
+                <button class="methodButton" onclick="productMethodFunction(1)">重置已勾選項目</button><br>
+                <button class="methodButton" onclick="productMethodFunction(2)">刪除已勾選項目</button><br>
             </div>
 
         </div>
@@ -321,6 +303,8 @@ if ($errorCode != 0 || $loginMember != 3) {
                     }
                 }
             } else if ($_GET["method"] == 2) {  //訂單清單
+
+
                 $cmd = 'SELECT `訂單編號`, `訂購者帳號`, `訂單日期`, `販售者帳號`, `賣場編號`, `購買清單`, `訂單金額`, `配銷方式`, `訂單狀態` ,`消費者`.`連絡電話`
                 FROM `訂單` INNER JOIN `消費者`
                 ON `訂單`.`訂購者帳號` = `消費者`.`使用者帳號`
@@ -334,11 +318,28 @@ if ($errorCode != 0 || $loginMember != 3) {
                 }
             } else if ($_GET["method"] == 3) {  //農產上架審核
             } else if ($_GET["method"] == 4) {   //農場產品設定
-            } else if ($_GET["method"] == 5) {  //農產上架審核
-            } else if ($_GET["method"] == 6) {   //農場產品設定
+                checkAddProduct($conn);
+                DeleteProduct($conn);
+                ProductsLayout1();
+                $cmd = 'SELECT * FROM `農產品` WHERE 1 ;';
+                $index = 0;
+                $sqlData = mysqli_query($conn, $cmd);
+                if ($sqlData->num_rows > 0) {
+                    while ($sqlArray = mysqli_fetch_array($sqlData, MYSQLI_ASSOC)) {
+                        ProductsLayout2($sqlArray);
+                    }
+                }
+                ProductsLayout3();
+            } else if ($_GET["method"] == 5) {  //小農申請清單
+            } else if ($_GET["method"] == 6) {   //匯出功能
             }
 
             ?>
+
+
+            <!--  -->
+
+
 
             <script>
                 function fixed(index, status) {
@@ -411,81 +412,278 @@ if ($errorCode != 0 || $loginMember != 3) {
                     // clone.style.display = "block";
 
                 }
+
+                function goHome() {
+                    document.location.href = "index.php";
+                }
+                var oldcheck;
+
+                function storeMethod(obj, store) {
+                    if (obj.checked) {
+                        if (oldcheck != obj && oldcheck != null)
+                            oldcheck.checked = false;
+                        console.log("on");
+                        var div = document.getElementById("storeMethodDiv");
+                        // console.log(div.childNodes[1]);
+                        div.childNodes[1].innerHTML = '賣場編號:' + store;
+                        div.style.display = "";
+                        oldcheck = obj;
+                    } else {
+                        var div = document.getElementById("storeMethodDiv");
+                        div.childNodes[1].innerHTML = '賣場編號:' + store;
+                        div.style.display = "none";
+                    }
+
+                }
+                var checkStatus = "";
+
+                function orderMethod(obj) {
+                    if (obj.checked) {
+                        console.log(obj.value);
+                        // checkStatus.push(obj);
+                    }
+                    // if (checkStatus.length != 0) {
+                    //     var div = document.getElementById("orderMethodDiv");
+                    //     var str = "";
+
+                    //     for (var i = 0; i = checkStatus.length; i++) {
+                    //         str += "<br>" + checkStatus[i].value;
+                    //     }
+                    //     div.childNodes[1].innerHTML = '選取的訂單:<br>' + str;
+                    //     div.style.display = "";
+                    //     // document.getElementsByClassName("orderMethod");
+                    // }
+                    var div = document.getElementById("orderMethodDiv");
+                    if (obj.checked) {
+                        checkStatus += "\n" + obj.value;
+                        div.childNodes[1].innerHTML = '選取的訂單:<br>' + checkStatus;
+                        div.style.display = "";
+                    } else {
+                        checkStatus.replace("\n\"" + obj.value + "\"", "");
+                        div.childNodes[1].innerHTML = '選取的訂單:<br>' + checkStatus;
+                    }
+                    if (checkStatus == "") {
+                        div.style.display = "none";
+                        div.childNodes[1].innerHTML = '選取的訂單:';
+                    }
+
+
+                    // else {
+                    //     div.style.display = "none";
+                    // }
+
+                }
+
+                function productMethod(n, ckobj = null) {
+                    document.getElementsByClassName("productMethodDiv")[0].style.display = "";
+                    //抓product值 存cookie
+                    var obj = [];
+                    obj.push(document.getElementsByName("productName" + n)[0]);
+                    obj.push(document.getElementsByName("productCash" + n)[0]);
+                    obj.push(document.getElementsByName("productSelect" + n)[0]);
+                    var str = "productIndex" + ":" + n + "," +
+                        obj[0].name + ":" + obj[0].value + "," +
+                        obj[1].name + ":" + obj[1].value + "," +
+                        obj[2].name + ":" + obj[2].checked + ";";
+                    // console.log(obj[2].checked);
+                    document.cookie = "productIndex" + n + "=" + str;
+                    document.getElementsByName("trbg" + n)[0].style.backgroundColor = "#4DFFFF";
+                }
+
+                function chechkProductInfo() {
+                    var cookieStr = document.cookie;
+                    var productInfo = cookieStr.split(';');
+
+                    for (var i = 0; i < productInfo.length; i++) {
+                        if (productInfo[i].indexOf("productIndex") == -1) continue;
+                        console.log("check " + i);
+                        var tmp = productInfo[i].split(",");
+                        // console.log(tmp);
+                        var n = tmp[0].substring(tmp[0].indexOf(":") + 1, tmp[0].length);
+                        var val = tmp[1].substring(tmp[1].indexOf(":") + 1, tmp[1].length);
+                        // console.log(n);
+                        document.getElementsByName("productName" + n)[0].value = val;
+
+                        var val = tmp[2].substring(tmp[2].indexOf(":") + 1, tmp[2].length);
+                        // console.log(val);
+                        document.getElementsByName("productCash" + n)[0].value = val;
+
+                        var val = tmp[3].substring(tmp[3].indexOf(":") + 1, tmp[3].length);
+                        document.getElementsByName("productSelect" + n)[0].checked = (val == "true" ? true : false);
+                        console.log(val);
+                        document.getElementsByName("trbg" + n)[0].style.backgroundColor = "#4DFFFF";
+
+                        // console.log(n);
+                        document.getElementsByClassName("productMethodDiv")[0].style.display = "";
+
+                    }
+                }
+
+                function addProduct(n) {
+                    var form1 = document.createElement('form');
+                    form1.name = "tempForm";
+                    document.body.appendChild(form1);
+                    var input2 = document.createElement("button");
+                    input2.type = "hidden";
+                    input2.name = "addProduct";
+                    input2.value = "1";
+                    form1.appendChild(input2);
+                    form1.method = "post";
+                    form1.action = "managementPage.php?method=4";
+                    input2.click();
+                }
+
+                function deleteProduct(n) {
+                    var form1 = document.createElement('form');
+                    form1.name = "tempForm";
+                    document.body.appendChild(form1);
+                    var input2 = document.createElement("button");
+                    input2.type = "hidden";
+                    input2.name = "deleteProduct";
+                    input2.value = n;
+                    form1.appendChild(input2);
+                    form1.method = "post";
+                    form1.action = "managementPage.php?method=4";
+                    input2.click();
+                }
+
+                function productMethodFunction(f) {
+                    var cookieStr = document.cookie;
+                    var productInfo = cookieStr.split(';');
+                    if (f == 0) {
+                        var form1 = document.createElement("form");
+                        form1.id = "form1";
+                        form1.name = "form1";
+                        document.body.appendChild(form1);
+                        input = document.createElement("input");
+                        input.type = "hidden";
+                        input.name = "method";
+                        input.value = f;
+                        form1.appendChild(input);
+                        var input;
+                        var item = [];
+
+                        for (var i = 0; i < productInfo.length; i++) {
+                            if (productInfo[i].indexOf("productIndex") == -1) continue;
+                            var tmp = productInfo[i].split(",");
+
+                            var n = tmp[0].substring(tmp[0].indexOf(":") + 1, tmp[0].length);
+                            input = document.createElement("input");
+                            input.type = "hidden";
+                            input.name = "productIndex";
+                            input.value = n;
+                            form1.appendChild(input);
+
+                            var val = tmp[1].substring(tmp[1].indexOf(":") + 1, tmp[1].length);
+                            input = document.createElement("input");
+                            input.type = "hidden";
+                            input.name = "productName" + n;
+                            input.value = val;
+                            form1.appendChild(input);
+
+                            var val = tmp[2].substring(tmp[2].indexOf(":") + 1, tmp[2].length);
+                            input = document.createElement("input");
+                            input.type = "hidden";
+                            input.name = "productCash" + n;
+                            input.value = val;
+                            form1.appendChild(input);
+
+                            var val = tmp[3].substring(tmp[3].indexOf(":") + 1, tmp[3].length);
+                            input = document.createElement("input");
+                            input.type = "hidden";
+                            input.name = "productSelect" + n;
+                            input.value = val;
+                            form1.appendChild(input);
+                            item.push(n);
+
+
+                            if (val == "true") {
+                                document.cookie = "productIndex" + n + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+                                document.getElementsByName("productSelect" + n)[0].checked = false;
+                            } else {
+
+                            }
+
+                        }
+                        input = document.createElement("input");
+                        input.type = "hidden";
+                        input.name = "productItem";
+                        input.value = item;
+                        form1.appendChild(input);
+
+                        var button = document.createElement("button");
+                        button.type = "submit";
+                        button.name = "fixed";
+                        form1.appendChild(button);
+                        form1.method = "post";
+                        form1.action = "fixProduct.php";
+                        button.click();
+                    } else if (f == 1) {
+                        for (var i = 0; i < productInfo.length; i++) {
+                            // console.log("1");
+                            if (productInfo[i].indexOf("productIndex") == -1)
+                                continue;
+                            var tmp = productInfo[i].split(",");
+                            var n = tmp[0].substring(tmp[0].indexOf(":") + 1, tmp[0].length);
+                            var val = tmp[3].substring(tmp[3].indexOf(":") + 1, tmp[3].length);
+                            if (val == "true") {
+                                document.cookie = "productIndex" + n + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+                                console.log("clear " + n);
+                                document.getElementsByName("productSelect" + n)[0].checked = false;
+                                document.getElementsByName("trbg" + n)[0].style.backgroundColor = "";
+                            }
+                        }
+                        document.location.href = document.location;
+
+                    } else if (f == 2) {
+                        var form1 = document.createElement("form");
+                        form1.id = "form1";
+                        form1.name = "form1";
+                        document.body.appendChild(form1);
+                        input = document.createElement("input");
+                        input.type = "hidden";
+                        input.name = "method";
+                        input.value = f;
+                        form1.appendChild(input);
+                        var input;
+                        var item = [];
+                        for (var i = 0; i < productInfo.length; i++) {
+                            if (productInfo[i].indexOf("productIndex") == -1) continue;
+                            var tmp = productInfo[i].split(",");
+                            var n = tmp[0].substring(tmp[0].indexOf(":") + 1, tmp[0].length);
+                            var val = tmp[3].substring(tmp[3].indexOf(":") + 1, tmp[3].length);
+                            if (val == "true") {
+                                document.cookie = "productIndex" + n + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+                                document.getElementsByName("productSelect" + n)[0].checked = false;
+                                item.push(n);
+                            } else {
+
+                            }
+                        }
+                        input = document.createElement("input");
+                        input.type = "hidden";
+                        input.name = "productItem";
+                        input.value = item;
+                        form1.appendChild(input);
+
+                        var button = document.createElement("button");
+                        button.type = "submit";
+                        button.name = "fixed";
+                        form1.appendChild(button);
+                        form1.method = "post";
+                        form1.action = "fixProduct.php";
+                        button.click();
+                    }
+
+
+                }
+
+
+                chechkProductInfo();
             </script>
         </div>
     </div>
+
 </body>
 
 </html>
-
-<script>
-    function goHome() {
-        document.location.href = "index.php";
-    }
-
-    // function storeOrderInfo(store) {
-    //     document.location.href = "managementPage.php?method=7";
-    //     var clone = document.getElementById(store).cloneNode;
-
-    //     document.getElementById("orderDetail").style = "";
-
-    // }
-
-    var oldcheck;
-
-    function storeMethod(obj, store) {
-        if (obj.checked) {
-            if (oldcheck != obj && oldcheck != null)
-                oldcheck.checked = false;
-            console.log("on");
-            var div = document.getElementById("storeMethodDiv");
-            // console.log(div.childNodes[1]);
-            div.childNodes[1].innerHTML = '賣場編號:' + store;
-            div.style.display = "";
-            oldcheck = obj;
-        } else {
-            var div = document.getElementById("storeMethodDiv");
-            div.childNodes[1].innerHTML = '賣場編號:' + store;
-            div.style.display = "none";
-        }
-
-    }
-    var checkStatus = "";
-
-    function orderMethod(obj) {
-        if (obj.checked) {
-            console.log(obj.value);
-            // checkStatus.push(obj);
-        }
-        // if (checkStatus.length != 0) {
-        //     var div = document.getElementById("orderMethodDiv");
-        //     var str = "";
-
-        //     for (var i = 0; i = checkStatus.length; i++) {
-        //         str += "<br>" + checkStatus[i].value;
-        //     }
-        //     div.childNodes[1].innerHTML = '選取的訂單:<br>' + str;
-        //     div.style.display = "";
-        //     // document.getElementsByClassName("orderMethod");
-        // }
-        var div = document.getElementById("orderMethodDiv");
-        if (obj.checked) {
-            checkStatus += "<br>" + obj.value;
-            div.childNodes[1].innerHTML = '選取的訂單:<br>' + checkStatus;
-            div.style.display = "";
-        } else {
-            checkStatus.replace("<br>" + obj.value, "");
-            div.childNodes[1].innerHTML = '選取的訂單:<br>' + checkStatus;
-        }
-        if (checkStatus == "") {
-            div.style.display = "none";
-            div.childNodes[1].innerHTML = '選取的訂單:';
-        }
-
-
-        // else {
-        //     div.style.display = "none";
-        // }
-
-    }
-</script>

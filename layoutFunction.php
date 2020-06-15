@@ -16,7 +16,7 @@ function ManagementStoreInfoLayout($data)
     if ($data['示意圖'] != null)
         echo '<img id="previewImg"src="data:' . $data['圖片編碼格式'] . ';base64,' . $data['示意圖'] . '" />';
     else
-        echo '<img id="previewImg"src="Image/carrot.png" />';
+        echo '<img id="previewImg"src="Image/user.png" />';
     echo '<button class="StoreHrefText">進入此賣場</button>
     </td>
     <td style="width:auto;font-size:14px;">使用者帳號：<br><b>' . $data['使用者帳號'] . '</b></td>
@@ -119,6 +119,91 @@ function orderList($sqlArray)
                         </div>
                         </div>
                         ';
+}
+function ProductsLayout1()
+{
+    echo '<table class="StoreInfoTable" rules="all" id="productTable" style="width:590px; height:auto;">
+    <tbody>
+        <tr style="height:50px; background-color:#82D900;font-weight: bolder;">
+            <td width="40" align="center">
+                編號
+            </td>
+            <td>
+                名稱
+            </td>
+            <td>
+                限制單價上限<br>
+                (每斤n元/每個n元/....)
+            </td>
+            <td width="40" align="center">
+                選取
+            </td>
+            <td width="40" align="center">
+                刪除
+            </td>
+        </tr>';
+}
+function ProductsLayout2($sqlArray)
+{
+    echo '          <form name="product" action="">
+                        <tr class="trbg" name="trbg' . $sqlArray['產品編號'] . '" style=";">
+                            <td align="center">
+                                <input type="hidden" name=productIndex value="' . $sqlArray['產品編號'] . '" />
+                                ' . $sqlArray['產品編號'] . '
+                            </td>
+                            <td>
+                                <input type="text" value="' . $sqlArray['名稱'] . '" name="productName' . $sqlArray['產品編號'] . '" style="width: 80px;" onchange="productMethod(' . $sqlArray['產品編號'] . ')" />
+                            </td>
+                            <td>
+                                <input type="text" value="' . $sqlArray['限額公斤價'] . '" name="productCash' . $sqlArray['產品編號'] . '" style="width: 60px;" onchange="productMethod(' . $sqlArray['產品編號'] . ')" />元
+                            </td>
+                            <td align="center">
+                                <input type="checkbox" class="storeCheckbox" name="productSelect' . $sqlArray['產品編號'] . '" onclick="productMethod(' . $sqlArray['產品編號'] . ',this)" />
+                            </td>
+                            <td align="center">
+                                <button class="addProductInfo" onclick="if(!deleteProduct(' . $sqlArray['產品編號'] . ')){return false;}">
+                                    <img src="Image/del.png" style="height:20px; width:20px;">
+                                </button>
+                            </td>
+                        </tr>
+                    </form>
+
+
+';
+}
+function ProductsLayout3()
+{
+    echo '<tr>
+            <td colspan="5" align="center" style="height:35px; background-color:#FFFFFF;">
+                <button class="addProductInfo" onclick="if(!addProduct()){return false;}">
+                    <img src="Image/add.png" style="height:25px; width:25px;">
+                </button>
+            </td>
+        </tr>
+        </tbody>
+        </table>
+';
+}
+function checkAddProduct($conn)
+{
+    if (isset($_POST['addProduct'])) {
+        $cmd = 'SELECT COUNT(`產品編號`) AS `總數` FROM `農產品` WHERE 1';
+        $sqlData = mysqli_query($conn, $cmd);
+        $sqlArray = mysqli_fetch_array($sqlData, MYSQLI_ASSOC);
+        $cmd2 = 'INSERT INTO `農產品`(`產品編號`, `名稱`, `限額公斤價`) VALUES ("' . ($sqlArray['總數'] + 1) . '","產品名稱","0");';
+        $sqlData = mysqli_query($conn, $cmd2);
+        if (!$sqlData) echo ("Error");
+        unset($_POST['addProduct']);
+    }
+}
+function DeleteProduct($conn)
+{
+    if (isset($_POST['deleteProduct'])) {
+        $cmd = 'DELETE FROM `農產品` WHERE `產品編號`=' . $_POST['deleteProduct'] . '';
+        $sqlData = mysqli_query($conn, $cmd);
+        if (!$sqlData) echo ("Error");
+        unset($_POST['deleteProduct']);
+    }
 }
 function orderStatus($x)
 {
