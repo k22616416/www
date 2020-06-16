@@ -308,7 +308,7 @@ if ($errorCode != 0 || $loginMember != 3) {
                 $cmd = 'SELECT `訂單編號`, `訂購者帳號`, `訂單日期`, `販售者帳號`, `賣場編號`, `購買清單`, `訂單金額`, `配銷方式`, `訂單狀態` ,`消費者`.`連絡電話`
                 FROM `訂單` INNER JOIN `消費者`
                 ON `訂單`.`訂購者帳號` = `消費者`.`使用者帳號`
-                WHERE 1 ;';
+                WHERE 訂單狀態 = "0" ;';
                 $sqlData = mysqli_query($conn, $cmd);
                 if ($sqlData->num_rows > 0) {
 
@@ -336,7 +336,36 @@ if ($errorCode != 0 || $loginMember != 3) {
 
             ?>
 
-
+            <table class="StoreInfoTable" rules="all" id="storeInfoTemplate" style="width:550px;">
+                <input type="hidden" name="storeNumber" value="' . $data['賣場編號'] . '">
+                <form id="entryStore" method="post" action="storePage.php">
+                    <tbody>
+                        <tr>
+                            <td rowspan="3" style="width:70px;">
+                                <!-- if ($data['示意圖'] != null) -->
+                                <!-- echo '<img id="previewImg"src="data:' . $data['圖片編碼格式'] . ';base64,' . $data['示意圖'] . '" />'; -->
+                                <!-- else -->
+                                <img id="previewImg" src="Image/user.png" />
+                                <button class="StoreHrefText">進入此賣場</button>
+                            </td>
+                            <td style="width:auto;font-size:14px;">使用者帳號：<br><b>' . $data['使用者帳號'] . '</b></td>
+                            <td colspan="2" style="width:auto;font-size:14px;">連絡電話：<br><b>' . $data['賣場編號'] . '</b></td>
+                        <tr>
+                            <td colspan="3" style="width:100px;"><span style="font-size:14px;">地址：<br>' . $data['瀏覽次數'] . '</span></td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" style="width:100px;"><span style="font-size:14px;">農地經緯度：<br>' . $data['交易訂單數'] . '</span></td>
+                        </tr>
+                        </tr>
+                        <tr>
+                            <td>審核狀態</td>
+                            <td>123</td>
+                            <td><button class="entryStoreButton" storeIndex="123456" onclick="">通過</button></td>
+                            <td><button class="entryStoreButton" storeIndex="123456" onclick="">拒絕</button></td>
+                        </tr>
+                    </tbody>
+                </form>
+            </table>
             <!--  -->
 
 
