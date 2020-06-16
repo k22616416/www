@@ -188,6 +188,24 @@ if ($errorCode != 0 || $loginMember != 3) {
                 .methodButton {
                     margin: 3 3 3 3;
                 }
+
+                .passButton {
+                    background-color: #00FF00;
+                    width: 70px;
+                }
+
+                .passButton:hover {
+                    background-color: #00DD00;
+                }
+
+                .blockButton {
+                    background-color: #FF0000;
+                    width: 70px;
+                }
+
+                .blockButton:hover {
+                    background-color: #DD0000;
+                }
             </style>
             <div class="storeMethodDiv" id="storeMethodDiv" style="display: none;">
                 <p>賣場編號</p>
@@ -331,41 +349,19 @@ if ($errorCode != 0 || $loginMember != 3) {
                 }
                 ProductsLayout3();
             } else if ($_GET["method"] == 5) {  //小農申請清單
+                $cmd = 'SELECT * FROM `註冊審核` WHERE `審核狀態` = 0;';
+                $sqlData = mysqli_query($conn, $cmd);
+                if ($sqlData->num_rows > 0) {
+                    while ($sqlArray = mysqli_fetch_array($sqlData, MYSQLI_ASSOC)) {
+                        registeredLayout($sqlArray);
+                    }
+                }
             } else if ($_GET["method"] == 6) {   //匯出功能
             }
 
             ?>
 
-            <table class="StoreInfoTable" rules="all" id="storeInfoTemplate" style="width:550px;">
-                <input type="hidden" name="storeNumber" value="' . $data['賣場編號'] . '">
-                <form id="entryStore" method="post" action="storePage.php">
-                    <tbody>
-                        <tr>
-                            <td rowspan="3" style="width:70px;">
-                                <!-- if ($data['示意圖'] != null) -->
-                                <!-- echo '<img id="previewImg"src="data:' . $data['圖片編碼格式'] . ';base64,' . $data['示意圖'] . '" />'; -->
-                                <!-- else -->
-                                <img id="previewImg" src="Image/user.png" />
-                                <button class="StoreHrefText">進入此賣場</button>
-                            </td>
-                            <td style="width:auto;font-size:14px;">使用者帳號：<br><b>' . $data['使用者帳號'] . '</b></td>
-                            <td colspan="2" style="width:auto;font-size:14px;">連絡電話：<br><b>' . $data['賣場編號'] . '</b></td>
-                        <tr>
-                            <td colspan="3" style="width:100px;"><span style="font-size:14px;">地址：<br>' . $data['瀏覽次數'] . '</span></td>
-                        </tr>
-                        <tr>
-                            <td colspan="3" style="width:100px;"><span style="font-size:14px;">農地經緯度：<br>' . $data['交易訂單數'] . '</span></td>
-                        </tr>
-                        </tr>
-                        <tr>
-                            <td>審核狀態</td>
-                            <td>123</td>
-                            <td><button class="entryStoreButton" storeIndex="123456" onclick="">通過</button></td>
-                            <td><button class="entryStoreButton" storeIndex="123456" onclick="">拒絕</button></td>
-                        </tr>
-                    </tbody>
-                </form>
-            </table>
+
             <!--  -->
 
 
@@ -560,6 +556,7 @@ if ($errorCode != 0 || $loginMember != 3) {
                     form1.method = "post";
                     form1.action = "managementPage.php?method=4";
                     input2.click();
+
                 }
 
                 function deleteProduct(n) {

@@ -62,12 +62,16 @@ function orderDetailLayout($sqlArray)
     購買者聯絡電話:' . $sqlArray['連絡電話'] . '
     </td>
     <td>
-    訂單狀態:<span style="color:red">' . orderStatus($sqlArray['訂單狀態']) . '</span>
+    訂單狀態:<span style="color:red">' . orderStatus($sqlArray['訂單狀態']) . '</span><br>
     <form name="orderDetail" id="orderDetail" method="post" action="managementPage.php?method=7">
-    <input type="hidden" name="orderIndex" value="' . $sqlArray['訂單編號'] . '" />
-    <input type="radio" name="orderStatus" value="1">通過</input>
-    <input type="radio" name="orderStatus" value="2">未通過</input>
-    <button type="submit" class="statusSubmit" name="statusSubmit" id="statusSubmit">送出</button>
+    <input type="hidden" name="orderIndex" value="' . $sqlArray['訂單編號'] . '" />';
+    if ($sqlArray['訂單狀態'] == 0) {
+        echo '
+            <input type="radio" name="orderStatus" value="1">通過</input>
+            <input type="radio" name="orderStatus" value="2">未通過</input>
+            <button type="submit" class="statusSubmit" name="statusSubmit" id="statusSubmit">送出</button>';
+    }
+    echo '
     </form>
     </td>
     </tr>
@@ -205,6 +209,43 @@ function DeleteProduct($conn)
         unset($_POST['deleteProduct']);
     }
 }
+function registeredLayout($sqlArray)
+{
+    echo '
+    <table class="StoreInfoTable" rules="all" id="storeInfoTemplate" style="width:550px;">
+                <form id="register" method="post" action="registerOperating.php">
+                    <tbody>
+                        <tr>
+                            <td rowspan="3" style="width:70px;">';
+    if ($sqlArray['圖片'] != null)
+        echo '<img id="previewImg"src="data:' . $sqlArray['圖片編碼格式'] . ';base64,' . $sqlArray['圖片'] . '" />';
+    else
+        echo '<img id="previewImg" src="Image/user.png" />';
+    echo '<button class="StoreHrefText">進入此賣場</button>
+                            </td>
+                            <td style="width:auto;font-size:14px;">使用者帳號：<br><b>' . $sqlArray['使用者帳號'] . '</b></td>
+                            <td colspan="2" style="width:auto;font-size:14px;">連絡電話：<br><b>' . $sqlArray['聯絡電話'] . '</b></td>
+                        <tr>
+                            <td colspan="3" style="width:100px;"><span style="font-size:14px;">地址：<br>' . $sqlArray['住址'] . '</span></td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" style="width:100px;"><span style="font-size:14px;">農地經緯度：<br>' . $sqlArray['地圖經緯度'] . '</span></td>
+                        </tr>
+                        </tr>
+                        <tr>
+                            <input type="hidden" name="registerIndex" value="' . $sqlArray['編號'] . '" />
+                            <td align="left" colspan="2">註冊身分：<span style="color:#FF0000"><b>' . ($sqlArray['註冊身分類別'] == 0 ? '消費者' : '小農') . '</b></span></td>
+                            <td style="width:80px;"><button class="passButton" name="pass" onclick="">通過</button></td>
+                            <td style="width:80px;"><button class="blockButton" name="block" onclick="">拒絕</button></td>
+                        </tr>
+                    </tbody>
+                </form>
+            </table>
+    
+    ';
+}
+
+
 function orderStatus($x)
 {
     switch ($x) {
