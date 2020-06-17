@@ -92,9 +92,9 @@ function orderList($sqlArray)
                                             訂購者帳號:' . $sqlArray['訂購者帳號'] . '
                                         </td>
                                         <td>
-                                            訂單總金額:<span style="color:red">' . $sqlArray['訂單金額'] . '</span>
+                                            販售者帳號:' . $sqlArray['販售者帳號'] . '
                                         </td>
-                                        <td rowspan="3">
+                                        <td rowspan="4">
                                             <input type="hidden" name="orderIndex" value="' . $sqlArray['訂單編號'] . '" />
                                             <p style="text-align:center; width:50px; margin:auto auto auto auto;"><button class="detailButton" type="submit">詳<br>細<br>資<br>訊</button></p>
                                         </td>
@@ -110,9 +110,14 @@ function orderList($sqlArray)
                                     </tr>
                                     <tr>
                                         <td>
-                                            購買者聯絡電話:' . $sqlArray['連絡電話'] . '
+                                            訂購者聯絡電話:' . $sqlArray['連絡電話'] . '
                                         </td>
                                         <td>
+                                            訂單總金額:<span style="color:red">' . $sqlArray['訂單金額'] . ' 元</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2">
                                             訂單狀態:<span style="color:red">' . orderStatus($sqlArray['訂單狀態']) . '</span>
                                         </td>
                                     </tr>
@@ -217,35 +222,97 @@ function registeredLayout($sqlArray)
                 <form id="register" method="post" action="registerOperating.php">
                     <tbody>
                         <tr>
-                            <td rowspan="3" style="width:70px;">';
+                            <td rowspan="3" style="width:90px;">';
     if ($sqlArray['圖片'] != null)
-        echo '<img id="previewImg"src="data:' . $sqlArray['圖片編碼格式'] . ';base64,' . $sqlArray['圖片'] . '" />';
+        echo '<img id="previewImg" src="data:' . $sqlArray['圖片編碼格式'] . ';base64,' . $sqlArray['圖片'] . '" />';
     else
         echo '<img id="previewImg" src="Image/user.png" />';
-    echo '<button class="StoreHrefText">進入此賣場</button>
-                            </td>
-                            <td style="width:auto;font-size:14px;">使用者帳號：<br><b>' . $sqlArray['使用者帳號'] . '</b></td>
-                            <td colspan="2" style="width:auto;font-size:14px;">連絡電話：<br><b>' . $sqlArray['聯絡電話'] . '</b></td>
-                        <tr>
-                            <td colspan="3" style="width:100px;"><span style="font-size:14px;">地址：<br>' . $sqlArray['住址'] . '</span></td>
-                        </tr>
-                        <tr>
-                            <td colspan="3" style="width:100px;"><span style="font-size:14px;">農地經緯度：<br>' . $sqlArray['地圖經緯度'] . '</span></td>
-                        </tr>
-                        </tr>
-                        <tr>
-                            <input type="hidden" name="registerIndex" value="' . $sqlArray['編號'] . '" />
-                            <td align="left" colspan="2">註冊身分：<span style="color:#FF0000"><b>' . ($sqlArray['註冊身分類別'] == 0 ? '消費者' : '小農') . '</b></span></td>
-                            <td style="width:80px;"><button class="passButton" name="pass" onclick="">通過</button></td>
-                            <td style="width:80px;"><button class="blockButton" name="block" onclick="">拒絕</button></td>
-                        </tr>
-                    </tbody>
-                </form>
-            </table>
+    echo '</td>
+          <td style="width:auto;font-size:16px;">使用者帳號：<br><b>' . $sqlArray['使用者帳號'] . '</b></td>
+          <td colspan="2" style="width:auto;font-size:16px;">連絡電話：<br><b>' . $sqlArray['聯絡電話'] . '</b></td>
+          <tr>
+          <td colspan="3" style="width:100px;"><span style="font-size:16px;">地址：' . $sqlArray['住址'] . '</span></td>
+          </tr>
+          <tr>
+          <td colspan="3" style="width:100px;"><span style="font-size:16px;">農地經緯度：<br>' . $sqlArray['地圖經緯度'] . '</span></td>
+          </tr>
+          </tr>
+          <tr>
+          <input type="hidden" name="registerIndex" value="' . $sqlArray['編號'] . '" />
+          <td align="left" colspan="2">註冊身分：<span style="color:#FF0000"><b>' . ($sqlArray['註冊身分類別'] == 0 ? '消費者' : '小農') . '</b></span></td>
+          <td align="center" style="width:80px;"><button class="passButton" name="pass" onclick="">通過</button></td>
+          <td align="center" style="width:80px;"><button class="blockButton" name="block" onclick="">拒絕</button></td>
+          </tr>
+          </tbody>
+          </form>
+          </table>
     
     ';
 }
 
+function checkListLayout($sqlArray)
+{
+    echo '
+    <div style="display: flex;">
+                <table class="StoreInfoTable" id="storeInfoTemplate" rules="all" style="width:590px;">
+                    <form name="productCheckForm" action="productCheckFunction.php" method="post" align="center" style="margin:auto auto auto auto;">
+                        <tbody>
+                            <tr>
+                                <td align="center" rowspan="5" style="width: 100px;color:#FF0000;">';
+    if ($sqlArray['圖片'] != null)
+        echo '<img id="previewImg" src="data:' . $sqlArray['圖片編碼格式'] . ';base64,' . $sqlArray['圖片'] . '" />';
+    else echo '
+                                    <img id="previewImg" src="Image/carrot.png" />
+                                    <br>
+                                    ' . organicStatus($sqlArray['是否有機']) . '
+                                </td>
+                                <td width="200">
+                                    賣家帳號:<b>' . $sqlArray['使用者帳號'] . '</b>
+                                </td>
+                                <td>
+                                    申請日期:' . $sqlArray['上架日期'] . '
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    產品名稱:<b>' . $sqlArray['名稱'] . '</b>
+                                </td>
+                                <td>
+                                    販售價格:<b>' . $sqlArray['價格'] . ' 元</b>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    物種:' . $sqlArray['物種'] . '
+                                </td>
+                                <td>
+                                    產地:' . $sqlArray['產地'] . '
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                <input type="hidden" name="productIndex" value="' . $sqlArray['產品編號'] . '" />
+                                    產品編號:<b>' . $sqlArray['產品編號'] . '</b>
+                                </td>
+                                <td>
+                                    上架數量:' . $sqlArray['剩餘數量'] . '
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" align="right">
+                                    <button class="passButton" name="pass" onclick="" style="position:relative; right:0px;">通過</button>
+                                    <button class="blockButton" name="block" onclick="" style="position:relative; right:0px;">拒絕</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </form>
+                </table>
+
+            </div>
+    
+    
+    ';
+}
 
 function orderStatus($x)
 {
@@ -256,6 +323,18 @@ function orderStatus($x)
             return '通過';
         case 2:
             return '未通過';
+        default:
+            return null;
+    }
+}
+
+function organicStatus($n)
+{
+    switch ($n) {
+        case 0:
+            return '非有機';
+        case 1:
+            return '有機';
         default:
             return null;
     }

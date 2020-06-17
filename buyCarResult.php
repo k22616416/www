@@ -236,6 +236,17 @@ if (($conn = ConnectDB()) == null) {
     <div class="mainDiv">
       <div style="margin:10px auto auto auto;">
         <form name="buyCarResult" id="buyCarResult" method="post" action="buyCarInser.php">
+          <div>
+            <span style="font-size: larger; ">請選擇運送方式</span><br>
+            <select name="transport" id="transport" style="font-size: larger; ">
+              <option value=""></option>
+              <option value="郵寄">郵寄</option>
+              <option value="面交">面交</option>
+            </select>
+            <br>
+            <span style="font-size: larger; ">請輸入運送地址(如面交則無需填寫)</span><br>
+            <input type="text" name="position" id="position" value="" style="font-size: medium; width:500px;" />
+          </div>
           <table class="buyCarResultTable" rules="all" cellpadding='5'>
             <tbody>
               <tr>
@@ -293,7 +304,9 @@ if (($conn = ConnectDB()) == null) {
                 echo '<script>
                       document.getElementById("totalCount").innerHTML = "總購買數量：' . $totalCount . '";
                       document.getElementById("totalCash").innerHTML = "總金額：' . $totalCash . '";
-                      </script>';
+                      </script>
+                      <input type="hidden" name="totalCash" value="' . $totalCash . '"/>
+                      ';
               }
               ?>
 
@@ -315,6 +328,12 @@ if (($conn = ConnectDB()) == null) {
         if (!empty) {
           alert("錯誤!\n購物車內沒有商品，將返回首頁。");
           document.location.href = "index.php";
+          return false;
+        }
+        var pos = document.getElementById("position").value;
+        var port = document.getElementById("transport").value;
+        if (pos == "" || port == "") {
+          alert("請選擇配送方式並輸入地址!");
           return false;
         }
         document.getElementById("buyCarResult").submit();

@@ -16,11 +16,11 @@ if (isset($_POST['storeNumber'])) {
 } else if (isset($_POST['enterStore'])) {
     // echo '<script>alert("1");</script>';
     $userName = $_POST['storeNumber'];
-    $cmd = "SELECT * FROM `小農` WHERE `使用者帳號`= '" . $userName . "';";
+    $cmd = "SELECT * FROM `小農` WHERE `賣場編號`= '" . $userName . "';";
     $sqlData = mysqli_query($conn, $cmd);
     if ($sqlData->num_rows > 0) {
         $sqlArray = mysqli_fetch_array($sqlData, MYSQLI_ASSOC);
-        $store = $sqlArray['賣場編號'];
+        $store = $userName;
         $storeName = $sqlArray['使用者帳號'];
     }
 } else {
@@ -205,10 +205,22 @@ if ($sqlData->num_rows > 0) {
                             echo '<td colspan=2><button class="RegisterButton" name="enterStore" >進入農場管理頁面</button></td>';
                             echo '</form>';
                             echo '</tr>';
+                            echo '<tr >';
+                            echo '<form method="post" action="userOrderList.php">';
+                            echo '<input type="hidden" name="farmIndex" value="' . $userName . '">';
+                            echo '<td colspan=2><button class="RegisterButton" name="enterStore" >查看已購買訂單</button></td>';
+                            echo '</form>';
+                            echo '</tr>';
                         } else if ($loginMember == 1) //消費者身分
                         {
                             echo '<tr>';
                             echo '<td colspan="2"><button class="RegisterButton" name="logout" type="submit">修改個人資料</button></td>';
+                            echo '</tr>';
+                            echo '<tr >';
+                            echo '<form method="post" action="userOrderList.php">';
+                            echo '<input type="hidden" name="farmIndex" value="' . $userName . '">';
+                            echo '<td colspan=2><button class="RegisterButton" name="enterStore" >查看已購買訂單</button></td>';
+                            echo '</form>';
                             echo '</tr>';
                         }
                         ?>
@@ -339,7 +351,7 @@ if ($sqlData->num_rows > 0) {
                             $list[] = array('seller' => $seller, 'CID' => $CID, 'name' => $name, 'CCash' => $CCash, 'count' => $count);
                             $_SESSION['buyCarList'] = serialize($list);
                         }
-                        debug(print_r($list, true));
+                        // debug(print_r($list, true));
 
                         $_SESSION['buyCarList'] = serialize($list);
                         if (!isset($_SESSION['buyCarList']))  //購物車資訊存到cookie
@@ -372,7 +384,7 @@ if ($sqlData->num_rows > 0) {
                                             }
                                         </script>
                                         <td align="left" id="cashTotal' . $i . '">小計:' . $list[$i]['CCash'] * $list[$i]['count'] . '</td>
-                                        <td align="center"><input type="count" onkeydown="if(event.keyCode==13){return false;}" onchange="cashTotal' . $i . '(' . $list[$i]['CCash'] . ',this.value,' . $i . ')" value="' . $list[$i]['count'] . '" style="width:20px; text-align:center;"></input></td>
+                                        <td align="center"><input type="count" onkeydown="if(event.keyCode==13){return false;}" onchange="cashTotal' . $i . '(' . $list[$i]['CCash'] . ',this.value,' . $i . ')" value="' . $list[$i]['count'] . '" style="width:30px; text-align:center;"></input></td>
         
                                         <td><input type="submit"  name="cancel" style="background-color:rgba(0,0,0,0); ;background-image:url(Image/cancel.png); width:32px; height:32px; border:0px; padding:0 0 0 0;" value=""></input> </td>
                                         
@@ -427,6 +439,18 @@ if ($sqlData->num_rows > 0) {
                     creatByuCar(null, null, null, null, null);
                 }
 
+                function organicStatus($n)
+                {
+                    switch ($n) {
+                        case 0:
+                            return '非有機';
+                        case 1:
+                            return '有機';
+                        default:
+                            return null;
+                    }
+                }
+
                 ?>
 
                 <button class="checkoutButton" onclick='Javascript:document.location.href=" buyCarResult.php"'>結帳</button>
@@ -439,67 +463,78 @@ if ($sqlData->num_rows > 0) {
             $cmd = 'SELECT *
             FROM (`小農` INNER JOIN `個人賣場2` ON `小農`.`賣場編號`=`個人賣場2`.`賣場編號`)
             INNER JOIN `產品資訊` ON `個人賣場2`.`產品編號`=`產品資訊`.`產品編號`
-            WHERE `小農`.`賣場編號`="' . $store . '";';
+            WHERE `小農`.`賣場編號`="' . $store . '" AND `產品資訊`.`審核狀態` = "1";';
             $sqlData = mysqli_query($conn, $cmd);
             if ($sqlData->num_rows > 0) {
                 while ($sqlArray = mysqli_fetch_array($sqlData, MYSQLI_ASSOC)) {
                     echo '
-                    <table class="StoreInfoTable" id="storeInfoTemplate">
-                        <form name="commodity" id="commodity" action="storePage.php" method="post" align="center" style="margin:auto auto auto auto;">
-                            <input type="hidden" name="seller" value="' . $sqlArray['使用者帳號'] . '"/>
-                            <input type="hidden" name="commodityIndex" value="' . $sqlArray['產品編號'] . '"/>
-                            <tbody>
-                                <tr>
-                                    <td rowspan="3" align="center" style="width: 100px; height:100px;">';
-                    if ($sqlArray['示意圖'] != null)
-                        echo '<img src="data:' . $sqlArray['圖片編碼格式'] . ';base64,' . $sqlArray['示意圖'] . '" />';
-                    else
-                        echo '<img src="image/carrot.png"/>';
-                    echo '<span id="sql" style="font-size:smaller;">' . ($sqlArray['是否有機'] ? '有機' : '非有機') . '</span>
-                                    </td>
-                                    <td rowspan="3">
-                                        <hr width=" 3px" size=100px color="#000000" style="margin: 0% auto 0% auto; border: 0px;">
-                                    </td>
-                                    <td rowspan="3" id="sql">
-                                        <table style="border:0px; border-collapse:collapse; width:400px; height:100px; font-weight: bold; font-size:18px;">
-                                            <tr style="border: 3px solid #000000; border-top:0px; border-right:0px; border-left:0px; ">
-                                            <input type="hidden" name="CName" value="' . $sqlArray['名稱'] . '"></input>
-                                                <td  style="border: 3px solid #000000; border-top:0px; border-left:0px; width:200px;">
-                                                    品名：' . $sqlArray['名稱'] . '</td>
-                                                    <input type="hidden" name="cash" value="' . $sqlArray['價格'] . '"></input>
-                                                <td>' . $sqlArray['價格'] . ' 元/把</td>
-                                            </tr>
-                                            <tr style="border: 3px solid #000000; border-right:0px;  border-left:0px;">
-                                                <td style="border: 3px solid #000000; border-left:0px;">配銷地點：' . $sqlArray['願意配銷地點'] . '</td>
-                                                <td>運送方式：' . $sqlArray['配銷方式'] . '</td>
-                                            </tr>
-                                            <tr style="border: 3px solid #000000; border-right:0px; border-bottom:0px; border-left:0px;">
-                                                <td style="border: 3px solid #000000; border-left:0px; border-bottom:0px;">
-                                                    剩餘數量：' . $sqlArray['剩餘數量'] . '</td>
-                                                <td>購買數量 <input type="text" name="buyCount" style="width:50px;" onkeydown="if(event.keyCode==13){return false;}" value=1></input></td>
-                                            </tr>
-                                        </table>
-                                    </td>
-
-                                    <td rowspan="3">
-                                        <hr width=" 3px" size=100px color="#000000" style="margin: 0% auto 0% auto; border: 0px;">
-                                    </td>
-                                    <td align="center" style="right:0px; position: relative; width: 100px; font-size:24px; font-weight: bolder; ">
-                                        <button type="submit" name="buyButton" font color="blue" align="center" style=" font-size:24px; font-weight: bolder; background-color: #FFFFFF;">購<br>買</button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </form>
-                    </table>
-                    ';
+                    <div style="display: flex;">
+        <table class="StoreInfoTable" id="storeInfoTemplate" rules="all" style="width:590px;">
+            <form name="commodity" action="storePage.php" method="post" align="center" style="margin:auto auto auto auto;">
+                <tbody>
+                    <tr>
+                        <input type="hidden" name="seller" value="' . $sqlArray['使用者帳號'] . '"/>
+                        <input type="hidden" name="commodityIndex" value="' . $sqlArray['產品編號'] . '"/>
+                        <td align="center" rowspan="5" style="width: 100px;color:#FF0000;padding:10 0 0 0 ;">';
+                    if ($sqlArray['示意圖'] != null) {
+                        debug("1");
+                        echo '<img id="previewImg" src="data:' . $sqlArray['圖片編碼格式'] . ';base64,' . $sqlArray['示意圖'] . '" /><br>';
+                    } else
+                        echo '<img id="previewImg" src="Image/carrot.png" /><br>
+                            <b>' . organicStatus($sqlArray['是否有機']) . '</b>
+                        </td>
+                    <td width="245" bgcolor="#FFE153">
+                        <input type="hidden" name="CName" value="' . $sqlArray['名稱'] . '"></input>
+                        產品名稱:<b>' . $sqlArray['名稱'] . '</b>
+                    </td>
+                    <td bgcolor="#FFE153">
+                        <input type="hidden" name="cash" value="' . $sqlArray['價格'] . '"></input>
+                        販售價格:<b>' . $sqlArray['價格'] . ' 元 / ' . $sqlArray['單位'] . '</b>
+                    </td>
+                    </tr>
+                <tr>
+                <td>
+                物種:' . $sqlArray['物種'] . '
+                </td>
+                <td>
+                產地:' . $sqlArray['產地'] . '
+                </td>
+                </tr>
+                <tr>
+                <td>
+                收成時間:' . $sqlArray['收成時間'] . '
+                </td>
+                <td>
+                剩餘數量:' . $sqlArray['剩餘數量'] . '
+                </td>
+                </tr>
+                <tr>
+                <td colspan="2">
+                可配送方式:' . $sqlArray['願意配送方式'] . '
+                </td>
+                </tr>
+                    <tr>
+                    <td>
+                    備註:' . $sqlArray['產品註明'] . '
+                    </td>
+                    <td colspan="2" align="right">
+                    購買數量 <input type="text" name="buyCount" style="width:50px;" onkeydown="if(event.keyCode==13){return false;}" value=1></input>
+                    <button type="submit" name="buyButton" align="center" style=" font-size:18px; font-weight: bolder; background-color: #FFFFFF;">購買</button>
+                    </td>
+                    </tr>
+                </tbody>
+            </form>
+        </table>
+    </div>
+            ';
                 }
             } else {
-                echo '資料取得失敗';
+                echo '<div style="width:200px; height:100px; position:relative; background-color:#FFFFFF ;border:2px solid #000000; top:60px; left:50%; margin-left:-100px;">
+                        此農場尚未販售任何農產品
+                    </div>';
             }
 
             ?>
-
-
         </div>
 
 
@@ -507,4 +542,60 @@ if ($sqlData->num_rows > 0) {
     </div>
 </body>
 
+
+
+
 </html>
+
+<?php
+//舊的商品表格
+// echo '
+// <table class="StoreInfoTable" id="storeInfoTemplate">
+//     <form name="commodity" id="commodity" action="storePage.php" method="post" align="center" style="margin:auto auto auto auto;">
+//         <input type="hidden" name="seller" value="' . $sqlArray['使用者帳號'] . '"/>
+//         <input type="hidden" name="commodityIndex" value="' . $sqlArray['產品編號'] . '"/>
+//         <tbody>
+//             <tr>
+//                 <td rowspan="3" align="center" style="width: 100px; height:100px;">';
+// if ($sqlArray['示意圖'] != null)
+//     echo '<img src="data:' . $sqlArray['圖片編碼格式'] . ';base64,' . $sqlArray['示意圖'] . '" />';
+// else
+//     echo '<img src="image/carrot.png"/>';
+// echo '<span id="sql" style="font-size:smaller;">' . organicStatus($sqlArray['是否有機']) . '</span>
+//                 </td>
+//                 <td rowspan="3">
+//                     <hr width=" 3px" size=100px color="#000000" style="margin: 0% auto 0% auto; border: 0px;">
+//                 </td>
+//                 <td rowspan="3" id="sql">
+//                     <table style="border:0px; border-collapse:collapse; width:400px; height:100px; font-weight: bold; font-size:18px;">
+//                         <tr style="border: 3px solid #000000; border-top:0px; border-right:0px; border-left:0px; ">
+//                         <input type="hidden" name="CName" value="' . $sqlArray['名稱'] . '"></input>
+//                             <td  style="border: 3px solid #000000; border-top:0px; border-left:0px; width:200px;">
+//                                 品名：' . $sqlArray['名稱'] . '</td>
+//                                 <input type="hidden" name="cash" value="' . $sqlArray['價格'] . '"></input>
+//                             <td>' . $sqlArray['價格'] . ' 元</td>
+//                         </tr>
+//                         <tr style="border: 3px solid #000000; border-right:0px;  border-left:0px;">
+//                             <td style="border: 3px solid #000000; border-left:0px;">配銷地點：' . $sqlArray['願意配銷地點'] . '</td>
+//                             <td>運送方式：' . $sqlArray['配銷方式'] . '</td>
+//                         </tr>
+//                         <tr style="border: 3px solid #000000; border-right:0px; border-bottom:0px; border-left:0px;">
+//                             <td style="border: 3px solid #000000; border-left:0px; border-bottom:0px;">
+//                                 剩餘數量：' . $sqlArray['剩餘數量'] . '</td>
+//                             <td>購買數量 <input type="text" name="buyCount" style="width:50px;" onkeydown="if(event.keyCode==13){return false;}" value=1></input></td>
+//                         </tr>
+//                     </table>
+//                 </td>
+
+//                 <td rowspan="3">
+//                     <hr width=" 3px" size=100px color="#000000" style="margin: 0% auto 0% auto; border: 0px;">
+//                 </td>
+//                 <td align="center" style="right:0px; position: relative; width: 100px; font-size:24px; font-weight: bolder; ">
+//                     <button type="submit" name="buyButton" font color="blue" align="center" style=" font-size:24px; font-weight: bolder; background-color: #FFFFFF;">購<br>買</button>
+//                 </td>
+//             </tr>
+//         </tbody>
+//     </form>
+// </table>
+// ';
+?>

@@ -4,6 +4,34 @@ include_once("sqlConnectAPI.php");
 if (($conn = ConnectDB()) == null) {
     die("資料庫連線失敗");
 }
+
+
+function getStoreIndex($user)
+{
+    echo $user;
+    global $conn;
+    $result = "";
+    $cmd = 'SELECT * FROM `小農` 
+            WHERE `使用者帳號`="' . $user . '"';
+    if (($sqlData = SqlCommit($conn, $cmd)) != null) {
+        $row = $sqlData->fetch_array();
+        $result = $row['賣場編號'];
+    } else {
+        $result = null;
+    }
+    return $result;
+}
+
+function getOrderIndex()
+{
+    global $conn;
+    $cmd = 'SELECT MAX(`訂單編號`) as `編號` WHERE 1;';
+    $sqlData = mysqli_query($conn, $cmd);
+    return $sqlData;
+}
+
+
+
 $list = unserialize($_SESSION['buyCarList']);
 $lastSSeller = '';
 $nowSeller = '';
@@ -57,10 +85,15 @@ for ($i = 0; $i < count($orderDetail); $i++) {
     "' . $sellerList[$i] . '",
     "' . $storeIndex . '",
     \'' . json_encode($orderDetail[$sellerList[$i]]) . '\',
-    "' . "123" . '",
-    "' . "面交" . '",
+    "' . $_POST['totalCash'] . '",
+    "' . $_POST['transport'] . '",
     "' . "0" . '")';
     echo $cmd;
+    if (($sqlData = mysqli_query($conn, $cmd)) != true) {
+        $error = true;
+        $errorStr += $conn->error . "\n";
+    }
+    $cmd = 'INSERT INTO `配銷方式`(`訂單編號`, `付款方式`, `配銷地址`, `匯款帳戶`) VALUES ("' . getOrderIndex() . '","","' . $_POST['transport'] . '","' . $_POST['position'] . '")';
     if (($sqlData = mysqli_query($conn, $cmd)) != true) {
         $error = true;
         $errorStr += $conn->error . "\n";
@@ -73,21 +106,5 @@ if ($error) {
     echo '<script>alert("訂單提交成功!");</script>';
     unset($_SESSION['buyCarList']);
 }
+$conn->close();
 echo '<script>document.location.href = "index.php";</script>';
-
-
-function getStoreIndex($user)
-{
-    echo $user;
-    global $conn;
-    $result = "";
-    $cmd = 'SELECT * FROM `小農` 
-            WHERE `使用者帳號`="' . $user . '"';
-    if (($sqlData = SqlCommit($conn, $cmd)) != null) {
-        $row = $sqlData->fetch_array();
-        $result = $row['賣場編號'];
-    } else {
-        $result = null;
-    }
-    return $result;
-}

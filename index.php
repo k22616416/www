@@ -153,10 +153,22 @@ if (($conn = ConnectDB()) == null) {
               echo '<td colspan=2><button class="RegisterButton" name="enterStore" >進入農場管理頁面</button></td>';
               echo '</form>';
               echo '</tr>';
+              echo '<tr >';
+              echo '<form method="post" action="userOrderList.php">';
+              echo '<input type="hidden" name="farmIndex" value="' . $userName . '">';
+              echo '<td colspan=2><button class="RegisterButton" name="enterStore" >查看已購買訂單</button></td>';
+              echo '</form>';
+              echo '</tr>';
             } else if ($loginMember == 1) //消費者身分
             {
               echo '<tr>';
               echo '<td colspan="2"><button class="RegisterButton" name="logout" type="submit">修改個人資料</button></td>';
+              echo '</tr>';
+              echo '<tr >';
+              echo '<form method="post" action="userOrderList.php">';
+              echo '<input type="hidden" name="farmIndex" value="' . $userName . '">';
+              echo '<td colspan=2><button class="RegisterButton" name="enterStore" >查看已購買訂單</button></td>';
+              echo '</form>';
               echo '</tr>';
             }
             ?>
@@ -209,31 +221,24 @@ if (($conn = ConnectDB()) == null) {
 
       <div class="TopDiv">
         <table class="SearchTable">
-          <tbody>
-            <tr>
-              <td style="width: 100px; height:auto; text-align:right; font-size:larger; font-weight:bold;margin: auto 0% auto auto">農產品篩選</td>
-              <td>
-                <hr width="1" size=65px color="#000000" style="margin: 0% auto auto 0%; width:1px;">
-              </td>
-              <!-- Sql農產品篩選條件 -->
-              <?php
-              $cmd = "SELECT `名稱` FROM `農產品` WHERE 1;";
+          <form name="searchForm" method="post" action="index.php">
+            <tbody>
+              <tr>
+                <td align="center" style="width: 100px; height:auto;  font-size:larger; font-weight:bold;">賣場尋找</td>
+                <td>
+                  <hr width="1" size=65px color="#000000" style="margin: 0% auto auto 0%; width:1px;">
+                </td>
+                <!-- Sql農產品篩選條件 -->
+                <td>
+                  <input type="text" name="searchStore" placeholder="請輸入賣家帳號或賣場編號" style="height:30px; font-size:medium" value="<?php if (isset($_POST['searchStore'])) echo $_POST['searchStore']; ?>"></input>
+                  <button type="submit" name="search"> 搜尋</button>
+                </td>
 
-              if (($sqlData = SqlCommit($conn, $cmd)) > 0) {
-                while ($row = $sqlData->fetch_assoc()) {
-                  echo '<td><input type="checkbox" name="" value="" id="sql">' . $row['名稱'] . '</td>';
-                }
-              }
-              ?>
-              <!-- <td><input type="checkbox" name="" value="" id="sql">123</td> -->
+                <!-- <td><input type="checkbox" name="" value="" id="sql">123</td> -->
 
-              <td style="width: 40px;">
-                <button style="width: 40px; height:auto; text-align:center; font-size:larger; font-weight:bold;">
-                  篩<br>選
-                </button>
-              </td>
-            </tr>
-          </tbody>
+              </tr>
+            </tbody>
+          </form>
         </table>
       </div>
 
@@ -259,7 +264,12 @@ if (($conn = ConnectDB()) == null) {
         }
       </script>
       <?php
-      $cmd = "SELECT * FROM `小農` WHERE 1;";
+      if (isset($_POST['searchStore']) && $_POST['searchStore'] != null)
+        $cmd = 'SELECT * FROM `小農` 
+          WHERE `使用者帳號` = "' . $_POST['searchStore'] . '"
+          OR `賣場編號` = "' . $_POST['searchStore'] . '";';
+      else
+        $cmd = "SELECT * FROM `小農` WHERE 1;";
       if (($sqlData = SqlCommit($conn, $cmd)) != null) {
         $i = 0;
         while ($row = $sqlData->fetch_assoc()) {

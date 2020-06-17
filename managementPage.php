@@ -161,7 +161,7 @@ if ($errorCode != 0 || $loginMember != 3) {
                         </tr>
                         <tr>
                             <td><button class="ManagementMethodDiv" type="submit" name="method" value="4" <?php if ($_GET['method'] == 4 && $_POST["orderIndex"] == null) echo "style=\"background-color:rgba(255, 255, 0, 0.9);\"" ?>>農場商品設定</button></td>
-                            <td><button class="ManagementMethodDiv" type="submit" name="method" value="5" <?php if ($_GET['method'] == 5 && $_POST["orderIndex"] == null) echo "style=\"background-color:rgba(255, 255, 0, 0.9);\"" ?>>小農申請清單</button></td>
+                            <td><button class="ManagementMethodDiv" type="submit" name="method" value="5" <?php if ($_GET['method'] == 5 && $_POST["orderIndex"] == null) echo "style=\"background-color:rgba(255, 255, 0, 0.9);\"" ?>>會員申請清單</button></td>
                             <td><button class="ManagementMethodDiv" type="submit" name="method" value="6" <?php if ($_GET['method'] == 6 && $_POST["orderIndex"] == null) echo "style=\"background-color:rgba(255, 255, 0, 0.9);\"" ?>>匯出功能</button></td>
 
                         </tr>
@@ -191,7 +191,8 @@ if ($errorCode != 0 || $loginMember != 3) {
 
                 .passButton {
                     background-color: #00FF00;
-                    width: 70px;
+                    width: 80px;
+
                 }
 
                 .passButton:hover {
@@ -200,7 +201,8 @@ if ($errorCode != 0 || $loginMember != 3) {
 
                 .blockButton {
                     background-color: #FF0000;
-                    width: 70px;
+                    width: 80px;
+                    position: relative;
                 }
 
                 .blockButton:hover {
@@ -217,11 +219,9 @@ if ($errorCode != 0 || $loginMember != 3) {
             <div class="orderMethodDiv" id="orderMethodDiv" style="display: none;">
                 <p>選取的訂單編號:</p>
                 <input type="hidden" value="123" />
-                <button>全部通過</button><button>全部拒絕</button><br>
+                <button onclick="orderListBatch(1)">全部通過</button><button onclick="orderListBatch(2)">全部拒絕</button><br>
                 <!--預估做法：
                     1.動態生成許多hidden input 把訂單清單個別埋在裡面 
-                    然後建表單送到另一個php內處理
-                    2.生成一個hidden input 把訂單清單格式化字串埋在input內
                     然後建表單送到另一個php內處理
                 -->
                 <script>
@@ -350,7 +350,7 @@ if ($errorCode != 0 || $loginMember != 3) {
             } else if ($_GET["method"] == 2) {  //訂單清單
 
 
-                $cmd = 'SELECT `訂單編號`, `訂購者帳號`, `訂單日期`, `販售者帳號`, `賣場編號`, `購買清單`, `訂單金額`, `配銷方式`, `訂單狀態` ,`消費者`.`連絡電話`
+                $cmd = 'SELECT *
                 FROM `訂單` INNER JOIN `消費者`
                 ON `訂單`.`訂購者帳號` = `消費者`.`使用者帳號`
                 WHERE 訂單狀態 = "0" ;';
@@ -362,6 +362,18 @@ if ($errorCode != 0 || $loginMember != 3) {
                     }
                 }
             } else if ($_GET["method"] == 3) {  //農產上架審核
+                $cmd = 'SELECT * 
+                FROM (`產品資訊` INNER JOIN `個人賣場2`
+                ON `產品資訊`.`產品編號` = `個人賣場2`.`產品編號`) INNER JOIN `小農`
+                ON `個人賣場2`.`賣場編號` = `小農`.`賣場編號`
+                WHERE `審核狀態`="0";';
+                $index = 0;
+                $sqlData = mysqli_query($conn, $cmd);
+                if ($sqlData->num_rows > 0) {
+                    while ($sqlArray = mysqli_fetch_array($sqlData, MYSQLI_ASSOC)) {
+                        checkListLayout($sqlArray);
+                    }
+                }
             } else if ($_GET["method"] == 4) {   //農場產品設定
                 checkAddProduct($conn);
                 DeleteProduct($conn);
@@ -387,6 +399,7 @@ if ($errorCode != 0 || $loginMember != 3) {
             }
 
             ?>
+
 
 
             <!--  -->
@@ -488,10 +501,12 @@ if ($errorCode != 0 || $loginMember != 3) {
 
                 }
                 var checkStatus = "";
+                var orderList = [];
 
                 function orderMethod(obj) {
                     if (obj.checked) {
                         console.log(obj.value);
+                        orderList.push(obj.value);
                         // checkStatus.push(obj);
                     }
                     // if (checkStatus.length != 0) {
@@ -524,6 +539,40 @@ if ($errorCode != 0 || $loginMember != 3) {
                     //     div.style.display = "none";
                     // }
 
+                }
+
+                function orderListBatch(status) {
+                    if (orderList.length < 0)
+                        return;
+                    var form1 = document.createElement("form");
+                    form1.id = "form1";
+                    form1.name = "form1";
+                    document.body.appendChild(form1);
+                    var input;
+                    for (var i = 0; i < orderList.length; i++) {
+                        input = document.createElement("input");
+                        input.type = "hidden";
+                        input.name = "orderIndex" + i;
+                        input.value = orderList[i];
+                        form1.appendChild(input);
+                    }
+
+                    input = document.createElement("input");
+                    input.type = "hidden";
+                    input.name = "orderLength";
+                    input.value = orderList.length;
+                    form1.appendChild(input);
+
+                    var btn = document.createElement("button");
+                    btn.type = "submit";
+                    if (status == 1)
+                        btn.name = "statusSubmit"
+                    else
+                        btn.name = "block"
+                    form1.appendChild(btn);
+                    form1.method = "post";
+                    form1.action = "orderOperationg.php";
+                    btn.click();
                 }
 
                 function productMethod(n, ckobj = null) {

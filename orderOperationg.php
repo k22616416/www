@@ -23,4 +23,4 @@ if (isset($_POST['statusSubmit'])) {
         }
     }
 }
-// echo '<script>document.location.href="managementPage.php?method=7";</script>';
+echo '<script>document.location.href="managementPage.php?method=2";</script>';

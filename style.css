@@ -459,18 +459,6 @@ color: red;
 	border: 1px solid #000000;
 }
 
-.addCommodity {
-	background-color: rgba(0, 255, 0, 0.7);
-
-}
-
-.addCommodity:hover {
-	background-color: rgba(0, 200, 0, 0.7);
-}
-
-.addCommodity:active {
-	background-color: rgba(0, 255, 0, 0.7);
-}
 
 .entryStoreButton {
 	width: 90px;
