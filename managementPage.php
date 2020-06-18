@@ -3,7 +3,7 @@
 use function PHPSTORM_META\type;
 
 session_start();
-$_SESSION['root'] = 1;  /////////////////////for test
+$_SESSION['root'] = 0;  /////////////////////for test
 
 function checkRoot()
 {
@@ -387,7 +387,7 @@ if ($errorCode != 0 || $loginMember != 3) {
                     }
                 }
                 ProductsLayout3();
-            } else if ($_GET["method"] == 5) {  //小農申請清單
+            } else if ($_GET["method"] == 5) {  //會員申請清單
                 $cmd = 'SELECT * FROM `註冊審核` WHERE `審核狀態` = 0;';
                 $sqlData = mysqli_query($conn, $cmd);
                 if ($sqlData->num_rows > 0) {

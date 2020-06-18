@@ -23,27 +23,29 @@ if (isset($_POST["add"])) {
     `上架日期`,`審核狀態`) 
     VALUES ("' . $len . '","",
     "","0",
-    "0",0,
+    "0","0",
     "","0",
     "","產品名稱",
-    "","","' . date("Y-m-d H:i:s") . '"
-    "1");';
+    "","",
+    "' . date("Y-m-d H:i:s") . '","1");';
     $sqlData = mysqli_query($conn, $cmd);
     if (!$sqlData) {
-        echo 'error @ add 1';
+        echo 'error @ add 1:<br>';
+        echo $conn->error . "<br>";
     } else {
         $cmd = '
 INSERT INTO `個人賣場2`
         (`項目`, `賣場編號`, 
         `產品編號`, `產品資訊`, 
         `願意配銷地點`, `配銷方式`) 
-VALUES ("",' . $_POST['storeIndex'] . ',
+VALUES ("","' . $_POST['storeIndex'] . '",
         ' . $len . ',"",
         "","")';
     }
     $sqlData = mysqli_query($conn, $cmd);
     if (!$sqlData) {
-        echo 'error @ add 2';
+        echo 'error @ add 2<br>';
+        echo $conn->error . "<br>";
     }
 } else if (isset($_POST['del'])) {
     $len = $_POST['length'];
@@ -51,13 +53,15 @@ VALUES ("",' . $_POST['storeIndex'] . ',
         $cmd = 'DELETE FROM `個人賣場2` WHERE `產品編號`="' . $_POST['productIndex' . $i] . '";';
         $sqlData = mysqli_query($conn, $cmd);
         if (!$sqlData) {
-            echo 'error @ del 1';
+            echo 'error @ del 1<br>';
+            echo $conn->error . "<br>";
             die();
         }
         $cmd = 'DELETE FROM `產品資訊` WHERE `產品編號`="' . $_POST['productIndex' . $i] . '";';
         $sqlData = mysqli_query($conn, $cmd);
         if (!$sqlData) {
-            echo 'error @ del 1';
+            echo 'error @ del 1<br>';
+            echo $conn->error . "<br>";
             die();
         }
     }

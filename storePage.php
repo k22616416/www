@@ -201,7 +201,7 @@ if ($sqlData->num_rows > 0) {
                             echo '</tr>';
                             echo '<tr >';
                             echo '<form method="post" action="farmManagement.php?method=1">';
-                            echo '<input type="hidden" name="farmIndex" value="' . $userName . '">';
+                            echo '<input type="hidden" name="farmNumber" value="' . $userName . '">';
                             echo '<td colspan=2><button class="RegisterButton" name="enterStore" >進入農場管理頁面</button></td>';
                             echo '</form>';
                             echo '</tr>';
@@ -517,7 +517,7 @@ if ($sqlData->num_rows > 0) {
                     <td>
                     備註:' . $sqlArray['產品註明'] . '
                     </td>
-                    <td colspan="2" align="right">
+                    <td colspan="1" align="right">
                     購買數量 <input type="text" name="buyCount" style="width:50px;" onkeydown="if(event.keyCode==13){return false;}" value=1></input>
                     <button type="submit" name="buyButton" align="center" style=" font-size:18px; font-weight: bolder; background-color: #FFFFFF;">購買</button>
                     </td>

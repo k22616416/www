@@ -26,15 +26,16 @@ $storeInfo = '';
 $storeOrder = 0;
 $CommodityIndex = 0;
 // $order = $_GET['orderIndex'];
-
+error_reporting(0);
 $titleStr = '小農線上市集媒合系統';
 
 include_once("sqlConnectAPI.php");
 if (($conn = ConnectDB()) == null) {
     die("資料庫連線失敗");
 }
-
-if (isset($_POST['storeNumber'])) {
+if (isset($_POST['farmNumber'])) {
+    $store = $_POST['farmNumber'];
+} else if (isset($_POST['storeNumber'])) {
     $store = $_POST['storeNumber'];
     $_SESSION['storeNumber'] = $store;
 } else if ($_SESSION['storeNumber'] != null) {
@@ -57,7 +58,7 @@ if (isset($_POST['storeNumber'])) {
 
 
 
-error_reporting(0);
+
 
 
 function orderStatus($x)
@@ -73,6 +74,7 @@ function orderStatus($x)
             return null;
     }
 }
+
 ?>
 <!-- 判斷有沒有登入 -->
 <?php
@@ -235,8 +237,8 @@ if (isset($_POST['logout'])) {
         <!--透過SQL增加商品資訊-->
         <div class="mainDiv">
             <div class="farmMethodItem" align="center">
-                <button class="addCommodity" onclick="addNewCommodity(1,<?php echo $store; ?>)">新增產品</button>
-                <button class="delCommodity" onclick="addNewCommodity(0,<?php echo $store; ?>)" style="display: none;">刪除產品</button>
+                <button class="addCommodity" onclick="addNewCommodity(1,' <?php echo $store; ?> ')">新增產品</button>
+                <button class="delCommodity" onclick="addNewCommodity(0,'<?php echo $store; ?>')" style="display: none;">刪除產品</button>
             </div>
             <?php
 
@@ -252,8 +254,9 @@ if (isset($_POST['logout'])) {
                 }
             }
 
-            if ($_POST["orderIndex"] != null) {
+            if (isset($_POST["orderIndex"])) {
                 // echo $_POST["orderIndex"];
+                debug("orderDetail");
                 $cmd = 'SELECT * 
                 FROM `訂單` INNER JOIN `消費者`
                 ON `訂單`.`訂購者帳號` = `消費者`.`使用者帳號`
@@ -379,6 +382,7 @@ if (isset($_POST['logout'])) {
                     ';
                 }
             } else if ($_GET["method"] == 1) {
+                debug("1");
                 $cmd = 'SELECT *
                         FROM (`小農` INNER JOIN `個人賣場2` ON `小農`.`賣場編號`=`個人賣場2`.`賣場編號`)
                         INNER JOIN `產品資訊` ON `個人賣場2`.`產品編號`=`產品資訊`.`產品編號`
@@ -464,6 +468,7 @@ if (isset($_POST['logout'])) {
                 }
             } else if ($_GET["method"] == 2) {  //訂單資訊
                 // echo $storeName;
+                debug("2");
                 $cmd = 'SELECT `訂單編號`, `訂購者帳號`, `訂單日期`, `販售者帳號`, `賣場編號`, `購買清單`, `訂單金額`, `配銷方式`, `訂單狀態` ,`消費者`.`連絡電話`
                 FROM `訂單` INNER JOIN `消費者`
                 ON `訂單`.`訂購者帳號` = `消費者`.`使用者帳號`

@@ -149,7 +149,7 @@ if (($conn = ConnectDB()) == null) {
               echo '</tr>';
               echo '<tr >';
               echo '<form method="post" action="farmManagement.php?method=1">';
-              echo '<input type="hidden" name="farmIndex" value="' . $userName . '">';
+              echo '<input type="hidden" name="farmNumber" value="' . $farmStoreNumber . '">';
               echo '<td colspan=2><button class="RegisterButton" name="enterStore" >進入農場管理頁面</button></td>';
               echo '</form>';
               echo '</tr>';
@@ -224,7 +224,7 @@ if (($conn = ConnectDB()) == null) {
           <form name="searchForm" method="post" action="index.php">
             <tbody>
               <tr>
-                <td align="center" style="width: 100px; height:auto;  font-size:larger; font-weight:bold;">賣場尋找</td>
+                <td align="center" style="width: 100px; height:auto;  font-size:larger; font-weight:bold;">賣場搜尋</td>
                 <td>
                   <hr width="1" size=65px color="#000000" style="margin: 0% auto auto 0%; width:1px;">
                 </td>

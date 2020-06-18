@@ -8,28 +8,31 @@ if (($conn = ConnectDB()) == null) {
     die("資料庫連線失敗");
 }
 
-if (isset($_POST['storeNumber'])) {
-    $store = $_POST['storeNumber'];
-    $_SESSION['storeNumber'] = $store;
-} else if ($_SESSION['storeNumber'] != null) {
-    $store = $_SESSION['storeNumber'];
-} else if (isset($_POST['enterStore'])) {
-    // echo '<script>alert("1");</script>';
-    $userName = $_POST['storeNumber'];
-    $cmd = "SELECT * FROM `小農` WHERE `使用者帳號`= '" . $userName . "';";
-    $sqlData = mysqli_query($conn, $cmd);
-    if ($sqlData->num_rows > 0) {
-        $sqlArray = mysqli_fetch_array($sqlData, MYSQLI_ASSOC);
-        $store = $sqlArray['賣場編號'];
-        $storeName = $sqlArray['使用者帳號'];
-    }
-} else {
-    echo '<script>alert("取得賣場編號失敗");</script>';
-    // echo "取得賣場編號失敗";
-    sleep(2);
-    echo '<script>document.location.href="index.php"</script>';
-    exit;
-}
+// if (isset($_POST['storeNumber'])) {
+//     $store = $_POST['storeNumber'];
+//     $_SESSION['storeNumber'] = $store;
+// } else if ($_SESSION['storeNumber'] != null) {
+//     $store = $_SESSION['storeNumber'];
+// } else if (isset($_POST['enterStore'])) {
+//     // echo '<script>alert("1");</script>';
+//     $userName = $_POST['storeNumber'];
+//     $cmd = "SELECT * FROM `小農` WHERE `使用者帳號`= '" . $userName . "';";
+//     $sqlData = mysqli_query($conn, $cmd);
+//     if ($sqlData->num_rows > 0) {
+//         $sqlArray = mysqli_fetch_array($sqlData, MYSQLI_ASSOC);
+//         $store = $sqlArray['賣場編號'];
+//         $storeName = $sqlArray['使用者帳號'];
+//     }
+// } else {
+//     echo '<script>alert("取得賣場編號失敗");</script>';
+//     // echo "取得賣場編號失敗";
+//     sleep(2);
+//     echo '<script>document.location.href="index.php"</script>';
+//     exit;
+// }
+
+
+
 
 $loginStatus = false;
 $loginMember = 0;
@@ -42,8 +45,25 @@ $storeBrowse = 0;
 
 error_reporting(0);
 
-
-
+if (isset($_POST['farmIndex'])) {
+    $farmIndex = $_POST['farmIndex'];
+    $_SESSION['orderUser'] = $farmIndex;
+} else if ($_SESSION['orderUser'] != null) {
+    $farmIndex = $_SESSION['orderUser'];
+}
+function orderStatus($x)
+{
+    switch ($x) {
+        case 0:
+            return '審核中';
+        case 1:
+            return '通過';
+        case 2:
+            return '未通過';
+        default:
+            return null;
+    }
+}
 ?>
 <!-- 判斷有沒有登入 -->
 <?php
@@ -334,15 +354,14 @@ if ($sqlData->num_rows > 0) {
                                     </tr>
                                     <tr>
                                         <td colspan="2">
-                                            匯款帳戶: ';
+                                            匯款帳戶: <b>';
                         if ($sqlArray['匯款帳戶'] == null) {
-                            echo '<input type="text" name="payment" value="" placeholder="請輸入銀行帳戶" ' . ($sqlArray['訂單狀態'] != 1 ? 'disabled = "disabled"' : '') . '>';
+                            echo '賣家尚未提供';
                         } else {
                             echo $sqlArray['匯款帳戶'];
                         }
-                        echo '
+                        echo '</b>
                                             <input type="hidden" name="orderIndex" value="' . $sqlArray['訂單編號'] . '" />
-                                            <button name="submitPayment" style="height:25px;">送出</button>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -417,7 +436,7 @@ if ($sqlData->num_rows > 0) {
                 $cmd = 'SELECT *
                     FROM `訂單` INNER JOIN `小農`
                     ON `訂單`.`訂購者帳號` = `小農`.`使用者帳號`
-                    WHERE `使用者帳號`="' . $_POST['farmIndex'] . '"';
+                    WHERE `使用者帳號`="' . $farmIndex . '"';
                 $sqlData = mysqli_query($conn, $cmd);
                 if ($sqlData->num_rows > 0) {
 
@@ -451,7 +470,7 @@ if ($sqlData->num_rows > 0) {
                             販售者聯絡電話:' . $sqlArray['連絡電話'] . '
                         </td>
                         <td>
-                            訂單狀態:<span style="color:red">' . $sqlArray['訂單狀態'] . '</span>
+                            訂單狀態:<span style="color:red">' . orderStatus($sqlArray['訂單狀態']) . '</span>
                         </td>
                     </tr>
                 </tbody>

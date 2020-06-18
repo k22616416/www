@@ -33,16 +33,20 @@ if (isset($_POST['user'])) {
     if (($conn = ConnectDB()) == null) {
         die("資料庫連線失敗");
     }
-    $cmd = 'SELECT * FROM `註冊審核` WHERE `使用者帳號`=\'' . $user . '\' AND `註冊身分類別`=\'' . $member . '\'';
-    if (($sqlData = mysqli_query($conn, $cmd)) == false) {
+    $error = 0;
+    $cmd = 'SELECT * FROM `註冊審核` WHERE `使用者帳號`="' . $user . '" AND `註冊身分類別`="' . $member . '"';
+    $sqlData = mysqli_query($conn, $cmd);
+    if ($sqlData->num_rows == 0) {
         $cmd = 'SELECT * FROM `使用者` WHERE `使用者帳號`=\'' . $user . '\'';
-        if (($sqlData = mysqli_query($conn, $cmd)) == false) {
+        $sqlData = mysqli_query($conn, $cmd);
+        if ($sqlData->num_rows == 0) {
             $cmd = 'SELECT * FROM `小農` WHERE `使用者帳號`=\'' . $user . '\'';
-            if (($sqlData = mysqli_query($conn, $cmd)) == false) {
+            $sqlData = mysqli_query($conn, $cmd);
+            if ($sqlData->num_rows == 0) {
                 $cmd = 'INSERT INTO `註冊審核`(`編號`,`註冊身分類別`, `使用者帳號`, `使用者密碼`, `聯絡電話`, `Email`, `住址`, `地圖經緯度`) VALUES (\'\',' . $member . ',"' . $user . '","' . $passwd . '","' . $phone . '","' . $email . '","' . $address . '","' . $gMap . '")';
-                if ($sqlData = mysqli_query($conn, $cmd) == false) {
-                    echo '<script>alert("資料庫存取失敗");</script>';
-                    die();
+                if ($sqlData = mysqli_query($conn, $cmd) === false) {
+                    $error = 4;
+
                     // echo '<script>document.location.href="index.php"</script>';
                 } else {
                     echo '<script>alert("註冊資訊提交成功!\n請等待管理員審核");</script>';
@@ -55,16 +59,23 @@ if (isset($_POST['user'])) {
                     if ($member == 1)
                         unset($_POST['gMap']);
                     echo '<script>document.location.href="index.php"</script>';
+                    $error = 0;
                 }
+            } else {
+                $error = 3;
             }
+        } else {
+            $error = 2;
         }
+    } else {
+        $error = 1;
     }
 }
-echo '<script>alert("此帳號已被註冊!");</script>';
-echo '<script>document.location.href="registerPage.php"</script>';
 
-
-
+if ($error) {
+    echo '<script>alert("此帳號已被註冊!\nError Code:' . $error . '");</script>';
+    echo '<script>document.location.href="registerPage.php"</script>';
+}
 
 ?>
 
