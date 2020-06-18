@@ -25,9 +25,13 @@ function getStoreIndex($user)
 function getOrderIndex()
 {
     global $conn;
-    $cmd = 'SELECT MAX(`訂單編號`) as `編號` WHERE 1;';
+    $cmd = 'SELECT MAX(`訂單編號`) as `訂單編號` FROM `訂單` WHERE `訂購者帳號`="' . $_SESSION['user'] . '" ;';
     $sqlData = mysqli_query($conn, $cmd);
-    return $sqlData;
+    if ($sqlData->num_rows > 0) {
+        $sqlArray = mysqli_fetch_assoc($sqlData);
+        return $sqlArray['訂單編號'];
+    }
+    return null;
 }
 
 
@@ -88,15 +92,16 @@ for ($i = 0; $i < count($orderDetail); $i++) {
     "' . $_POST['totalCash'] . '",
     "' . $_POST['transport'] . '",
     "' . "0" . '")';
-    echo $cmd;
+    // echo $cmd;
     if (($sqlData = mysqli_query($conn, $cmd)) != true) {
         $error = true;
-        $errorStr += $conn->error . "\n";
+        $errorStr = $errorStr . $conn->error . "<br>";
     }
-    $cmd = 'INSERT INTO `配銷方式`(`訂單編號`, `付款方式`, `配銷地址`, `匯款帳戶`) VALUES ("' . getOrderIndex() . '","","' . $_POST['transport'] . '","' . $_POST['position'] . '")';
+    $cmd = 'UPDATE `配銷方式` SET `配銷地址`="' . $_POST['position'] . '",`配銷方式`="' . $_POST['transport'] . '" WHERE `訂單編號`="' . getOrderIndex() . '" ;';
+    // $cmd = 'INSERT INTO `配銷方式`(`訂單編號`, `付款方式`, `配銷地址`, `匯款帳戶`) VALUES ("' . getOrderIndex() . '","","' . $_POST['transport'] . '","' . $_POST['position'] . '")';
     if (($sqlData = mysqli_query($conn, $cmd)) != true) {
         $error = true;
-        $errorStr += $conn->error . "\n";
+        $errorStr = $error . $conn->error . "<br>";
     }
 }
 if ($error) {
@@ -107,4 +112,4 @@ if ($error) {
     unset($_SESSION['buyCarList']);
 }
 $conn->close();
-echo '<script>document.location.href = "index.php";</script>';
+if (!$error) echo '<script>document.location.href = "index.php";</script>';

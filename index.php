@@ -51,9 +51,10 @@ if (($conn = ConnectDB()) == null) {
         } else if ($_SESSION['user'] != null) {
           $loginStatus = true;
           $loginMember = $_SESSION['member'];
-          $infoName = $_SESSION['姓名'];
+          $infoName = $_SESSION['name'];
           $userName = $_SESSION['user'];
           $farmStoreNumber = $_SESSION['farmStoreNumber'];
+          debug("session user");
           $errorCode = 0;
         } else {
 
@@ -109,7 +110,7 @@ if (($conn = ConnectDB()) == null) {
                 $_SESSION['name'] = $sqlArray['姓名'];
                 $_SESSION['member'] = $loginMember;
                 $_SESSION['farmStoreNumber'] = $sqlArray['賣場編號'];
-                $_SESSION['姓名'] = $infoName;
+                $_SESSION['name'] = $infoName;
               } else {
                 $errorCode = 2;
               }
@@ -136,11 +137,11 @@ if (($conn = ConnectDB()) == null) {
             <?php
             if ($loginMember == 2) //小農身分
             {
-              echo '<tr >';
-              echo '<form method="post" action="storePage.php">';
-              echo '<td colspan=2><button class="RegisterButton" name="fixed" type="submit">修改個人資料</button></td>';
-              echo '</form>';
-              echo '</tr>';
+              // echo '<tr >';
+              // echo '<form method="post" action="storePage.php">';
+              // echo '<td colspan=2><button class="RegisterButton" name="fixed" type="submit">修改個人資料</button></td>';
+              // echo '</form>';
+              // echo '</tr>';
               echo '<tr >';
               echo '<form method="post" action="storePage.php">';
               echo '<input type="hidden" name="storeNumber" value="' . $farmStoreNumber . '">';

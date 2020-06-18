@@ -188,11 +188,11 @@ if ($sqlData->num_rows > 0) {
                         <?php
                         if ($loginMember == 2) //小農身分
                         {
-                            echo '<tr >';
-                            echo '<form method="post" action="storePage.php">';
-                            echo '<td colspan=2><button class="RegisterButton" name="fixed" type="submit">修改個人資料</button></td>';
-                            echo '</form>';
-                            echo '</tr>';
+                            // echo '<tr >';
+                            // echo '<form method="post" action="storePage.php">';
+                            // echo '<td colspan=2><button class="RegisterButton" name="fixed" type="submit">修改個人資料</button></td>';
+                            // echo '</form>';
+                            // echo '</tr>';
                             echo '<tr >';
                             echo '<form method="post" action="storePage.php">';
                             echo '<input type="hidden" name="storeNumber" value="' . $farmStoreNumber . '">';
@@ -201,7 +201,7 @@ if ($sqlData->num_rows > 0) {
                             echo '</tr>';
                             echo '<tr >';
                             echo '<form method="post" action="farmManagement.php?method=1">';
-                            echo '<input type="hidden" name="farmNumber" value="' . $userName . '">';
+                            echo '<input type="hidden" name="farmNumber" value="' . $farmStoreNumber . '">';
                             echo '<td colspan=2><button class="RegisterButton" name="enterStore" >進入農場管理頁面</button></td>';
                             echo '</form>';
                             echo '</tr>';
@@ -384,7 +384,7 @@ if ($sqlData->num_rows > 0) {
                                             }
                                         </script>
                                         <td align="left" id="cashTotal' . $i . '">小計:' . $list[$i]['CCash'] * $list[$i]['count'] . '</td>
-                                        <td align="center"><input type="count" onkeydown="if(event.keyCode==13){return false;}" onchange="cashTotal' . $i . '(' . $list[$i]['CCash'] . ',this.value,' . $i . ')" value="' . $list[$i]['count'] . '" style="width:30px; text-align:center;"></input></td>
+                                        <td align="center"><input type="count" onkeydown="if(event.keyCode==13){return false;}" onchange="cashTotal' . $i . '(' . $list[$i]['CCash'] . ',this.value,' . $i . ')" value="' . $list[$i]['count'] . '" disabled="disabled" style="width:30px; text-align:center;"></input></td>
         
                                         <td><input type="submit"  name="cancel" style="background-color:rgba(0,0,0,0); ;background-image:url(Image/cancel.png); width:32px; height:32px; border:0px; padding:0 0 0 0;" value=""></input> </td>
                                         

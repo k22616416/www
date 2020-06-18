@@ -9,11 +9,14 @@ if (isset($_POST['pass'])) {
     $sqlData = mysqli_query($conn, $cmd);
     if ($sqlData->num_rows > 0) {
         $sqlArray = mysqli_fetch_array($sqlData);
-        if ($sqlArray['註冊身分類別'] == 0) {
-            $cmd = 'INSERT INTO `消費者`(`使用者帳號`, `姓名`, `使用者密碼`, `地址`, `Email`, `連絡電話`) VALUES ("' . $sqlArray['使用者帳號'] . '","' . $sqlArray['使用者帳號'] . '","' . $sqlArray['使用者密碼'] . '","' . $sqlArray['地址'] . '","' . $sqlArray['Email'] . '","' . $sqlArray['聯絡電話'] . '")';
-        } else {
+        if ($sqlArray['註冊身分類別'] == 1) {
             $cmd = 'INSERT INTO `小農`(`使用者帳號`, `姓名`, `使用者密碼`, `地址`, `Email`, `連絡電話`) VALUES ("' . $sqlArray['使用者帳號'] . '","' . $sqlArray['使用者帳號'] . '","' . $sqlArray['使用者密碼'] . '","' . $sqlArray['住址'] . '","' . $sqlArray['Email'] . '","' . $sqlArray['聯絡電話'] . '")';
+            $sqlData = mysqli_query($conn, $cmd);
+            if (!$sqlData) {
+                echo '資料庫存取失敗';
+            }
         }
+        $cmd = 'INSERT INTO `消費者`(`使用者帳號`, `姓名`, `使用者密碼`, `地址`, `Email`, `連絡電話`) VALUES ("' . $sqlArray['使用者帳號'] . '","' . $sqlArray['使用者帳號'] . '","' . $sqlArray['使用者密碼'] . '","' . $sqlArray['地址'] . '","' . $sqlArray['Email'] . '","' . $sqlArray['聯絡電話'] . '")';
         $sqlData = mysqli_query($conn, $cmd);
         if (!$sqlData) {
             echo '資料庫存取失敗';

@@ -33,30 +33,35 @@ include_once("sqlConnectAPI.php");
 if (($conn = ConnectDB()) == null) {
     die("資料庫連線失敗");
 }
-if (isset($_POST['farmNumber'])) {
+// if (isset($_POST['farmNumber'])) {
+//     $store = $_POST['farmNumber'];
+// } else if (isset($_POST['storeNumber'])) {
+//     $store = $_POST['storeNumber'];
+//     $_SESSION['storeNumber'] = $store;
+// } else if ($_SESSION['storeNumber'] != null) {
+//     $store = $_SESSION['storeNumber'];
+// } else if (isset($_POST['enterStore'])) {
+//     $userName = $_POST['storeNumber'];
+//     $cmd = "SELECT * FROM `小農` WHERE `使用者帳號`= '" . $userName . "';";
+//     if (($sqlData = SqlCommit($conn, $cmd)) != null) {
+//         while ($row = $sqlData->fetch_assoc()) {
+//             $store = $sqlArray['賣場編號'];
+//             $storeName = $sqlArray['使用者帳號'];
+//         }
+//     }
+// } else {
+//     echo '<script>alert("取得賣場編號失敗");</script>';
+//     // echo "取得賣場編號失敗";
+//     sleep(2);
+//     if (!checkRoot()) echo '<script>document.location.href="index.php"</script>';
+// }
+
+if (isset($_POST['enterStore'])) {
     $store = $_POST['farmNumber'];
-} else if (isset($_POST['storeNumber'])) {
-    $store = $_POST['storeNumber'];
     $_SESSION['storeNumber'] = $store;
 } else if ($_SESSION['storeNumber'] != null) {
     $store = $_SESSION['storeNumber'];
-} else if (isset($_POST['enterStore'])) {
-    $userName = $_POST['storeNumber'];
-    $cmd = "SELECT * FROM `小農` WHERE `使用者帳號`= '" . $userName . "';";
-    if (($sqlData = SqlCommit($conn, $cmd)) != null) {
-        while ($row = $sqlData->fetch_assoc()) {
-            $store = $sqlArray['賣場編號'];
-            $storeName = $sqlArray['使用者帳號'];
-        }
-    }
-} else {
-    echo '<script>alert("取得賣場編號失敗");</script>';
-    // echo "取得賣場編號失敗";
-    sleep(2);
-    if (!checkRoot()) echo '<script>document.location.href="index.php"</script>';
 }
-
-
 
 
 
@@ -166,11 +171,11 @@ if (isset($_POST['logout'])) {
                         <?php
                         if ($loginMember == 2) //小農身分
                         {
-                            echo '<tr >';
-                            echo '<form method="post" action="storePage.php">';
-                            echo '<td colspan=2><button class="RegisterButton" name="fixed" type="submit">修改個人資料</button></td>';
-                            echo '</form>';
-                            echo '</tr>';
+                            // echo '<tr >';
+                            // echo '<form method="post" action="storePage.php">';
+                            // echo '<td colspan=2><button class="RegisterButton" name="fixed" type="submit">修改個人資料</button></td>';
+                            // echo '</form>';
+                            // echo '</tr>';
                             echo '<tr >';
                             echo '<form method="post" action="storePage.php">';
                             echo '<input type="hidden" name="storeNumber" value="' . $farmStoreNumber . '">';
@@ -179,7 +184,7 @@ if (isset($_POST['logout'])) {
                             echo '</tr>';
                             echo '<tr >';
                             echo '<form method="post" action="farmManagement.php?method=1">';
-                            echo '<input type="hidden" name="user" value="' . $userName . '">';
+                            echo '<input type="hidden" name="farmNumber" value="' . $farmStoreNumber . '">';
                             echo '<td colspan=2><button class="RegisterButton" name="enterStore" >進入農場管理頁面</button></td>';
                             echo '</form>';
                             echo '</tr>';
@@ -237,7 +242,7 @@ if (isset($_POST['logout'])) {
         <!--透過SQL增加商品資訊-->
         <div class="mainDiv">
             <div class="farmMethodItem" align="center">
-                <button class="addCommodity" onclick="addNewCommodity(1,' <?php echo $store; ?> ')">新增產品</button>
+                <button class="addCommodity" onclick="addNewCommodity(1,'<?php echo $store; ?>')">新增產品</button>
                 <button class="delCommodity" onclick="addNewCommodity(0,'<?php echo $store; ?>')" style="display: none;">刪除產品</button>
             </div>
             <?php
@@ -303,10 +308,10 @@ if (isset($_POST['logout'])) {
                                     <tr>
                                         <td colspan="2">
                                             匯款帳戶: ';
-                        if ($sqlArray['匯款帳戶'] == null) {
+                        if ($sqlArray["匯款帳戶"] == null) {
                             echo '<input type="text" name="payment" value="" placeholder="請輸入銀行帳戶" ' . ($sqlArray['訂單狀態'] != 1 ? 'disabled = "disabled"' : '') . '>';
                         } else {
-                            echo $sqlArray['匯款帳戶'];
+                            echo $sqlArray["匯款帳戶"];
                         }
                         echo '
                                             <input type="hidden" name="orderIndex" value="' . $sqlArray['訂單編號'] . '" />
@@ -382,14 +387,17 @@ if (isset($_POST['logout'])) {
                     ';
                 }
             } else if ($_GET["method"] == 1) {
-                debug("1");
+                debug($store);
+
                 $cmd = 'SELECT *
                         FROM (`小農` INNER JOIN `個人賣場2` ON `小農`.`賣場編號`=`個人賣場2`.`賣場編號`)
                         INNER JOIN `產品資訊` ON `個人賣場2`.`產品編號`=`產品資訊`.`產品編號`
                         WHERE `小農`.`賣場編號`="' . $store . '";';
+
                 $index = 0;
                 $sqlData = mysqli_query($conn, $cmd);
                 if ($sqlData->num_rows > 0) {
+                    debug($sqlData->num_rows);
                     while ($sqlArray = mysqli_fetch_array($sqlData, MYSQLI_ASSOC)) {
 
 
@@ -465,6 +473,8 @@ if (isset($_POST['logout'])) {
                         $index++;
                         $CommodityIndex++;
                     }
+                } else {
+                    debug("Store Empty.");
                 }
             } else if ($_GET["method"] == 2) {  //訂單資訊
                 // echo $storeName;

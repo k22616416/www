@@ -14,3 +14,4 @@ if (isset($_POST['submitPayment'])) {
 }
 
 $conn->close();
+echo '<script>document.location.href = "farmManagement.php?method=2";</script>';

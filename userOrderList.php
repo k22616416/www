@@ -147,20 +147,20 @@ $cmd = 'UPDATE `小農` SET `瀏覽次數`= `瀏覽次數`+1 WHERE `賣場編號
 SqlCommit($conn, $cmd);
 
 // topDiv info
-$cmd = "SELECT * FROM `小農` WHERE `賣場編號`= '" . $store . "'";
-$sqlData = mysqli_query($conn, $cmd);
-if ($sqlData->num_rows > 0) {
-    $sqlArray = mysqli_fetch_array($sqlData, MYSQLI_ASSOC);
-    $storeInfo = $sqlArray['賣場簡介'];
-    $storeOrder = $sqlArray['交易訂單數'];
-    $storeBrowse = $sqlArray['瀏覽次數'];
-    $storeName = $sqlArray['使用者帳號'];
-} else {
-    echo '<script>alert("取得賣場資訊時發生錯誤，將返回首頁\n' . $store . '");</script>';
-    // echo '取得賣場資訊時發生錯誤，將返回首頁';
-    sleep(2);
-    echo '<script>document.location.href="index.php"</script>';
-}
+// $cmd = "SELECT * FROM `小農` WHERE `賣場編號`= '" . $store . "'";
+// $sqlData = mysqli_query($conn, $cmd);
+// if ($sqlData->num_rows > 0) {
+//     $sqlArray = mysqli_fetch_array($sqlData, MYSQLI_ASSOC);
+//     $storeInfo = $sqlArray['賣場簡介'];
+//     $storeOrder = $sqlArray['交易訂單數'];
+//     $storeBrowse = $sqlArray['瀏覽次數'];
+//     $storeName = $sqlArray['使用者帳號'];
+// } else {
+//     echo '<script>alert("取得賣場資訊時發生錯誤，將返回首頁\n' . $store . '");</script>';
+//     // echo '取得賣場資訊時發生錯誤，將返回首頁';
+//     sleep(2);
+//     echo '<script>document.location.href="index.php"</script>';
+// }
 
 
 
@@ -208,11 +208,11 @@ if ($sqlData->num_rows > 0) {
                         <?php
                         if ($loginMember == 2) //小農身分
                         {
-                            echo '<tr >';
-                            echo '<form method="post" action="storePage.php">';
-                            echo '<td colspan=2><button class="RegisterButton" name="fixed" type="submit">修改個人資料</button></td>';
-                            echo '</form>';
-                            echo '</tr>';
+                            // echo '<tr >';
+                            // echo '<form method="post" action="storePage.php">';
+                            // echo '<td colspan=2><button class="RegisterButton" name="fixed" type="submit">修改個人資料</button></td>';
+                            // echo '</form>';
+                            // echo '</tr>';
                             echo '<tr >';
                             echo '<form method="post" action="storePage.php">';
                             echo '<input type="hidden" name="storeNumber" value="' . $farmStoreNumber . '">';

@@ -50,7 +50,7 @@ if (($conn = ConnectDB()) == null) {
         } else if ($_SESSION['user'] != null) {
           $loginStatus = true;
           $loginMember = $_SESSION['member'];
-          $infoName = $_SESSION['姓名'];
+          $infoName = $_SESSION['name'];
           $userName = $_SESSION['user'];
           $farmStoreNumber = $_SESSION['farmStoreNumber'];
           $errorCode = 0;
@@ -80,7 +80,6 @@ if (($conn = ConnectDB()) == null) {
                 $errorCode = 0;
                 $_SESSION['user'] = $userName;
                 $_SESSION['name'] = $sqlArray['姓名'];
-                $_SESSION['member'] = $loginMember;
               } else {
                 //echo "0筆資料";
                 $errorCode = 2;
