@@ -510,7 +510,7 @@ if ($sqlData->num_rows > 0) {
                 </tr>
                 <tr>
                 <td colspan="2">
-                可配送方式:' . $sqlArray['願意配送方式'] . '
+                可配送方式:' . $sqlArray['配銷方式'] . '
                 </td>
                 </tr>
                     <tr>

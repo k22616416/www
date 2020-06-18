@@ -403,7 +403,9 @@ if (isset($_POST['logout'])) {
 
                         echo '
     <div style="display: flex;">
-                <table class="StoreInfoTable" id="storeInfoTemplate" rules="all" style="width:550px;">
+                <table class="StoreInfoTable" id="storeInfoTemplate" rules="all" style="width:550px;';
+                        if ($sqlArray['審核狀態'] == 0) echo 'background-color: #ADADAD;';
+                        echo '">
                     <form name="commodity" action="submitStoreFixedInfo.php" Enctype="multipart/form-data" method="post" align="center" style="margin:auto auto auto auto;">
                         <tbody>
                             <tr>
@@ -457,8 +459,8 @@ if (isset($_POST['logout'])) {
                                 <td>
                                 備註:<input name="remark" id="remark' . $index . '"disabled = "disabled" value="' . $sqlArray['產品註明'] . '" style="width: 50px;" onkeydown="if(event.keyCode==13){return false;}"></input>
                                 </td>
-                                <td colspan="2" align="right">
-                                    <button type="button" name="fixedButton' . $index . '" id="fixedButton' . $index . '" onclick="if(!fixed(' . $index . ',' . true . ')){return false;}" font color="blue" align="center" style=" font-size:16px; font-weight: bolder; background-color: #BEBEBE;">修改</button>
+                                <td colspan="1" align="right">
+                                    <button type="button" name="fixedButton' . $index . '" id="fixedButton' . $index . '" onclick="if(!fixed(' . $index . ',' . true . ')){return false;}" font color="blue" align="center" ' . ($sqlArray['審核狀態'] == 0 ? 'disabled="disabled"' : "") . ' style=" font-size:16px; font-weight: bolder; background-color: #BEBEBE;">修改</button>
                                     <button type="submit" name="submitButton' . $index . '" id="submitButton' . $index . '"  font color="blue" align="center" style=" font-size:16px; font-weight: bolder; background-color: #53FF53;display:none;">提交修改</button>
                                 </td>
                             </tr>
@@ -466,10 +468,12 @@ if (isset($_POST['logout'])) {
                     </form>
                 </table>
                 <div class="option">
-                <input type="checkbox" class="orderCheckbox" onclick="showDelMathod(' . $sqlArray['產品編號'] . ')"  value="' . $index . '"/>
-                </div>
-            </div>
-            ';
+                ';
+                        if ($sqlArray['審核狀態'] == 1)
+                            echo '<input type="checkbox" class="orderCheckbox" onclick="showDelMathod(' . $sqlArray['產品編號'] . ')"  value="' . $index . '"/></div>';
+                        else
+                            echo '<div style="font-size:18px">審<br>核<br>中</div></div>';
+                        echo '</div>';
                         $index++;
                         $CommodityIndex++;
                     }
@@ -487,7 +491,7 @@ if (isset($_POST['logout'])) {
                 if ($sqlData->num_rows > 0) {
 
                     while ($sqlArray = mysqli_fetch_array($sqlData, MYSQLI_ASSOC)) {
-                        echo '<table class="StoreInfoTable" border="1px" style="width:590px; border-collapse:collapse; ">
+                        echo '<table class="StoreInfoTable" border="1px" style="width:590px; border-collapse:collapse;">
                             <form name="orderDetail" id="orderDetail" method="post" action="farmManagement.php?method=2">
                                 <tbody>
                                     <tr>
@@ -497,7 +501,7 @@ if (isset($_POST['logout'])) {
                                         <td>
                                             訂單總金額:<span style="color:red">' . $sqlArray['訂單金額'] . '</span>
                                         </td>
-                                        <td rowspan="3">
+                                        <td rowspan="2">
                                             <input type="hidden" name="orderIndex" value="' . $sqlArray['訂單編號'] . '" />
                                             <p style="text-align:center; width:50px; margin:auto auto auto auto;"><button class="detailButton" type="submit">詳<br>細<br>資<br>訊</button></p>
                                         </td>
