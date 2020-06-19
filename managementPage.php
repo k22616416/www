@@ -105,6 +105,7 @@ if ($errorCode != 0 || $loginMember != 3) {
                 小農<br>
                 線上市集<br>
             </div>
+            <div style="position: absolute; top:110px;"><b>點擊上方區塊可以回首頁喔！</b></div>
             <button type="button" onclick="Javascript:document.location.href='managementPage.php?method=1'" style="position: absolute; top:36px;left:210px; background-color:RGBA(255,0,0,1);">回功能首頁</button>
             <div class="LoginArea">
 

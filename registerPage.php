@@ -98,6 +98,7 @@ if ($error) {
                 小農<br>
                 線上市集<br>
             </div>
+            <div style="position: absolute; top:110px;"><b>點擊上方區塊可以回首頁喔！</b></div>
             <form action="registerPage.php" method="post">
                 <input name="memberInput" type="hidden" value="<?php if ($member == 0) echo '1';
                                                                 else echo '0'; ?>"></input>

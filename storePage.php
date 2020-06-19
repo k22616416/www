@@ -168,7 +168,7 @@ if ($sqlData->num_rows > 0) {
                 小農<br>
                 線上市集<br>
             </div>
-
+            <div style="position: absolute; top:110px;"><b>點擊上方區塊可以回首頁喔！</b></div>
             <button type="button" onclick="goHome()" style="position: absolute; top:36px;left:210px; background-color:RGBA(255,0,0,0.60);">離開此賣場</button>
             <div class="LoginArea">
 
@@ -213,9 +213,7 @@ if ($sqlData->num_rows > 0) {
                             echo '</tr>';
                         } else if ($loginMember == 1) //消費者身分
                         {
-                            echo '<tr>';
-                            echo '<td colspan="2"><button class="RegisterButton" name="logout" type="submit">修改個人資料</button></td>';
-                            echo '</tr>';
+
                             echo '<tr >';
                             echo '<form method="post" action="userOrderList.php">';
                             echo '<input type="hidden" name="farmIndex" value="' . $userName . '">';
@@ -383,9 +381,8 @@ if ($sqlData->num_rows > 0) {
                                                 document.getElementById("cashTotal' . $i . '").innerHTML = "小計:"+(cash * count);
                                             }
                                         </script>
-                                        <td align="left" id="cashTotal' . $i . '">小計:' . $list[$i]['CCash'] * $list[$i]['count'] . '</td>
                                         <td align="center"><input type="count" onkeydown="if(event.keyCode==13){return false;}" onchange="cashTotal' . $i . '(' . $list[$i]['CCash'] . ',this.value,' . $i . ')" value="' . $list[$i]['count'] . '" disabled="disabled" style="width:30px; text-align:center;"></input></td>
-        
+                                        <td align="left" id="cashTotal' . $i . '">$' . $list[$i]['CCash'] * $list[$i]['count'] . '</td>
                                         <td><input type="submit"  name="cancel" style="background-color:rgba(0,0,0,0); ;background-image:url(Image/cancel.png); width:32px; height:32px; border:0px; padding:0 0 0 0;" value=""></input> </td>
                                         
         

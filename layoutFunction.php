@@ -1,6 +1,8 @@
 <?php
-
-function ManagementSearchLayout()
+function CheckLoginStatus()
+{
+}
+function LoginLayout($sqlArray)
 {
 }
 function ManagementStoreInfoLayout($data)

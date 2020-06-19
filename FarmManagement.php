@@ -152,7 +152,7 @@ if (isset($_POST['logout'])) {
                 小農<br>
                 線上市集<br>
             </div>
-
+            <div style="position: absolute; top:110px;"><b>點擊上方區塊可以回首頁喔！</b></div>
             <div class="LoginArea">
 
                 <!-- 已登入 -->

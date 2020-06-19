@@ -38,7 +38,7 @@ if (($conn = ConnectDB()) == null) {
         小農<br>
         線上市集<br>
       </div>
-
+      <div style="position: absolute; top:110px;"><b>點擊上方區塊可以回首頁喔！</b></div>
       <div class="LoginArea">
         <!-- 判斷有沒有登入 -->
 
@@ -162,9 +162,7 @@ if (($conn = ConnectDB()) == null) {
               echo '</tr>';
             } else if ($loginMember == 1) //消費者身分
             {
-              echo '<tr>';
-              echo '<td colspan="2"><button class="RegisterButton" name="logout" type="submit">修改個人資料</button></td>';
-              echo '</tr>';
+
               echo '<tr >';
               echo '<form method="post" action="userOrderList.php">';
               echo '<input type="hidden" name="farmIndex" value="' . $userName . '">';
