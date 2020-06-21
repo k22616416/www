@@ -50,6 +50,8 @@ if (isset($_POST['farmIndex'])) {
     $_SESSION['orderUser'] = $farmIndex;
 } else if ($_SESSION['orderUser'] != null) {
     $farmIndex = $_SESSION['orderUser'];
+} else if ($_SESSION['storeNumber'] != null) {
+    $store = $_SESSION['storeNumber'];
 }
 function orderStatus($x)
 {
@@ -221,7 +223,7 @@ SqlCommit($conn, $cmd);
                             echo '</tr>';
                             echo '<tr >';
                             echo '<form method="post" action="farmManagement.php?method=1">';
-                            echo '<input type="hidden" name="farmIndex" value="' . $userName . '">';
+                            echo '<input type="hidden" name="farmIndex" value="' . $$farmStoreNumber . '">';
                             echo '<td colspan=2><button class="RegisterButton" name="enterStore" >進入農場管理頁面</button></td>';
                             echo '</form>';
                             echo '</tr>';

@@ -286,8 +286,8 @@ if ($error) {
                         </tr>
                         <tr>
                             <td colspan="3">
-                                <div class="googleMapDiv" style="width: 300px; height:300px; background-color:rgba(255,255,255,0.70); border:1px solid #000000; text-align:center;">
-                                    因經費不足<br>尚無法顯示Google地圖</div>
+                                <div class="googleMapDiv" style="width: 300px; height:300px; background-color:rgba(255,255,255,0.70); border:1px solid #000000; text-align:center; background-image:url(Image/google.png); background-size:contain;">
+                                    因經費不足<br>尚無法顯示可使用的Google地圖</div>
                             </td>
                         </tr>
                     </tbody>

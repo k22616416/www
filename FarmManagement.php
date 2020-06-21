@@ -26,7 +26,7 @@ $storeInfo = '';
 $storeOrder = 0;
 $CommodityIndex = 0;
 // $order = $_GET['orderIndex'];
-error_reporting(0);
+// error_reporting(0);
 $titleStr = '小農線上市集媒合系統';
 
 include_once("sqlConnectAPI.php");
@@ -57,13 +57,16 @@ if (($conn = ConnectDB()) == null) {
 // }
 
 if (isset($_POST['enterStore'])) {
+    debug("enterStore");
     $store = $_POST['farmNumber'];
     $_SESSION['storeNumber'] = $store;
 } else if ($_SESSION['storeNumber'] != null) {
+    debug("storeNumber");
     $store = $_SESSION['storeNumber'];
+} else if (isset($_POST['farmNumber'])) {
+    debug("farmNumber");
+    $store = $_POST['farmNumber'];
 }
-
-
 
 
 function orderStatus($x)
@@ -89,6 +92,7 @@ if (isset($_POST['logout'])) {
     unset($_SESSION['name']);
     unset($_SESSION['member']);
 } else if ($_SESSION['user'] != null) {
+    debug("user != null");
     $loginStatus = true;
     $loginMember = $_SESSION['member'];
     $infoName = $_SESSION['name'];
@@ -127,6 +131,18 @@ if (isset($_POST['logout'])) {
         sleep(2);
         if (!checkRoot()) echo '<script>document.location.href="index.php"</script>';
     }
+}
+
+if ($loginStatus && ($store == null)) {
+    $cmd = "SELECT * FROM `小農` WHERE `使用者帳號`= '" . $userName . "' ;";
+    $sqlData = mysqli_query($conn, $cmd);
+    if ($sqlData->num_rows > 0) {
+        $sqlArray = mysqli_fetch_assoc($sqlData);
+        $farmStoreNumber = $sqlArray['賣場編號'];
+        debug("取得賣場編號");
+    }
+
+    // debug("未取得賣場編號");
 }
 
 
@@ -483,10 +499,11 @@ if (isset($_POST['logout'])) {
             } else if ($_GET["method"] == 2) {  //訂單資訊
                 // echo $storeName;
                 debug("2");
+                debug($store);
                 $cmd = 'SELECT `訂單編號`, `訂購者帳號`, `訂單日期`, `販售者帳號`, `賣場編號`, `購買清單`, `訂單金額`, `配銷方式`, `訂單狀態` ,`消費者`.`連絡電話`
                 FROM `訂單` INNER JOIN `消費者`
                 ON `訂單`.`訂購者帳號` = `消費者`.`使用者帳號`
-                WHERE `賣場編號`="' . $store . '"';
+                WHERE `賣場編號`="' . ($store) . '"';
                 $sqlData = mysqli_query($conn, $cmd);
                 if ($sqlData->num_rows > 0) {
 
@@ -501,7 +518,7 @@ if (isset($_POST['logout'])) {
                                         <td>
                                             訂單總金額:<span style="color:red">' . $sqlArray['訂單金額'] . '</span>
                                         </td>
-                                        <td rowspan="2">
+                                        <td rowspan="3">
                                             <input type="hidden" name="orderIndex" value="' . $sqlArray['訂單編號'] . '" />
                                             <p style="text-align:center; width:50px; margin:auto auto auto auto;"><button class="detailButton" type="submit">詳<br>細<br>資<br>訊</button></p>
                                         </td>

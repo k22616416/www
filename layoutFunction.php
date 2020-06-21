@@ -1,6 +1,81 @@
 <?php
-function CheckLoginStatus()
+function CheckLoginStatus($conn)
 {
+    if (isset($_POST['logout'])) {  //登出
+        unset($_POST['logout']);
+        // unset($_SESSION['user']);
+        // unset($_SESSION['name']);
+        // unset($_SESSION['member']);
+    } else if (isset($_POST['login'])) {
+        $loginStatus = true;
+        $loginMember = $_SESSION['member'];
+        $infoName = $_SESSION['name'];
+        $userName = $_SESSION['user'];
+        $farmStoreNumber = $_SESSION['farmStoreNumber'];
+        $errorCode = 0;
+    } else {
+
+        if (isset($_POST['memberSubmit'])) {
+            if (empty($_POST['user']) || empty($_POST['password'])) {
+                $errorCode = 1;
+            } else {
+                $userName = $_POST['user'];
+                $passwd = $_POST['password'];
+                //$task = $_POST['newTask'];
+
+                $cmd = "SELECT * FROM `消費者` WHERE `使用者帳號`= '" . $userName . "' AND `使用者密碼`='" . $passwd . "';";
+                //echo $cmd;
+                $sqlData = mysqli_query($conn, $cmd);
+                if (mysqli_num_rows($sqlData) > 0) {
+                    // mysqli_num_rows($sqlData) > 0;
+                    $sqlArray = mysqli_fetch_array($sqlData, MYSQLI_ASSOC);
+                    $loginStatus = true;
+                    $loginMember = 1;
+                    $infoName = $sqlArray['姓名'];
+                    $errorCode = 0;
+                    $_SESSION['user'] = $userName;
+                    $_SESSION['name'] = $sqlArray['姓名'];
+                    $_SESSION['member'] = $loginMember;
+                } else {
+                    //echo "0筆資料";
+                    $errorCode = 2;
+                }
+
+                // mysqli_close($conn);
+                unset($_POST['user']);
+                unset($_POST['password']);
+            }
+        }
+        if (isset($_POST['farmerSubmit'])) {
+            if (empty($_POST['user']) || empty($_POST['password'])) {
+                $errorCode = 1;
+            } else {
+                $userName = $_POST['user'];
+                $passwd = $_POST['password'];
+
+                $cmd = "SELECT * FROM `小農` WHERE `使用者帳號`= '" . $userName . "' AND `使用者密碼`='" . $passwd . "';";
+                $sqlData = mysqli_query($conn, $cmd);
+                if ($sqlData->num_rows > 0) {
+                    $sqlArray = mysqli_fetch_array($sqlData, MYSQLI_ASSOC);
+                    $loginStatus = true;
+                    $loginMember = 2;
+                    $errorCode = 0;
+                    $infoName = $sqlArray['姓名'];
+                    $farmStoreNumber = $sqlArray['賣場編號'];
+
+                    $_SESSION['user'] = $userName;
+                    $_SESSION['name'] = $sqlArray['姓名'];
+                    $_SESSION['member'] = $loginMember;
+                    $_SESSION['farmStoreNumber'] = $sqlArray['賣場編號'];
+                    $_SESSION['name'] = $infoName;
+                } else {
+                    $errorCode = 2;
+                }
+                unset($_POST['user']);
+                unset($_POST['password']);
+            }
+        }
+    }
 }
 function LoginLayout($sqlArray)
 {
@@ -28,13 +103,13 @@ function ManagementStoreInfoLayout($data)
     </tr>
     <tr>
     <td colspan="3">農場簡介：' . $data['賣場簡介'] . '</td>
-    <td><button class="entryStoreButton" storeIndex="' . $data['賣場編號'] . '" onclick="if(!storeOrderInfo(' . $data['賣場編號'] . ')){return false;}">查看該賣場<br>訂單資訊</button></td>
+    <td><button class="entryStoreButton" storeIndex="' . $data['賣場編號'] . '" onclick="if(!storeOrderInfo(' . $data['賣場編號'] . ')){return false;}">查看該賣場</button></td>
     </tr>
     </tbody>
     </form>
     </table>
     <div class="option">
-    <input type="checkbox" class="storeCheckbox" onclick="storeMethod(this,' . $data['賣場編號'] . ')" />
+    <input type="checkbox" class="storeCheckbox" onclick="//storeMethod(this,\'' . $data['賣場編號'] . '\')"/>
     </div>
     </div>';
 }

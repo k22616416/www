@@ -248,20 +248,7 @@ if (($conn = ConnectDB()) == null) {
     <div class="mainDiv">
 
 
-      <script>
-        var i = 0;
-        var storeInfoTemplate = document.getElementById('storeInfoTemplate');
 
-        function CreatStoreInfoDiv(info) {
-          var clone = storeInfoTemplate.cloneNode(true); // "deep" clone
-
-          clone.id = "storeInfoDiv" + ++i; // there can only be one element with an ID
-
-          console.log("clone");
-          storeInfoTemplate.parentNode.appendChild(clone);
-          clone.style.display = "block";
-        }
-      </script>
       <?php
       if (isset($_POST['searchStore']) && $_POST['searchStore'] != null)
         $cmd = 'SELECT * FROM `小農` 
@@ -326,6 +313,41 @@ if (($conn = ConnectDB()) == null) {
 
   </div>
 
+
+  <script>
+    function login(user, password, member) {
+      var form1 = document.createElement("form");
+      form1.name = "form1";
+      document.body.appendChild(form1);
+      input = document.createElement("input");
+      input.type = "hidden";
+      input.name = "user";
+      input.value = user;
+      form1.appendChild(input);
+
+      input = document.createElement("input");
+      input.type = "hidden";
+      input.name = "password";
+      input.value = password;
+      form1.appendChild(input);
+
+      input = document.createElement("input");
+      input.type = "hidden";
+      input.name = "member";
+      input.value = member;
+      form1.appendChild(input);
+
+      btn = document.createElement("btn");
+      btn.type = "submit";
+      btn.name = "login";
+      btn.value = member;
+      form1.appendChild(btn);
+
+      form1.action = "index.php";
+      form1.method = "post"
+      btn.click();
+    }
+  </script>
 </body>
 
 </html>
